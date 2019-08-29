@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mythical Monster Match</string>
+    <string name="host_bt">Host Game</string>
+    <string name="join_bt">Join Game</string>
+    <string name="show_card_bt">Show Cards</string>
+    <string name="menu_bt">Menu</string>
+    <string name="lobby_ueberschrift">Game Lobby</string>
+</resources>
