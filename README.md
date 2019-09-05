@@ -1,7 +1,7 @@
 # Mythen-Monster-Trumpf
 
 
-Tabelle von Ciwan:
+Tabelle von Ciwan:  (Klickt auf Raw damit es lesbar wird xD)
 
 Name     | Größe | Gewicht | Stärke | Brutalität | Killability | Speed | Gerissenheit | Scariness | Ekel | Rarity
 _________________________________________________________________________________________________________________
