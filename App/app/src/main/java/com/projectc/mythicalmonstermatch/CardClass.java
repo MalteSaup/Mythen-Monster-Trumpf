@@ -11,7 +11,7 @@ public class CardClass {
     Map<String, Float> attributeMap = new HashMap<String, Float>();                     //Attribute Map zum schlanken Vergleich Werte da über String Callbar
     Image img;                                                                          //Anzeige Bild, evtl auslagern TODO Nachforschen Möglichkeiten anzeigen
 
-    void CardClass(int id, String name, float a1, float a2, float a3, float a4, float a5, Image img){
+    public CardClass(int id, String name, float a1, float a2, float a3, float a4, float a5){
         this.id = id;
         this.name = name;
         this.attributeMap.put("attribute1", a1);                                    //Platzhalterattributesnamen da noch nicht ausgewählt welche genommen werden

@@ -12,6 +12,8 @@ public class MainActivity extends FragmentActivity {
 
     private MainFragment mainFrag;
     public String name = "";
+    public CardClass[] cardDeck = new CardClass[30];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,13 +28,9 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK && mainFrag.isInMenu){
+        if(keyCode == KeyEvent.KEYCODE_BACK && (mainFrag.isInMenu || mainFrag.isInCards)){
 
             MenuFragment menuFragment = (MenuFragment)getSupportFragmentManager().findFragmentById(R.id.mainActivityLayout);
-
-            if(menuFragment.getName() != null){
-                name = menuFragment.getName();
-            }
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.mainActivityLayout, mainFrag);
@@ -42,4 +40,20 @@ public class MainActivity extends FragmentActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public void createCardDeck(){
+        for(int i = 0; i < 30; i++){
+            cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i);
+        }
+
+    }
+
 }

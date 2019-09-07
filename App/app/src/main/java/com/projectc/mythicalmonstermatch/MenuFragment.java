@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,12 @@ public class MenuFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
-        enterName  = getView().findViewById(R.id.editName);
+        enterName = getView().findViewById(R.id.editName);
+        final MainActivity activity = (MainActivity) getActivity();
+        String uebergabeString = activity.getName();
+        if(!uebergabeString.isEmpty()){
+            enterName.setText(uebergabeString);
+        }
         enterName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -45,14 +51,9 @@ public class MenuFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                name = editable.toString();
+                activity.setName(editable.toString());
             }
         });
         super.onActivityCreated(saveInstandesState);
     }
-
-    public String getName(){
-        return name;
-    }
-
 }
