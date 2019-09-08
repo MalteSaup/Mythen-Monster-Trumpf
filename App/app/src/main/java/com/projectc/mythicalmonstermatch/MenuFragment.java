@@ -16,7 +16,6 @@ import android.widget.EditText;
 public class MenuFragment extends Fragment {
 
     private EditText enterName;
-    private String name;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

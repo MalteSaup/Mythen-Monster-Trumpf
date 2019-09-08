@@ -7,6 +7,21 @@
     android:layout_height="match_parent"
     tools:context=".CardFragment" >
 
+    <TextView
+        android:id="@+id/cardName"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
@@ -39,14 +54,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_percent="0.19" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.5" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline5"
@@ -73,8 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="Attribute:"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/attribute2"
@@ -82,8 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="Attribute:"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/attribute3"
@@ -91,8 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="Attribute:"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/attribute4"
@@ -100,8 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="Attribute:"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/attribute5"
@@ -109,8 +120,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="Attribute:"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
 
     </LinearLayout>

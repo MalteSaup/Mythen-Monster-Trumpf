@@ -12,7 +12,7 @@ public class MainActivity extends FragmentActivity {
 
     private MainFragment mainFrag;
     public String name = "";
-    public CardClass[] cardDeck = new CardClass[30];
+    private CardClass[] cardDeck = new CardClass[30];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +24,8 @@ public class MainActivity extends FragmentActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.mainActivityLayout, mainFrag);
         ft.commit();
+
+        createCardDeck();
     }
 
     @Override
@@ -48,10 +50,12 @@ public class MainActivity extends FragmentActivity {
     public void setName(String name){
         this.name = name;
     }
+    public CardClass[] getCardDeck(){return  cardDeck;}
 
     public void createCardDeck(){
         for(int i = 0; i < 30; i++){
             cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i);
+            Log.d("CARD DECK", "CARD" + i + ": " + cardDeck[i].name);
         }
 
     }
