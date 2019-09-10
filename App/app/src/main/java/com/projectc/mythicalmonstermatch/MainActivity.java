@@ -1,5 +1,6 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -14,6 +15,9 @@ public class MainActivity extends FragmentActivity {
     public String name = "";
     private CardClass[] cardDeck = new CardClass[30];
 
+    private SharedPreferences data;
+    private SharedPreferences.Editor data_editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,13 +30,18 @@ public class MainActivity extends FragmentActivity {
         ft.commit();
 
         createCardDeck();
+
+        data = getApplicationContext().getSharedPreferences("user_name", 0);
+
+        if(data.getString("user_name", null) != null){
+            name = data.getString("user_name", null);
+        }
+
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK && (mainFrag.isInMenu || mainFrag.isInCards)){
-
-            MenuFragment menuFragment = (MenuFragment)getSupportFragmentManager().findFragmentById(R.id.mainActivityLayout);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.mainActivityLayout, mainFrag);
@@ -49,13 +58,15 @@ public class MainActivity extends FragmentActivity {
 
     public void setName(String name){
         this.name = name;
+        data_editor = data.edit();
+        data_editor.putString("user_name", name);
+        data_editor.apply();
     }
     public CardClass[] getCardDeck(){return  cardDeck;}
 
     public void createCardDeck(){
         for(int i = 0; i < 30; i++){
             cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i);
-            Log.d("CARD DECK", "CARD" + i + ": " + cardDeck[i].name);
         }
 
     }

@@ -57,9 +57,7 @@ public class ShowCardFragment extends Fragment {
         rightCardView = getCardViews(rightFrag);
         centerCardView = getCardViews(centerFrag);
 
-        setCardText(count % 30, leftCardView);
-        setCardText(count + 2 % 30, rightCardView);
-        setCardText(count + 1 % 30, centerCardView);
+        setAllCardText(count, leftCardView, rightCardView, centerCardView);
 
         leftFrag.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -69,9 +67,7 @@ public class ShowCardFragment extends Fragment {
                     count += 30;
                 }
                 Log.d("NUMBERS", (count%30) + " : " + ((count + 2) % 30) + " : " + ((count + 1) % 30));
-                setCardText((count % 30), leftCardView);
-                setCardText((count + 2) % 30, rightCardView);
-                setCardText((count + 1) % 30, centerCardView);
+                setAllCardText(count, leftCardView, rightCardView, centerCardView);
             }
         });
 
@@ -80,9 +76,7 @@ public class ShowCardFragment extends Fragment {
             public void onClick(View v){
                 count = (count + 1) % 30;
 
-                setCardText(count % 30, leftCardView);
-                setCardText((count + 2) % 30, rightCardView);
-                setCardText((count + 1) % 30, centerCardView);
+                setAllCardText(count, leftCardView, rightCardView, centerCardView);
             }
         });
 
@@ -92,23 +86,20 @@ public class ShowCardFragment extends Fragment {
             views[i].setOnTouchListener(new OnSwipeTouchListener(getActivity()){
                 @Override
                 public void onSwipeLeft(){
-                    count = ((count - 1) % 30);
-                    if(count < 0){
-                        count += 30;
-                    }
-                    Log.d("NUMBERS", (count%30) + " : " + ((count + 2) % 30) + " : " + ((count + 1) % 30));
-                    setCardText((count % 30), leftCardView);
-                    setCardText((count + 2) % 30, rightCardView);
-                    setCardText((count + 1) % 30, centerCardView);
+                    count = ((count + 1) % 30);
+
+                    setAllCardText(count, leftCardView, rightCardView, centerCardView);
                 }
 
                 @Override
                 public void onSwipeRight(){
-                    count = (count + 1) % 30;
+                    count = (count - 1) % 30;
 
-                    setCardText(count % 30, leftCardView);
-                    setCardText((count + 2) % 30, rightCardView);
-                    setCardText((count + 1) % 30, centerCardView);
+                    if(count < 0){
+                        count += 30;
+                    }
+
+                    setAllCardText(count, leftCardView, rightCardView, centerCardView);
                 }
             });
         }
@@ -116,25 +107,23 @@ public class ShowCardFragment extends Fragment {
         getView().setOnTouchListener(new OnSwipeTouchListener(getActivity()){
             @Override
             public void onSwipeLeft(){
-                count = ((count - 1) % 30);
-                if(count < 0){
-                    count += 30;
-                }
-                Log.d("NUMBERS", (count%30) + " : " + ((count + 2) % 30) + " : " + ((count + 1) % 30));
-                setCardText((count % 30), leftCardView);
-                setCardText((count + 2) % 30, rightCardView);
-                setCardText((count + 1) % 30, centerCardView);
+                count = ((count + 1) % 30);
+
+                setAllCardText(count, leftCardView, rightCardView, centerCardView);
             }
 
             @Override
             public void onSwipeRight(){
-                count = (count + 1) % 30;
+                count = (count - 1) % 30;
 
-                setCardText(count % 30, leftCardView);
-                setCardText((count + 2) % 30, rightCardView);
-                setCardText((count + 1) % 30, centerCardView);
+                if(count < 0){
+                    count += 30;
+                }
+
+                setAllCardText(count, leftCardView, rightCardView, centerCardView);
             }
         });
+
 
 
         super.onActivityCreated(saveInstandesState);
@@ -146,14 +135,12 @@ public class ShowCardFragment extends Fragment {
     }
 
     public void setCardText(int number, TextView[] textViewArray){
-
+        String txt = "Attribute ";
         textViewArray[0].setText(ccDeck[number].name);
-        textViewArray[1].setText("Attribute 1: " + ccDeck[number].attributeMap.get("attribute1"));
-        textViewArray[2].setText("Attribute 2: " + ccDeck[number].attributeMap.get("attribute2"));
-        textViewArray[3].setText("Attribute 3: " + ccDeck[number].attributeMap.get("attribute3"));
-        textViewArray[4].setText("Attribute 4: " + ccDeck[number].attributeMap.get("attribute4"));
-        textViewArray[5].setText("Attribute 5: " + ccDeck[number].attributeMap.get("attribute5"));
 
+        for (int i = 1; i <= 5; i++){
+            textViewArray[i].setText(txt + i + ": " + ccDeck[number].attributeMap.get("attribute" + i));
+        }
     }
 
     public TextView[] getCardViews(ConstraintLayout cL){
@@ -165,6 +152,13 @@ public class ShowCardFragment extends Fragment {
         TextView tV5 = cL.findViewById(R.id.attribute5);
         TextView[] tVArray = {tVname, tV1, tV2, tV3, tV4, tV5};
         return tVArray;
+    }
+
+    public void setAllCardText(int count, TextView[] leftCardView, TextView[] rightCardView, TextView[] centerCardView ){
+        Log.d("COUNT NUMBERS", " " + (count % 30));
+        setCardText(count % 30, leftCardView);
+        setCardText((count + 2) % 30, rightCardView);
+        setCardText((count + 1) % 30, centerCardView);
     }
 
 
