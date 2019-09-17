@@ -1,17 +1,22 @@
 package com.projectc.mythicalmonstermatch;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.ArrayList;
+
 public class MainFragment extends Fragment {
 
     private Button menuBt;
     private Button showCardBt;
+    private Button hostBt;
     public boolean isInMenu;
     public boolean isInCards;
     private String name;
@@ -52,6 +57,20 @@ public class MainFragment extends Fragment {
                 ft.replace(R.id.mainActivityLayout, menuFrag);
                 ft.commit();
                 isInCards = true;
+            }
+        });
+        hostBt = getView().findViewById(R.id.hostGameBt);
+        hostBt.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                WifiHelper wH = new WifiHelper();
+                ArrayList<String> aL = wH.getDeviceList();
+                for (String a: aL) {
+                    Log.d("ADDRESS", a);
+                }*/ //Vorbereitung für später
             }
         });
         super.onActivityCreated(saveInstandesState);
