@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ServerMain extends Thread {
 
@@ -16,6 +18,7 @@ public class ServerMain extends Thread {
     private boolean gameIsStarted = false;
     private Socket[] rangfolgeSpieler;
     private int anDerReihe = 0;
+    private Timer timer = new Timer();
     final int SocketServerPORT = 8080;
 
     public ServerMain(String name){
@@ -28,6 +31,8 @@ public class ServerMain extends Thread {
             try {
                 serverSocket = new ServerSocket(SocketServerPORT);
 
+                timer.schedule(new CheckConnectionStatus(), 0, 500);
+
                 while(true){
                     if(!gameIsStarted) {
                         boolean gotConnected = false;
@@ -35,11 +40,8 @@ public class ServerMain extends Thread {
                         int number = 0;
                         Socket client = serverSocket.accept();
                         DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                        for (Socket socket : clientSocketHashMap.keySet()) {
-                            if (socket.isClosed()) {
-                                clientSocketHashMap.remove(socket);
-                            }
-                        }
+
+
                         if (clientSocketHashMap.size() < 5) {
                             DataInputStream input = new DataInputStream(client.getInputStream());
                             out.writeUTF(serverInfoText + ";" + clientSocketHashMap.size());
@@ -83,6 +85,19 @@ public class ServerMain extends Thread {
         }
         gameIsStarted = true;
     }
+
+    public class CheckConnectionStatus extends TimerTask {
+
+        @Override
+        public void run() {
+            for (Socket socket : clientSocketHashMap.keySet()) {
+                if (socket.isClosed()) {
+                    clientSocketHashMap.remove(socket);
+                }
+            }
+        }
+    }
+
 
 }
 
