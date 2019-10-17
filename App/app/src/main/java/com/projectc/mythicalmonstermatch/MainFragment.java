@@ -1,5 +1,6 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -17,9 +18,11 @@ public class MainFragment extends Fragment {
     private Button menuBt;
     private Button showCardBt;
     private Button hostBt;
+    private Button joinBt;
     public boolean isInMenu;
     public boolean isInCards;
     private String name;
+    private MainActivity mainActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,7 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        mainActivity = (MainActivity)getActivity();
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -63,6 +66,9 @@ public class MainFragment extends Fragment {
         hostBt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                mainActivity.startGameActivity(0);
+
+
                 /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                         .permitAll().build();
                 StrictMode.setThreadPolicy(policy);
@@ -73,6 +79,15 @@ public class MainFragment extends Fragment {
                 }*/ //Vorbereitung für später
             }
         });
+
+        joinBt = getView().findViewById(R.id.findGameBt);
+        joinBt.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                mainActivity.startGameActivity(1);
+            }
+        });
+
         super.onActivityCreated(saveInstandesState);
     }
 
