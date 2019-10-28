@@ -75,13 +75,12 @@ public class Server extends Thread{
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
                     String line;
                     long startTime = System.currentTimeMillis();
-                    while((line = bufferedReader.readLine()) != null){
+
+                    while(((line = bufferedReader.readLine()) != null) ||(System.currentTimeMillis()-startTime)<1000){
                         String[] tokens = line.split(" ");
-                        if((System.currentTimeMillis() - startTime) > 1000){
-                            break;
-                        }
+
                         if(tokens[0].equalsIgnoreCase("ask")){
-                            bufferedWriter.write("answer " + serverName + " 5\r\n");
+                            bufferedWriter.write("answer 1 " + playerList.size() + " " + serverName + "\r\n");
                             bufferedWriter.flush();
                             break;
                         } else if(tokens[0].equalsIgnoreCase("join")){

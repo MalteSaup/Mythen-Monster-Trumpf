@@ -66,16 +66,6 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v){
                 mainActivity.startGameActivity(0);
-
-
-                /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                        .permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-                WifiHelper wH = new WifiHelper();
-                ArrayList<String> aL = wH.getDeviceList();
-                for (String a: aL) {
-                    Log.d("ADDRESS", a);
-                }*/ //Vorbereitung für später
             }
         });
 

@@ -92,7 +92,7 @@ public class ServerListener extends Thread{
     }
 
     private void handleAsk() {
-        sendMessage("answer " + server.serverName + " " + server.playerCount());
+        sendMessage("answer 0 " + server.playerCount() + " " + server.serverName);
 
     }
 
