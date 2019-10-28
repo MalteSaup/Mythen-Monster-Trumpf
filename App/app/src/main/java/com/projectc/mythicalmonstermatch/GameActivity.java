@@ -3,6 +3,9 @@ package com.projectc.mythicalmonstermatch;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.projectc.mythicalmonstermatch.Connection.Client;
+import com.projectc.mythicalmonstermatch.Connection.Server;
+
 public class GameActivity extends FragmentActivity {
 
     private int code = 0;

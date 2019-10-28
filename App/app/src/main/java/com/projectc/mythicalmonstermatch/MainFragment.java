@@ -14,7 +14,6 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 public class MainFragment extends Fragment {
-
     private Button menuBt;
     private Button showCardBt;
     private Button hostBt;

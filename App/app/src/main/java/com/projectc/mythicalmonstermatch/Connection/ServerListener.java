@@ -1,4 +1,4 @@
-package com.projectc.mythicalmonstermatch;
+package com.projectc.mythicalmonstermatch.Connection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
