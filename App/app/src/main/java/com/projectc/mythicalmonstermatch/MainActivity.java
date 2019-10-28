@@ -1,5 +1,6 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -69,6 +70,13 @@ public class MainActivity extends FragmentActivity {
             cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i);
         }
 
+    }
+
+    public void startGameActivity(int code){
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("USERNAME", this.name);
+        intent.putExtra("CODE", code);                          //code 0 == Host, code 1 == Client
+        startActivity(intent);
     }
 
 }

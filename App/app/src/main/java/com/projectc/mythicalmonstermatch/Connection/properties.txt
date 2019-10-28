@@ -1,0 +1,16 @@
+CMD | 1 | 2 | 3 | 4 | 5
+
+CLIENT:
+ASK                                                                                 |ABFRAGE FÜR SERVER STATUS EVTL IN SEARCH CLIENT
+JOIN <NAME> <ID (DEFAULT = 0)>                                                      |JOINED SERVER UND ÜBERGIBT NAMEN, ID FALLS RECONNECT
+LEAVE                                                                               |NACHRICHT AN SERVER DAS CLIENT VERBINDUNG BEENDEN WILL
+MSG  <CMD> <INHALT CMD>                                                             |NACHRICHT AN SERVER EVTL HANDLE IWAS
+GMSG <CMD> <INHALT CMD>                                                             |NACHRICHT AN ALLE SPIELER
+
+
+
+
+SERVER:
+ANSWER <STATUS 0 = NICHT GESTARTET 1 = GESTARTET> <SPIELER ANZAHL> <SERVER NAME>    |ANTWORT AUF ASK
+ACCEPT <ID FALLS JOIN ID = 0>                                                       |JOIN AKZEPTIERT
+DENIED                                                                              |JOIN BLOCKIERT
