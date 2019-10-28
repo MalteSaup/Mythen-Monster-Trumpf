@@ -90,6 +90,10 @@ public class Client extends Thread{
                         } else if("setName".equalsIgnoreCase(cmd)){
                             tokens = line.split(" ", 2);                                //Erneute splitung von String da Nachricht im Inhaltsblock Leerzeichen enthalten darf
                             handleNameChange(tokens[1]);
+                        } else if("hearbeat".equalsIgnoreCase(cmd)){
+                            handleHeartbeat();
+                        } else if("aknowledge".equalsIgnoreCase(cmd)){
+                            aknowleagead = true;
                         }
                     }
                 }

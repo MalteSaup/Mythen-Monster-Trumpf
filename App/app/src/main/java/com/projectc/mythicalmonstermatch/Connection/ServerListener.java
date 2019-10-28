@@ -1,10 +1,12 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -13,8 +15,10 @@ public class ServerListener extends Thread{
     private Server server;
     private String login;
 
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private int count = 0;
+
+    private BufferedReader bufferedReader;
+    private BufferedWriter bufferedWriter;
 
     public ServerListener(Server server, Socket socket){
         this.server = server;
@@ -24,10 +28,12 @@ public class ServerListener extends Thread{
     @Override
     public void run(){
         try {
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            Hearbeat hearbeat = new Hearbeat(this);
+            hearbeat.start();
+
             String line;
 
             while((line = bufferedReader.readLine()) != null){
@@ -35,7 +41,7 @@ public class ServerListener extends Thread{
                 String tokens[] = line.split(" ");
                 if(tokens != null && tokens.length > 0){
                     String cmd = tokens[0];
-
+                    sendMessage("aknowledge");
                     if(cmd.equalsIgnoreCase("ask")){
                         handleAsk();
                         break;
@@ -49,6 +55,8 @@ public class ServerListener extends Thread{
                         break;
                     }else if(cmd.equalsIgnoreCase("start")){
                         handleStart(login);
+                    }else if(cmd.equalsIgnoreCase("hearbeat")){
+                        handleHeartbeat();
                     }
 
                 }
@@ -85,7 +93,8 @@ public class ServerListener extends Thread{
 
     private void sendMessage(String msg){
         try {
-            outputStream.write(msg.getBytes());
+            bufferedWriter.write(msg + "\r\n");
+            bufferedWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,14 +105,28 @@ public class ServerListener extends Thread{
 
     }
 
+    private void handleHeartbeat(){
+        count = 0;
+    }
+
+    public void heartbeatSend(){
+        sendMessage("heartbeat");
+        count++;
+        if(count >= 10){
+            handleConnectionLost();
+        }
+    }
+
+    private void handleConnectionLost(){
+        leave();
+    }
+
     private void leave(){
         server.removePlayer(this);
         server.removeListener(this);
         ArrayList<ServerListener> listenerList = server.getServerListeners();
         for(ServerListener sL : listenerList) {
-            if(!login.equals(sL.getLogin())) {
-                sL.sendMessage("update");
-            }
+            sL.sendMessage("update");
         }
     }
 

@@ -78,7 +78,8 @@ public class Server extends Thread{
 
                     while(((line = bufferedReader.readLine()) != null) ||(System.currentTimeMillis()-startTime)<1000){
                         String[] tokens = line.split(" ");
-
+                        bufferedWriter.write("aknowledge\r\n");
+                        bufferedWriter.flush();
                         if(tokens[0].equalsIgnoreCase("ask")){
                             bufferedWriter.write("answer 1 " + playerList.size() + " " + serverName + "\r\n");
                             bufferedWriter.flush();
@@ -97,4 +98,5 @@ public class Server extends Thread{
             e.printStackTrace();
         }
     }
+
 }
