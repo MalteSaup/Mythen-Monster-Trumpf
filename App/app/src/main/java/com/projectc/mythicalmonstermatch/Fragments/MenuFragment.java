@@ -1,4 +1,4 @@
-package com.projectc.mythicalmonstermatch;
+package com.projectc.mythicalmonstermatch.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.projectc.mythicalmonstermatch.MainActivity;
+import com.projectc.mythicalmonstermatch.R;
 
 
 public class MenuFragment extends Fragment {

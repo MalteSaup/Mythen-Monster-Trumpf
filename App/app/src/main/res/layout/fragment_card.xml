@@ -5,7 +5,8 @@
     android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CardFragment" >
+    android:background="#B3AC85"
+    tools:context=".Fragments.CardFragment" >
 
     <TextView
         android:id="@+id/cardName"

@@ -24,9 +24,9 @@ public class GameActivity extends FragmentActivity {
         }
 
         if(code == 0){
-            Server server = new Server (8080, 0, name);
-            server.start();
-            Client client = new Client("TODO", 8080, name, 1);
+            //Server server = new Server (8080, 0, name);
+            //server.start();
+            //Client client = new Client("TODO", 8080, name, 1);
             //SERVER STARTEN
             //CLIENT STARTEN
             //LOBBY FRAGMENT STARTEN
