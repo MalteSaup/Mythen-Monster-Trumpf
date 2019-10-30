@@ -128,7 +128,7 @@ public class ShowCardFragment extends Fragment {
                 mainActivity.mainFrag.onCard = false;
             }
         });
-
+        Log.d("WAS", " "  + view.findViewById(R.id.ueberschrift));
         super.onActivityCreated(saveInstandesState);
     }
 

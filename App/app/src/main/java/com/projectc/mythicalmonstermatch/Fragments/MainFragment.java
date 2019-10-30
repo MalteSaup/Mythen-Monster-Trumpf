@@ -64,7 +64,13 @@ public class MainFragment extends Fragment {
         hostBt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                mainActivity.startGameActivity(0);
+                /*mainActivity.startGameActivity(0);*/
+
+                HostFragment hostFrag = (HostFragment) Fragment.instantiate(getActivity(), HostFragment.class.getName(), null);
+
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.mainActivityLayout, hostFrag);
+                ft.commit();
             }
         });
 
