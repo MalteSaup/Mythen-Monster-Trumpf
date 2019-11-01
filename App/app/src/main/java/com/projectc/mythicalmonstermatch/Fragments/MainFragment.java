@@ -78,7 +78,13 @@ public class MainFragment extends Fragment {
         joinBt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                mainActivity.startGameActivity(1);
+                /*mainActivity.startGameActivity(1);*/
+
+                FindFragment findFragment = (FindFragment) Fragment.instantiate(getActivity(), FindFragment.class.getName(), null);
+
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.mainActivityLayout, findFragment);
+                ft.commit();
             }
         });
 
