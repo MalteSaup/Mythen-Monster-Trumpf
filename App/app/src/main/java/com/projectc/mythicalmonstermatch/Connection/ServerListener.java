@@ -1,11 +1,11 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ public class ServerListener extends Thread{
                 if(tokens != null && tokens.length > 0){
                     String cmd = tokens[0];
                     sendMessage("aknowledge");
+                    Log.d("SERVER CMD", cmd);
                     if(cmd.equalsIgnoreCase("ask")){
                         handleAsk();
                         break;
@@ -55,8 +56,6 @@ public class ServerListener extends Thread{
                         break;
                     }else if(cmd.equalsIgnoreCase("start")){
                         handleStart(login);
-                    }else if(cmd.equalsIgnoreCase("hearbeat")){
-                        handleHeartbeat();
                     }
 
                 }
@@ -105,23 +104,12 @@ public class ServerListener extends Thread{
 
     }
 
-    private void handleHeartbeat(){
-        count = 0;
-    }
-
-    public void heartbeatSend(){
-        sendMessage("heartbeat");
-        count++;
-        if(count >= 10){
-            handleConnectionLost();
-        }
-    }
-
     private void handleConnectionLost(){
         leave();
     }
 
     private void leave(){
+        Log.d("SERVER", "LEAVE");
         server.removePlayer(this);
         server.removeListener(this);
         ArrayList<ServerListener> listenerList = server.getServerListeners();

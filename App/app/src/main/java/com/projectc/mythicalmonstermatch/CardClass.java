@@ -6,10 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardClass {
+public class CardClass{
     public int id;                                                                             //ID zwischen 1-30 zur leichten eindeutigen identifiezierung der Karte
     public String name;                                                                        //Name des Monster (z.B. Medusa, Golem etc)
     public Map<String, Float> attributeMap = new HashMap<String, Float>();                     //Attribute Map zum schlanken Vergleich Werte da über String Callbar

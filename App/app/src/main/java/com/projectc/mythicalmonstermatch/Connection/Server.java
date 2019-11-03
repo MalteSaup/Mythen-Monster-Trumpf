@@ -2,11 +2,13 @@ package com.projectc.mythicalmonstermatch.Connection;
 
 import android.util.Log;
 
+import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
+import com.projectc.mythicalmonstermatch.PlayerChangeListener;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,15 +21,19 @@ public class Server extends Thread{
 
     private int port = 8080;                                                                        //PORT
 
+    private HostFragment hostFragment;
+
     private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
 
     public String serverName;                                                                       //Name des Servers (Servername == Name des Hosts)
 
     private ArrayList<ServerListener> serverListeners = new ArrayList<>();                          //Liste der gejointen Clients
     private ArrayList<ServerListener> playerList = new ArrayList<>();                               //Liste der gejointen Spielen (Clients != Spieler in diesem Fall)
+    private ArrayList<PlayerChangeListener> playerListener = new ArrayList<>();
+    public Server(String serverName, HostFragment hostFragment) {
 
-    public Server (String serverName){
         this.serverName = serverName;
+        this.hostFragment = hostFragment;
     }
 
     public void removeListener(ServerListener sL){                                                  //Entfernt Listener aus der Client Liste
@@ -47,13 +53,21 @@ public class Server extends Thread{
 
     public void addPlayer(ServerListener sL){                                                       //Fügt Spieler hinzu
         playerList.add(sL);
+        for(PlayerChangeListener pCL : playerListener){
+            pCL.playerChanged();
+        }
+        Log.d("SERVER", "HINZU " + sL.getLogin());
     }
 
     public void removePlayer(ServerListener sL){                                                    //Entfernt Spieler
         playerList.remove(sL);
+        for(PlayerChangeListener pCL : playerListener){
+            pCL.playerChanged();
+        }
+        Log.d("SERVER", "ENTFERNT " + sL.getLogin());
     }
 
-    public ArrayList<ServerListener> getServerListeners(){                                          //Gibt Client List zurück
+    public synchronized ArrayList<ServerListener> getServerListeners(){                                          //Gibt Client List zurück
         return playerList;
     }
 
@@ -98,5 +112,10 @@ public class Server extends Thread{
             e.printStackTrace();
         }
     }
+
+    public void addListener(PlayerChangeListener pCL){
+        playerListener.add(pCL);
+    }
+
 
 }

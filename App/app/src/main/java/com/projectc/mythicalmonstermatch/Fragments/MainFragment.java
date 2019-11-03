@@ -64,13 +64,9 @@ public class MainFragment extends Fragment {
         hostBt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                /*mainActivity.startGameActivity(0);*/
+                mainActivity.startGameActivity(0);
 
-                HostFragment hostFrag = (HostFragment) Fragment.instantiate(getActivity(), HostFragment.class.getName(), null);
 
-                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.mainActivityLayout, hostFrag);
-                ft.commit();
             }
         });
 
@@ -78,13 +74,13 @@ public class MainFragment extends Fragment {
         joinBt.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                /*mainActivity.startGameActivity(1);*/
+                mainActivity.startGameActivity(1);
 
-                FindFragment findFragment = (FindFragment) Fragment.instantiate(getActivity(), FindFragment.class.getName(), null);
+                /*FindFragment findFragment = (FindFragment) Fragment.instantiate(getActivity(), FindFragment.class.getName(), null);
 
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.mainActivityLayout, findFragment);
-                ft.commit();
+                ft.commit();*/
             }
         });
 

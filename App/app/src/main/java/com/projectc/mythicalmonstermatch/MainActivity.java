@@ -100,7 +100,8 @@ public class MainActivity extends FragmentActivity {
     public void startGameActivity(int code){
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("USERNAME", this.name);
-        intent.putExtra("CODE", code);                          //code 0 == Host, code 1 == Client
+        intent.putExtra("CODE", code);                                                        //code 0 == Host, code 1 == Client
+
         startActivity(intent);
     }
 

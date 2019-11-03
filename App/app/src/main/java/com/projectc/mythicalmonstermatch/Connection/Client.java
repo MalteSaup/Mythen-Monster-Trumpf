@@ -1,8 +1,6 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
 import android.content.Context;
-import android.net.wifi.WifiManager;
-import android.text.format.Formatter;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -15,8 +13,6 @@ import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
-
-import static android.content.Context.WIFI_SERVICE;
 
 public class Client extends Thread{
 
@@ -39,7 +35,7 @@ public class Client extends Thread{
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-    public Client (String serverName, String login, int code, int startIP, Context context) {
+    public Client (String serverName, String login, String address) {
         this.serverName = serverName;
         this.login = login;
     }
@@ -51,6 +47,7 @@ public class Client extends Thread{
 
     private void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
         try {
+            Log.d("CLIENT", msg);
             bufferedWriter.write(msg + "\r\n");                                                 //Message wird erstellt
             bufferedWriter.flush();                                                                 //Message wird zum Server gesendet
         } catch (IOException e) {
@@ -75,6 +72,8 @@ public class Client extends Thread{
 
                 String line;
 
+                sendMessage("join " + login);
+
                 joined = true;
 
                 while((line = bufferedReader.readLine()) != null){                                  //While Schleife für Nachrichten verarbeitung
@@ -90,13 +89,12 @@ public class Client extends Thread{
                         } else if("setName".equalsIgnoreCase(cmd)){
                             tokens = line.split(" ", 2);                                //Erneute splitung von String da Nachricht im Inhaltsblock Leerzeichen enthalten darf
                             handleNameChange(tokens[1]);
-                        } else if("hearbeat".equalsIgnoreCase(cmd)){
-                            handleHeartbeat();
                         } else if("aknowledge".equalsIgnoreCase(cmd)){
                             aknowleagead = true;
                         }
                     }
                 }
+                Log.d("CLIENT", "ZUENDDE");
 
             } catch (ConnectException e){
                 Log.d("ERROR", "CONNECTION FAILED");
@@ -137,7 +135,7 @@ public class Client extends Thread{
     }
 
     private void handleHeartbeat(){
-        sendMessage("HEARTBEAT");
+        sendMessage("heartbeat");
     }
 
     private void handleDenie() {                                                                    //Wird aufgerufen wenn der Server den Join verweigert
