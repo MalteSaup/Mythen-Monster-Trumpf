@@ -134,10 +134,6 @@ public class Client extends Thread{
         //TODO START LOBBY FRAGMENT
     }
 
-    private void handleHeartbeat(){
-        sendMessage("heartbeat");
-    }
-
     private void handleDenie() {                                                                    //Wird aufgerufen wenn der Server den Join verweigert
         //TODO Toast mit Denied Message oder Fragment
     }

@@ -2,6 +2,7 @@ package com.projectc.mythicalmonstermatch.Fragments;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,11 @@ public class HostFragment extends Fragment {
     public RecyclerView playerRecyclerView;
     public RecyclerView.Adapter playerAdapter;
 
+    private Handler handler;
+    private Runnable runnable;
+
+
+    private boolean stoped = false;
     Button button;
 
     @Override
@@ -52,14 +58,24 @@ public class HostFragment extends Fragment {
             }
         });
 
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                gA.update();
+                if(!stoped){handler.postDelayed(this, 500);}
+            }
+        };
+        runnable.run();
+
         super.onActivityCreated(saveInstandesState);
     }
 
-    public void update(ArrayList<String> playerList){
-
-        playerAdapter.notifyDataSetChanged();
+    @Override
+    public void onDestroy() {
+        stoped = true;
+        super.onDestroy();
     }
-
 
 }
 

@@ -144,6 +144,46 @@ public class GameActivity extends FragmentActivity{
         ArrayList<ServerListener> serverListeners = server.getServerListeners();
         ArrayList<PlayerItem> uebergabe = new ArrayList<>();
         Log.d("WAT", " " + serverListeners.size());
+        if(serverListeners.size() != playerItems.size()){
+            if (serverListeners.size() > playerItems.size()) {
+                for(ServerListener sL : serverListeners){
+                    boolean vorhanden = false;
+                    for(PlayerItem pI : playerItems){
+                        if(pI.getUsername().equals(sL.getLogin())){
+                            vorhanden = true;
+                        }
+                    }
+                    if(!vorhanden){
+                        uebergabe.add(new PlayerItem(sL.getLogin()));
+                    }
+                }
+                for(PlayerItem pI : uebergabe){
+                    playerItems.add(pI);
+                }
+            } else if (serverListeners.size() < playerItems.size()) {
+                for(PlayerItem pI : playerItems){
+                    boolean vorhanden = false;
+                    for(ServerListener sL : serverListeners){
+                        if(pI.getUsername().equals(sL.getLogin())){
+                            vorhanden = true;
+                        }
+                    }
+                    if(!vorhanden){
+                        uebergabe.add(pI);
+                    }
+                }
+                ArrayList<PlayerItem> uebergabe2 = checkForDoubles();
+                for(PlayerItem pI : uebergabe2){
+                    playerItems.remove(pI);
+                }
+                for(PlayerItem pI : uebergabe){
+                    playerItems.remove(pI);
+                }
+            }
+            hostFrag.playerAdapter.notifyDataSetChanged();
+        }
+
+
         for(ServerListener sL : serverListeners){
             boolean vorhanden = false;
             for(PlayerItem pI : playerItems){
@@ -161,6 +201,18 @@ public class GameActivity extends FragmentActivity{
         if(hostFrag.playerRecyclerView != null){
             hostFrag.playerAdapter.notifyDataSetChanged();
         }
+    }
+
+    public ArrayList<PlayerItem> checkForDoubles(){
+        ArrayList<PlayerItem> uebergabe = new ArrayList<>();
+        for(int i = 0; i < playerItems.size(); i++){
+            for(int o = i; o < playerItems.size(); o++){
+                if(playerItems.get(i).getUsername().equals(playerItems.get(o).getUsername())){
+                    uebergabe.add(playerItems.get(o));
+                }
+            }
+        }
+        return uebergabe;
     }
 }
 
