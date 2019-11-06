@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,6 +36,7 @@ public class MainActivity extends FragmentActivity {
 
         createCardDeck();
 
+        
         data = getApplicationContext().getSharedPreferences("user_name", 0);
 
         if(data.getString("user_name", null) != null){

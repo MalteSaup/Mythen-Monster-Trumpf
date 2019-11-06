@@ -15,8 +15,6 @@ import android.widget.Button;
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.R;
 
-import java.util.ArrayList;
-
 public class HostFragment extends Fragment {
 
     public RecyclerView playerRecyclerView;
@@ -54,18 +52,28 @@ public class HostFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gA.update();
+                gA.updateHostFragment();
             }
         });
 
         handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                gA.update();
-                if(!stoped){handler.postDelayed(this, 500);}
-            }
-        };
+        if(gA.code == 0){
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    gA.updateHostFragment();
+                    if(!stoped){handler.postDelayed(this, 500);}
+                }
+            };
+        } else{
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    gA.updateClientHostFragment();
+                    if(!stoped){handler.postDelayed(this, 500);}
+                }
+            };
+        }
         runnable.run();
 
         super.onActivityCreated(saveInstandesState);

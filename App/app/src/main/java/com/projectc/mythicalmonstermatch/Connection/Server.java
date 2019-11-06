@@ -3,13 +3,13 @@ package com.projectc.mythicalmonstermatch.Connection;
 import android.util.Log;
 
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
-import com.projectc.mythicalmonstermatch.PlayerChangeListener;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,12 +24,13 @@ public class Server extends Thread{
     private HostFragment hostFragment;
 
     private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
+    public boolean running = true;
 
     public String serverName;                                                                       //Name des Servers (Servername == Name des Hosts)
 
     private ArrayList<ServerListener> serverListeners = new ArrayList<>();                          //Liste der gejointen Clients
     private ArrayList<ServerListener> playerList = new ArrayList<>();                               //Liste der gejointen Spielen (Clients != Spieler in diesem Fall)
-    private ArrayList<PlayerChangeListener> playerListener = new ArrayList<>();
+
     public Server(String serverName, HostFragment hostFragment) {
 
         this.serverName = serverName;
@@ -53,17 +54,13 @@ public class Server extends Thread{
 
     public void addPlayer(ServerListener sL){                                                       //Fügt Spieler hinzu
         playerList.add(sL);
-        for(PlayerChangeListener pCL : playerListener){
-            pCL.playerChanged();
-        }
+
         Log.d("SERVER", "HINZU " + sL.getLogin());
     }
 
     public void removePlayer(ServerListener sL){                                                    //Entfernt Spieler
         playerList.remove(sL);
-        for(PlayerChangeListener pCL : playerListener){
-            pCL.playerChanged();
-        }
+
         Log.d("SERVER", "ENTFERNT " + sL.getLogin());
     }
 
@@ -75,7 +72,7 @@ public class Server extends Thread{
     public void run(){
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            while(true) {
+            while(running) {
                 Log.d("SERVER LOG", "Waiting for Users...");
                 Socket clientSocket = serverSocket.accept();                                        //Nimmt Clients an
 
@@ -92,15 +89,14 @@ public class Server extends Thread{
 
                     while(((line = bufferedReader.readLine()) != null) ||(System.currentTimeMillis()-startTime)<1000){
                         String[] tokens = line.split(" ");
-                        bufferedWriter.write("aknowledge\r\n");
-                        bufferedWriter.flush();
                         if(tokens[0].equalsIgnoreCase("ask")){
                             bufferedWriter.write("answer 1 " + playerList.size() + " " + serverName + "\r\n");
                             bufferedWriter.flush();
-                            break;
                         } else if(tokens[0].equalsIgnoreCase("join")){
                             bufferedWriter.write("denied\r\n");
                             bufferedWriter.flush();
+                            break;
+                        } else if(tokens[0].equalsIgnoreCase("ok")){
                             break;
                         }
                     }
@@ -108,14 +104,28 @@ public class Server extends Thread{
                 }
 
             }
+            Log.d("SERVER", "ZUENDE");
+        } catch (BindException e){
+            if(e.toString().equals("java.net.BindException: bind failed: EADDRINUSE (Address already in use)")){
+                Log.d("ERROR", "YEETISTAN");
+
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("ERROR", "" + e);
         }
     }
 
-    public void addListener(PlayerChangeListener pCL){
-        playerListener.add(pCL);
+
+
+    public void removeItems(ServerListener sL){
+        removeListener(sL);
+        removePlayer(sL);
     }
 
-
+    public void closeServer(){
+        for(ServerListener sL : serverListeners){
+            sL.sendMessage("closing");
+            running = false;
+        }
+    }
 }

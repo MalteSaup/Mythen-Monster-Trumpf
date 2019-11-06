@@ -1,7 +1,14 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+
+import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
+import com.projectc.mythicalmonstermatch.GameActivity;
+import com.projectc.mythicalmonstermatch.PlayerItem;
+import com.projectc.mythicalmonstermatch.R;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,6 +32,7 @@ public class Client extends Thread{
     private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
     private boolean joined = false;
     private boolean aknowleagead = true;
+    private boolean serverRunning = true;
 
     private Socket socket;                                                                          //Socket
 
@@ -34,6 +42,11 @@ public class Client extends Thread{
     private InputStream inputStream;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
+
+    private GameActivity gameActivity;
+
+    public ArrayList<PlayerItem> playerItems = new ArrayList<>();
+
 
     public Client (String serverName, String login, String address) {
         this.serverName = serverName;
@@ -76,7 +89,7 @@ public class Client extends Thread{
 
                 joined = true;
 
-                while((line = bufferedReader.readLine()) != null){                                  //While Schleife für Nachrichten verarbeitung
+                while((line = bufferedReader.readLine()) != null && serverRunning){                                  //While Schleife für Nachrichten verarbeitung
                     String[] tokens = line.split(" ");                                        //Splited Nachricht auf. 1 Nachrichten Block ist Command Token
                     if(tokens != null && tokens.length > 0) {
                         String cmd = tokens[0];
@@ -91,6 +104,17 @@ public class Client extends Thread{
                             handleNameChange(tokens[1]);
                         } else if("aknowledge".equalsIgnoreCase(cmd)){
                             aknowleagead = true;
+                        } else if("closing".equalsIgnoreCase(cmd)){
+                            handleClosing();
+                        } else if("playeranswer".equalsIgnoreCase(cmd)){
+                            tokens = line.split(";");
+                            handlePlayerAnswer(tokens);
+                        } else if("playeradded".equalsIgnoreCase(cmd)){
+                            tokens = line.split(";");
+                            handlePlayerAdded(tokens);
+                        } else if("playerremoved".equalsIgnoreCase(cmd)){
+                            tokens = line.split(";");
+                            handlePlayerRemoved(tokens);
                         }
                     }
                 }
@@ -110,6 +134,52 @@ public class Client extends Thread{
             }
     }
 
+    private void handlePlayerRemoved(String[] tokens) {
+        ArrayList<Integer> uebergabe = new ArrayList<>();
+        for(int i = 0; i < playerItems.size(); i++){
+            boolean vorhanden = false;
+            for(int o = 1; o < tokens.length; o++){
+                if(tokens[o].equals(playerItems.get(i).getUsername())){
+                    vorhanden = true;
+                }
+            }
+            if(!vorhanden){
+                uebergabe.add(i);
+            }
+        }
+        for(int i : uebergabe) {
+            playerItems.remove(i);
+        }
+    }
+
+    private void handlePlayerAdded(String[] tokens) {
+        ArrayList<PlayerItem> pIs = new ArrayList<>();
+        for(int o = 1; o < tokens.length; o++){
+            boolean vorhanden = false;
+            for(int i = 0; i < playerItems.size(); i++){
+                if(tokens[o].equals(playerItems.get(i).getUsername())){
+                    vorhanden = true;
+                }
+            }
+            if(!vorhanden){
+                pIs.add(new PlayerItem(tokens[o]));
+            }
+        }
+        for(PlayerItem pI : pIs){
+            playerItems.add(pI);
+        }
+    }
+
+    private void handlePlayerAnswer(String[] tokens) {
+        playerItems = new ArrayList<>();
+        for(int i = 1; i < tokens.length; i++){
+            playerItems.add(new PlayerItem(tokens[i]));
+        }
+    }
+
+    private void handleClosing() {
+        serverRunning = false;
+    }
 
 
     private void leave() {                                                                          //Sendet Leave Nachricht an Server
@@ -131,10 +201,22 @@ public class Client extends Thread{
     }
 
     private void handleAccept() {                                                                   //Wird aufgerufen wenn der Server den Join akzeptiert
+        sendMessage("GETPLAYER");
         //TODO START LOBBY FRAGMENT
     }
 
     private void handleDenie() {                                                                    //Wird aufgerufen wenn der Server den Join verweigert
-        //TODO Toast mit Denied Message oder Fragment
+        if(gameActivity != null){
+            FindFragment findFrag = (FindFragment) Fragment.instantiate(gameActivity, FindFragment.class.getName(), null);
+
+            FragmentTransaction ft = gameActivity.getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.gameActivityLayout, findFrag);
+            ft.commit();
+        }
     }
+
+    public void setGameActivity(GameActivity gameActivity){
+        this.gameActivity = gameActivity;
+    }
+
 }

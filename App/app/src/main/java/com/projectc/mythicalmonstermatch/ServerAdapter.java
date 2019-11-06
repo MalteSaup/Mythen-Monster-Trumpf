@@ -6,10 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ServerViewHolder> {
@@ -17,6 +15,15 @@ public class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ServerView
     private ArrayList<ServerItem> serverList;
     private LayoutInflater layoutInflater;
     private Context context;
+    private OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener{
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+        this.onItemClickListener = onItemClickListener;
+    }
 
     public ServerAdapter(Context context, ArrayList<ServerItem> serverList){
         this.context = context;
@@ -54,6 +61,18 @@ public class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ServerView
             super(itemView);
             servername = itemView.findViewById(R.id.servername);
             usercount = itemView.findViewById(R.id.usercount);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(onItemClickListener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            onItemClickListener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
 
 

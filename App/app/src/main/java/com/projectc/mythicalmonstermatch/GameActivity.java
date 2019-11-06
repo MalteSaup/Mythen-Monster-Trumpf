@@ -18,8 +18,8 @@ import java.util.ArrayList;
 
 public class GameActivity extends FragmentActivity{
 
-    private int code = 2;
-    private String name = "";
+    public int code = 2;
+    public String name = "";
     private CardClass[] cardDeck = new CardClass[30];
     public Server server;
     public Client client;
@@ -55,17 +55,11 @@ public class GameActivity extends FragmentActivity{
 
             server = new Server(this.name, hostFrag);
             server.start();
-
+            Log.d("SERVER STATUS", ""+server.running);
 
             client = createClient(this.name, this.name, "localhost");
             client.start();
 
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             ArrayList<ServerListener> sL = server.getServerListeners();
             Log.d("SL", " "+sL.size() + " " + server);
             for(ServerListener sLL : sL){
@@ -81,6 +75,7 @@ public class GameActivity extends FragmentActivity{
 
         } else if(code == 1){
             //TODO
+
             FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -113,13 +108,23 @@ public class GameActivity extends FragmentActivity{
         //}
     }
 
+    @Override
+    public void onDestroy() {
+
+        if(server != null){
+            server.closeServer();
+            Client closeClient = new Client("localhost", "localhost", "localhost");
+            closeClient.start();
+        }
+
+        super.onDestroy();
+
+    }
+
     public Client createClient(String servername, String login, String address){
         return new Client(servername, login, address);
     }
 
-    public void test(){
-        Log.d("MAIN", " "+ server.getServerListeners().size() + " "+ server +  " " + client.isAlive());
-    }
 
     public void createCardDeck(){
         BitmapFactory bf = new BitmapFactory();
@@ -140,79 +145,96 @@ public class GameActivity extends FragmentActivity{
 
     }
 
-    public void update() {
-        ArrayList<ServerListener> serverListeners = server.getServerListeners();
-        ArrayList<PlayerItem> uebergabe = new ArrayList<>();
-        Log.d("WAT", " " + serverListeners.size());
-        if(serverListeners.size() != playerItems.size()){
-            if (serverListeners.size() > playerItems.size()) {
-                for(ServerListener sL : serverListeners){
-                    boolean vorhanden = false;
-                    for(PlayerItem pI : playerItems){
-                        if(pI.getUsername().equals(sL.getLogin())){
-                            vorhanden = true;
+    public void updateHostFragment() {
+
+        if(hostFrag != null) {
+
+            ArrayList<ServerListener> serverListeners = server.getServerListeners();
+            if (serverListeners.size() != playerItems.size()) {
+                if (serverListeners.size() > playerItems.size()) {
+                    PlayerItem uebergabe = null;
+                    for (ServerListener sL : serverListeners) {
+                        boolean vorhanden = false;
+                        for (PlayerItem pI : playerItems) {
+                            if (pI.getUsername().equals(sL.getLogin())) {
+                                vorhanden = true;
+                            }
+                        }
+                        if (!vorhanden) {
+                            uebergabe = new PlayerItem(sL.getLogin());
+                            break;
                         }
                     }
-                    if(!vorhanden){
-                        uebergabe.add(new PlayerItem(sL.getLogin()));
+                    if (uebergabe != null) {
+                        playerItems.add(uebergabe);
+                        hostFrag.playerAdapter.notifyItemInserted(playerItems.size() - 1);
+                        updateHostFragment();
                     }
-                }
-                for(PlayerItem pI : uebergabe){
-                    playerItems.add(pI);
-                }
-            } else if (serverListeners.size() < playerItems.size()) {
-                for(PlayerItem pI : playerItems){
-                    boolean vorhanden = false;
-                    for(ServerListener sL : serverListeners){
-                        if(pI.getUsername().equals(sL.getLogin())){
-                            vorhanden = true;
+                } else if (serverListeners.size() < playerItems.size()) {
+                    int uebergabe = 100;
+                    for (int i = 0; i < playerItems.size(); i++) {
+                        boolean vorhanden = false;
+                        for (ServerListener sL : serverListeners) {
+                            if (playerItems.get(i).getUsername().equals(sL.getLogin())) {
+                                vorhanden = true;
+                            }
+                        }
+                        if (!vorhanden) {
+                            uebergabe = i;
+                            break;
                         }
                     }
-                    if(!vorhanden){
-                        uebergabe.add(pI);
+                    if (uebergabe != 100) {
+                        playerItems.remove(uebergabe);
+                        hostFrag.playerAdapter.notifyDataSetChanged();
+                        updateHostFragment();
                     }
                 }
-                ArrayList<PlayerItem> uebergabe2 = checkForDoubles();
-                for(PlayerItem pI : uebergabe2){
-                    playerItems.remove(pI);
-                }
-                for(PlayerItem pI : uebergabe){
-                    playerItems.remove(pI);
-                }
             }
-            hostFrag.playerAdapter.notifyDataSetChanged();
-        }
-
-
-        for(ServerListener sL : serverListeners){
-            boolean vorhanden = false;
-            for(PlayerItem pI : playerItems){
-                if(pI.getUsername().equals(sL.getLogin())){
-                    vorhanden = true;
-                }
-            }
-            if(!vorhanden){
-                uebergabe.add(new PlayerItem(sL.getLogin()));
-            }
-        }
-        for(PlayerItem pI : uebergabe){
-            playerItems.add(pI);
-        }
-        if(hostFrag.playerRecyclerView != null){
-            hostFrag.playerAdapter.notifyDataSetChanged();
         }
     }
 
-    public ArrayList<PlayerItem> checkForDoubles(){
-        ArrayList<PlayerItem> uebergabe = new ArrayList<>();
-        for(int i = 0; i < playerItems.size(); i++){
-            for(int o = i; o < playerItems.size(); o++){
-                if(playerItems.get(i).getUsername().equals(playerItems.get(o).getUsername())){
-                    uebergabe.add(playerItems.get(o));
+    public void updateClientHostFragment(){
+        if(hostFrag != null){
+            ArrayList<PlayerItem> playerItemUebergabe = client.playerItems;
+             if(playerItemUebergabe.size() != playerItems.size()){
+                if(playerItemUebergabe.size() > playerItems.size()){
+                    ArrayList<PlayerItem> uebergabe = new ArrayList<>();
+                    for(PlayerItem pI1 : playerItemUebergabe){
+                        boolean vorhanden = false;
+                        for(PlayerItem pI2 : playerItems){
+                            if(pI1.getUsername().equals(pI2.getUsername())){
+                                vorhanden = true;
+                            }
+                        }
+                        if(!vorhanden){
+                            uebergabe.add(pI1);
+                        }
+                    }
+                    for(PlayerItem pI : uebergabe){
+                        playerItems.add(pI);
+                        hostFrag.playerAdapter.notifyItemInserted(playerItems.size()-1);
+                    }
+                }else if(playerItemUebergabe.size() < playerItems.size()){
+                    ArrayList<Integer> uebergabe = new ArrayList<>();
+                    for(int i = 0; i < playerItems.size(); i++){
+                        boolean vorhanden = false;
+                        for(PlayerItem pI2 : playerItemUebergabe){
+                            if(playerItems.get(i).getUsername().equals(pI2.getUsername())){
+                                vorhanden = true;
+                            }
+                        }
+                        if(!vorhanden){
+                            uebergabe.add(i);
+                        }
+                    }
+                    for(int i : uebergabe){
+                        playerItems.remove(i);
+                        hostFrag.playerAdapter.notifyItemRemoved(i);
+                    }
                 }
             }
         }
-        return uebergabe;
     }
 }
 

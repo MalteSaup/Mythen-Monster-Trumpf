@@ -14,3 +14,4 @@ SERVER:
 ANSWER <STATUS 0 = NICHT GESTARTET 1 = GESTARTET> <SPIELER ANZAHL> <SERVER NAME>    |ANTWORT AUF ASK
 ACCEPT <ID FALLS JOIN ID = 0>                                                       |JOIN AKZEPTIERT
 DENIED                                                                              |JOIN BLOCKIERT
+CLOSING                                                                             |SERVER WIRD VOM HOST BEENDET
