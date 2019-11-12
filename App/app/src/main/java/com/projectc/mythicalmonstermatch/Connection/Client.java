@@ -182,7 +182,7 @@ public class Client extends Thread{
     }
 
 
-    private void leave() {                                                                          //Sendet Leave Nachricht an Server
+    public void leave() {                                                                          //Sendet Leave Nachricht an Server
         sendMessage("leave");
         aknowleagead = false;
     }

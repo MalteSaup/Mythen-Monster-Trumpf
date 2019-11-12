@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.R;
@@ -25,7 +24,6 @@ public class HostFragment extends Fragment {
 
 
     private boolean stoped = false;
-    Button button;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,20 +46,12 @@ public class HostFragment extends Fragment {
         playerRecyclerView.setAdapter(playerAdapter);
         Log.d("WAS", " "+ view.findViewById(R.id.ueberschrift));
 
-        button = view.findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gA.updateHostFragment();
-            }
-        });
-
         handler = new Handler();
         if(gA.code == 0){
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    gA.updateHostFragment();
+                    gA.updateHostFragment(gA.listenerToPlayerItem(gA.server.getServerListeners()));
                     if(!stoped){handler.postDelayed(this, 500);}
                 }
             };
@@ -69,7 +59,7 @@ public class HostFragment extends Fragment {
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    gA.updateClientHostFragment();
+                    gA.updateHostFragment(gA.client.playerItems);
                     if(!stoped){handler.postDelayed(this, 500);}
                 }
             };

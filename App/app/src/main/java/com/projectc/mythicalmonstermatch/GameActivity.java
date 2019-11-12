@@ -3,10 +3,12 @@ package com.projectc.mythicalmonstermatch;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
@@ -24,12 +26,20 @@ public class GameActivity extends FragmentActivity{
     public Server server;
     public Client client;
     public HostFragment hostFrag;
+    public boolean inHost = false;
+
+    private PowerManager.WakeLock wakeLock;
 
     private ArrayList<PlayerItem> playerItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "APP::WAKELOCK");
+        wakeLock.acquire();
+
         setContentView(R.layout.game_activity);
 
         Bundle bundle = getIntent().getExtras();
@@ -44,6 +54,7 @@ public class GameActivity extends FragmentActivity{
 
         if(code == 0){
 
+            inHost = true;
 
             hostFrag = (HostFragment) Fragment.instantiate(this, HostFragment.class.getName(), null);
 
@@ -88,24 +99,6 @@ public class GameActivity extends FragmentActivity{
 
 
         Log.d("HALLO", " " + cardDeck.length + " " + code + " " + name);
-
-//        public boolean onKeyDown(int keyCode, KeyEvent event) {
-            /*if(keyCode == android.view.KeyEvent.KEYCODE_BACK && (mainFrag.isInMenu || mainFrag.isInCards)){
-                /*if(!mainFrag.onCard){
-
-                    return true;
-                } else {
-                    View frag = findViewById(R.id.fragment);
-                    frag.setVisibility(View.GONE);
-                    ImageButton close = findViewById(R.id.closeCard);
-                    close.setVisibility(View.GONE);
-                    mainFrag.onCard = false;
-                    return true;
-                }
-
-            }*/
-          //  return super.onKeyDown(keyCode, event);
-        //}
     }
 
     @Override
@@ -116,7 +109,7 @@ public class GameActivity extends FragmentActivity{
             Client closeClient = new Client("localhost", "localhost", "localhost");
             closeClient.start();
         }
-
+        wakeLock.release();
         super.onDestroy();
 
     }
@@ -145,58 +138,16 @@ public class GameActivity extends FragmentActivity{
 
     }
 
-    public void updateHostFragment() {
-
-        if(hostFrag != null) {
-
-            ArrayList<ServerListener> serverListeners = server.getServerListeners();
-            if (serverListeners.size() != playerItems.size()) {
-                if (serverListeners.size() > playerItems.size()) {
-                    PlayerItem uebergabe = null;
-                    for (ServerListener sL : serverListeners) {
-                        boolean vorhanden = false;
-                        for (PlayerItem pI : playerItems) {
-                            if (pI.getUsername().equals(sL.getLogin())) {
-                                vorhanden = true;
-                            }
-                        }
-                        if (!vorhanden) {
-                            uebergabe = new PlayerItem(sL.getLogin());
-                            break;
-                        }
-                    }
-                    if (uebergabe != null) {
-                        playerItems.add(uebergabe);
-                        hostFrag.playerAdapter.notifyItemInserted(playerItems.size() - 1);
-                        updateHostFragment();
-                    }
-                } else if (serverListeners.size() < playerItems.size()) {
-                    int uebergabe = 100;
-                    for (int i = 0; i < playerItems.size(); i++) {
-                        boolean vorhanden = false;
-                        for (ServerListener sL : serverListeners) {
-                            if (playerItems.get(i).getUsername().equals(sL.getLogin())) {
-                                vorhanden = true;
-                            }
-                        }
-                        if (!vorhanden) {
-                            uebergabe = i;
-                            break;
-                        }
-                    }
-                    if (uebergabe != 100) {
-                        playerItems.remove(uebergabe);
-                        hostFrag.playerAdapter.notifyDataSetChanged();
-                        updateHostFragment();
-                    }
-                }
-            }
+    public ArrayList<PlayerItem> listenerToPlayerItem(ArrayList<ServerListener> serverListeners){
+        ArrayList<PlayerItem> uebergabe = new ArrayList<>();
+        for(ServerListener sL : serverListeners){
+            uebergabe.add(new PlayerItem(sL.getLogin()));
         }
+        return uebergabe;
     }
 
-    public void updateClientHostFragment(){
+    public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe){
         if(hostFrag != null){
-            ArrayList<PlayerItem> playerItemUebergabe = client.playerItems;
              if(playerItemUebergabe.size() != playerItems.size()){
                 if(playerItemUebergabe.size() > playerItems.size()){
                     ArrayList<PlayerItem> uebergabe = new ArrayList<>();
@@ -235,6 +186,22 @@ public class GameActivity extends FragmentActivity{
                 }
             }
         }
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == android.view.KeyEvent.KEYCODE_BACK){
+            if(inHost && code == 0){
+                server.closeServer();
+            } else if(inHost && code == 1){
+                client.leave();
+                FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.gameActivityLayout, findFrag);
+                ft.commit();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
 

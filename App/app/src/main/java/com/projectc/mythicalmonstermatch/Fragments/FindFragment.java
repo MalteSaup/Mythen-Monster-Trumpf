@@ -196,6 +196,8 @@ public class FindFragment extends Fragment {
         gA.client.setGameActivity(gA);
         gA.client.start();
 
+        gA.inHost = true;
+
         HostFragment hostFrag = (HostFragment) Fragment.instantiate(getContext(), FindFragment.class.getName(), null);
 
         gA.hostFrag = hostFrag;
