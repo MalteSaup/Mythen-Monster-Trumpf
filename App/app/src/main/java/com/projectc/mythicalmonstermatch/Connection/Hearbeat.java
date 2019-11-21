@@ -19,17 +19,10 @@ public class Hearbeat extends Thread {
                 started = true;
                 startTime = System.currentTimeMillis();
             } else{
-                if((System.currentTimeMillis() - startTime) >= 100){
-                    startTime = System.currentTimeMillis();
-                    sendHearbeat();
-                }
             }
         }
     }
 
-    private void sendHearbeat(){
-        sL.heartbeatSend();
-    }
 
 
 

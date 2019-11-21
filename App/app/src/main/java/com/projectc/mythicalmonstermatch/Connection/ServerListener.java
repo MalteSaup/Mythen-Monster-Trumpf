@@ -1,11 +1,11 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -35,16 +35,14 @@ public class ServerListener extends Thread{
             hearbeat.start();
 
             String line;
-
             while((line = bufferedReader.readLine()) != null){
-
+                Log.d("JETZT SERVER", line);
                 String tokens[] = line.split(" ");
                 if(tokens != null && tokens.length > 0){
                     String cmd = tokens[0];
-                    sendMessage("aknowledge");
+                    Log.d("SERVER CMD", cmd);
                     if(cmd.equalsIgnoreCase("ask")){
                         handleAsk();
-                        break;
                     }else if(cmd.equalsIgnoreCase("join")){
                         String[] joinTokens = line.split(" ", 2);
                         if(!handleJoin(joinTokens)){
@@ -55,18 +53,54 @@ public class ServerListener extends Thread{
                         break;
                     }else if(cmd.equalsIgnoreCase("start")){
                         handleStart(login);
-                    }else if(cmd.equalsIgnoreCase("hearbeat")){
-                        handleHeartbeat();
+                    }/*else if(cmd.equalsIgnoreCase("ok")){
+                        break;
+                    }*/else if(cmd.equalsIgnoreCase("getplayer")){
+                        handlePlayerRequest();
+                    }else if(cmd.equalsIgnoreCase("playerremoved")){
+                        handlePlayerRemove();
+                    }else if(cmd.equalsIgnoreCase("playeradded")){
+                        handlePlayerAdded();
                     }
 
                 }
 
             }
+            Log.d("JETZT LISTERNER", "ZUENDE");
             socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void handlePlayerAdded() {
+        ArrayList<ServerListener> serverListeners = server.getServerListeners();
+        String msg = "playeradded ;";
+        for(ServerListener sL : serverListeners){
+            msg += sL.login + ";";
+        }
+        sendMessage(msg);
+    }
+
+    public void handlePlayerRemove() {
+        ArrayList<ServerListener> serverListeners = server.getServerListeners();
+        String msg = "playerremoved ;";
+        for(ServerListener sL : serverListeners){
+            msg += sL.login + ";";
+        }
+        sendMessage(msg);
+    }
+
+    private void handlePlayerRequest() {
+        ArrayList<ServerListener> serverListeners = server.getServerListeners();
+        String msg = "playeranswer ;";
+        for(ServerListener sL : serverListeners){
+            msg += sL.login + ";";
+            Log.d("PLAYER", sL.login);
+        }
+        Log.d("PLAYER", msg);
+        sendMessage(msg);
     }
 
     private void handleStart(String login) {
@@ -86,35 +120,29 @@ public class ServerListener extends Thread{
         else{
             sendMessage("accept");
             server.addPlayer(this);
+            for(ServerListener sL : server.getServerListeners()){
+                if(sL != this){sL.handlePlayerAdded();}
+            }
             this.login = tokens[1];
+
             return true;
         }
     }
 
-    private void sendMessage(String msg){
+    public void sendMessage(String msg){
         try {
             bufferedWriter.write(msg + "\r\n");
+            //bufferedWriter.newLine();
             bufferedWriter.flush();
+            Log.d("JETZT SERVER", msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void handleAsk() {
-        sendMessage("answer 0 " + server.playerCount() + " " + server.serverName);
+        sendMessage("ANSWER 0 " + server.playerCount() + " " + server.serverName);
 
-    }
-
-    private void handleHeartbeat(){
-        count = 0;
-    }
-
-    public void heartbeatSend(){
-        sendMessage("heartbeat");
-        count++;
-        if(count >= 10){
-            handleConnectionLost();
-        }
     }
 
     private void handleConnectionLost(){
@@ -122,12 +150,11 @@ public class ServerListener extends Thread{
     }
 
     private void leave(){
-        server.removePlayer(this);
-        server.removeListener(this);
-        ArrayList<ServerListener> listenerList = server.getServerListeners();
-        for(ServerListener sL : listenerList) {
-            sL.sendMessage("update");
+        Log.d("SERVER", "LEAVE");
+        for(ServerListener sL : server.getServerListeners()){
+            if(sL != this){sL.handlePlayerRemove();}
         }
+        server.removeItems(this);
     }
 
     public String getLogin(){

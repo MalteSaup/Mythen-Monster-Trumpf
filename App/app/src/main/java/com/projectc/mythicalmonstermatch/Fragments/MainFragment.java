@@ -1,17 +1,15 @@
-package com.projectc.mythicalmonstermatch;
+package com.projectc.mythicalmonstermatch.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import java.util.ArrayList;
+import com.projectc.mythicalmonstermatch.MainActivity;
+import com.projectc.mythicalmonstermatch.R;
 
 public class MainFragment extends Fragment {
     private Button menuBt;
@@ -20,6 +18,7 @@ public class MainFragment extends Fragment {
     private Button joinBt;
     public boolean isInMenu;
     public boolean isInCards;
+    public boolean onCard = false;
     private String name;
     private MainActivity mainActivity;
 
@@ -66,6 +65,8 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v){
                 mainActivity.startGameActivity(0);
+
+
             }
         });
 
@@ -74,6 +75,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v){
                 mainActivity.startGameActivity(1);
+
+                /*FindFragment findFragment = (FindFragment) Fragment.instantiate(getActivity(), FindFragment.class.getName(), null);
+
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.mainActivityLayout, findFragment);
+                ft.commit();*/
             }
         });
 

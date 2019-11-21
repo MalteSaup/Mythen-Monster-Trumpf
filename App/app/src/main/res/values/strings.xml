@@ -6,6 +6,12 @@
     <string name="card_bt">Cards</string>
     <string name="enterName">Enter Name</string>
     <string name="changeName">Name</string>
+    <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
+    <string name="username">Username</string>
+    <string name="servername">Servername</string>
+    <string name="playercount">1/5</string>
+    <string name="refresh">Refresh</string>
     <!--<string name=""></string>!-->
 
     <string name="info_text">
