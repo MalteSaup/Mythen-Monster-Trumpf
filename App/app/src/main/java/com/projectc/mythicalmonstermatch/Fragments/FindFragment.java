@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.SearchClient;
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.R;
@@ -67,7 +66,7 @@ public class FindFragment extends Fragment {
 
         gA = (GameActivity)getActivity();
 
-
+        //if(gA.client != null){gA.client = null;}
         serverList = new ArrayList<>();
         serverRecyclerView = view.findViewById(R.id.serverView);
         serverRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -99,6 +98,7 @@ public class FindFragment extends Fragment {
         WifiManager wifiManager = (WifiManager) gA.getApplicationContext().getSystemService(WIFI_SERVICE);             //Initialisierung WifiManager => IP Address erfahren
         if(wifiManager != null){
             String address = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());        //IP-Address abfragen und in passende Form bringen
+            Log.d("JETZT CIWAN", address);
             String[] addressUebergabe = address.split("\\.");                                              //Split IP-Address in Zahlenblöcke
             final String addressSeed = addressUebergabe[0] + "." + addressUebergabe[1] + ".";
             final int start3Stelle = Integer.parseInt(addressUebergabe[2]);
@@ -192,13 +192,13 @@ public class FindFragment extends Fragment {
     }
 
     public void join(ServerItem joinItem){
-        gA.client = new Client(joinItem.getServername(), gA.name, joinItem.getAddress());
+        gA.client = gA.createClient(joinItem.getServername(), gA.name, joinItem.getAddress());
         gA.client.setGameActivity(gA);
         gA.client.start();
 
         gA.inHost = true;
 
-        HostFragment hostFrag = (HostFragment) Fragment.instantiate(getContext(), FindFragment.class.getName(), null);
+        HostFragment hostFrag = (HostFragment) Fragment.instantiate(getContext(), HostFragment.class.getName(), null);
 
         gA.hostFrag = hostFrag;
 

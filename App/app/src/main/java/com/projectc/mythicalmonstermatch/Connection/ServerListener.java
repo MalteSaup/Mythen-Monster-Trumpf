@@ -53,9 +53,9 @@ public class ServerListener extends Thread{
                         break;
                     }else if(cmd.equalsIgnoreCase("start")){
                         handleStart(login);
-                    }else if(cmd.equalsIgnoreCase("ok")){
+                    }/*else if(cmd.equalsIgnoreCase("ok")){
                         break;
-                    }else if(cmd.equalsIgnoreCase("getplayer")){
+                    }*/else if(cmd.equalsIgnoreCase("getplayer")){
                         handlePlayerRequest();
                     }else if(cmd.equalsIgnoreCase("playerremoved")){
                         handlePlayerRemove();
@@ -97,7 +97,9 @@ public class ServerListener extends Thread{
         String msg = "playeranswer ;";
         for(ServerListener sL : serverListeners){
             msg += sL.login + ";";
+            Log.d("PLAYER", sL.login);
         }
+        Log.d("PLAYER", msg);
         sendMessage(msg);
     }
 

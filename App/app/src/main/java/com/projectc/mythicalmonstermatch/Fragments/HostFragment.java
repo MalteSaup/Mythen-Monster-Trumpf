@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
+import com.projectc.mythicalmonstermatch.PlayerAdapter;
 import com.projectc.mythicalmonstermatch.R;
 
 public class HostFragment extends Fragment {
@@ -43,6 +44,7 @@ public class HostFragment extends Fragment {
         View view = getView();
         playerRecyclerView = view.findViewById(R.id.playerView);
         playerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        playerAdapter = new PlayerAdapter(gA, gA.playerItems);
         playerRecyclerView.setAdapter(playerAdapter);
         Log.d("WAS", " "+ view.findViewById(R.id.ueberschrift));
 
@@ -51,6 +53,7 @@ public class HostFragment extends Fragment {
             runnable = new Runnable() {
                 @Override
                 public void run() {
+                    Log.d("JETZT SL", "" + gA.server.getServerListeners().size());
                     gA.updateHostFragment(gA.listenerToPlayerItem(gA.server.getServerListeners()));
                     if(!stoped){handler.postDelayed(this, 500);}
                 }

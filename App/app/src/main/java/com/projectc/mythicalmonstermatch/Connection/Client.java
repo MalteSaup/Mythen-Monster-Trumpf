@@ -33,6 +33,7 @@ public class Client extends Thread{
     private boolean joined = false;
     private boolean aknowleagead = true;
     private boolean serverRunning = true;
+    public boolean running = true;
 
     private Socket socket;                                                                          //Socket
 
@@ -51,10 +52,12 @@ public class Client extends Thread{
     public Client (String serverName, String login, String address) {
         this.serverName = serverName;
         this.login = login;
+        this.address = address;
     }
 
     @Override
     public void run(){
+        Log.d("JETZT ADDRESS", "WAT" + address);
         connect(address);
     }
 
@@ -74,6 +77,7 @@ public class Client extends Thread{
 
 
     public void connect(String address) {
+        Log.d("JETZT ADDRESS", address);
             try {
                 socket = new Socket(address, 8080);                              //Verbindung auf Server wird hergestellt
                 inputStream = socket.getInputStream();                                              //Kriegt In- und Outputstream und versieht diese mit Buffern fürs Lesen und Schreiben für Kommunikation
@@ -86,13 +90,13 @@ public class Client extends Thread{
                 String line;
 
                 sendMessage("join " + login);
-
                 joined = true;
 
-                while((line = bufferedReader.readLine()) != null && serverRunning){                                  //While Schleife für Nachrichten verarbeitung
+                while((line = bufferedReader.readLine()) != null && serverRunning && running){                                  //While Schleife für Nachrichten verarbeitung
                     String[] tokens = line.split(" ");                                        //Splited Nachricht auf. 1 Nachrichten Block ist Command Token
                     if(tokens != null && tokens.length > 0) {
                         String cmd = tokens[0];
+                        Log.d("CLIENT", cmd);
                         if("denied".equalsIgnoreCase(cmd)){                                         //Wenn Denied Command (Nachfolgenden IF Statements dasselbe bloß anderes Command mit anderer Funktion)
                             handleDenie();
                         } else if("accept".equalsIgnoreCase(cmd)){
@@ -107,7 +111,7 @@ public class Client extends Thread{
                         } else if("closing".equalsIgnoreCase(cmd)){
                             handleClosing();
                         } else if("playeranswer".equalsIgnoreCase(cmd)){
-                            tokens = line.split(";");
+                            tokens = line.split("[;]");
                             handlePlayerAnswer(tokens);
                         } else if("playeradded".equalsIgnoreCase(cmd)){
                             tokens = line.split(";");
@@ -171,6 +175,7 @@ public class Client extends Thread{
     }
 
     private void handlePlayerAnswer(String[] tokens) {
+        Log.d("CLIENT ANSWER PLAYER", ""  + tokens.length);
         playerItems = new ArrayList<>();
         for(int i = 1; i < tokens.length; i++){
             playerItems.add(new PlayerItem(tokens[i]));
@@ -184,8 +189,10 @@ public class Client extends Thread{
 
     public void leave() {                                                                          //Sendet Leave Nachricht an Server
         sendMessage("leave");
-        aknowleagead = false;
+        running = false;
     }
+
+
 
     private void handleNameChange(String token) {                                                   //Setzt Namenstoken aus Nachricht als Namen
         login = token;

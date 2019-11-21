@@ -96,8 +96,6 @@ public class Server extends Thread{
                             bufferedWriter.write("denied\r\n");
                             bufferedWriter.flush();
                             break;
-                        } else if(tokens[0].equalsIgnoreCase("ok")){
-                            break;
                         }
                     }
                     clientSocket.close();

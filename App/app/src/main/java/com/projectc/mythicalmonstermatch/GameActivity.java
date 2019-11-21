@@ -2,6 +2,7 @@ package com.projectc.mythicalmonstermatch;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,7 @@ public class GameActivity extends FragmentActivity{
 
     private PowerManager.WakeLock wakeLock;
 
-    private ArrayList<PlayerItem> playerItems = new ArrayList<>();
+    public ArrayList<PlayerItem> playerItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class GameActivity extends FragmentActivity{
 
             hostFrag = (HostFragment) Fragment.instantiate(this, HostFragment.class.getName(), null);
 
-            hostFrag.playerAdapter = new PlayerAdapter(this, playerItems);
+            //hostFrag.playerAdapter = new PlayerAdapter(this, playerItems);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.gameActivityLayout, hostFrag);
@@ -68,7 +69,7 @@ public class GameActivity extends FragmentActivity{
             server.start();
             Log.d("SERVER STATUS", ""+server.running);
 
-            client = createClient(this.name, this.name, "localhost");
+            client = new Client(this.name, this.name, "localhost");
             client.start();
 
             ArrayList<ServerListener> sL = server.getServerListeners();
@@ -143,45 +144,52 @@ public class GameActivity extends FragmentActivity{
         for(ServerListener sL : serverListeners){
             uebergabe.add(new PlayerItem(sL.getLogin()));
         }
+        //Log.d("JETZT", "size " +  uebergabe.size());
         return uebergabe;
     }
 
-    public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe){
-        if(hostFrag != null){
-             if(playerItemUebergabe.size() != playerItems.size()){
-                if(playerItemUebergabe.size() > playerItems.size()){
+    public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe) {
+        if (hostFrag != null && hostFrag.playerAdapter != null && client.running) {
+            Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
+            if (playerItemUebergabe.size() != playerItems.size()) {
+                if (playerItemUebergabe.size() > playerItems.size()) {
                     ArrayList<PlayerItem> uebergabe = new ArrayList<>();
-                    for(PlayerItem pI1 : playerItemUebergabe){
+                    for (PlayerItem pI1 : playerItemUebergabe) {
                         boolean vorhanden = false;
-                        for(PlayerItem pI2 : playerItems){
-                            if(pI1.getUsername().equals(pI2.getUsername())){
+                        for (PlayerItem pI2 : playerItems) {
+                            if (pI1.getUsername().equals(pI2.getUsername())) {
                                 vorhanden = true;
                             }
                         }
-                        if(!vorhanden){
+                        if (!vorhanden) {
                             uebergabe.add(pI1);
                         }
                     }
-                    for(PlayerItem pI : uebergabe){
+                    for (PlayerItem pI : uebergabe) {
+                        Log.d("JETZT ZAHL", "" + pI.getUsername());
                         playerItems.add(pI);
-                        hostFrag.playerAdapter.notifyItemInserted(playerItems.size()-1);
+                        hostFrag.playerAdapter.notifyItemInserted(playerItems.size() - 1);
                     }
-                }else if(playerItemUebergabe.size() < playerItems.size()){
+                } else if (playerItemUebergabe.size() < playerItems.size()) {
                     ArrayList<Integer> uebergabe = new ArrayList<>();
-                    for(int i = 0; i < playerItems.size(); i++){
+                    for (int i = 0; i < playerItems.size(); i++) {
                         boolean vorhanden = false;
-                        for(PlayerItem pI2 : playerItemUebergabe){
-                            if(playerItems.get(i).getUsername().equals(pI2.getUsername())){
+                        for (PlayerItem pI2 : playerItemUebergabe) {
+                            if (playerItems.get(i).getUsername().equals(pI2.getUsername())) {
                                 vorhanden = true;
                             }
                         }
-                        if(!vorhanden){
+                        if (!vorhanden) {
                             uebergabe.add(i);
                         }
                     }
-                    for(int i : uebergabe){
-                        playerItems.remove(i);
-                        hostFrag.playerAdapter.notifyItemRemoved(i);
+                    for (int i : uebergabe) {
+                        try{
+                            playerItems.remove(i);
+                            hostFrag.playerAdapter.notifyItemRemoved(i);
+                        } catch(IndexOutOfBoundsException e){
+                            Log.d("JETZT", "KARTOFFEL");
+                        }
                     }
                 }
             }
@@ -193,11 +201,24 @@ public class GameActivity extends FragmentActivity{
             if(inHost && code == 0){
                 server.closeServer();
             } else if(inHost && code == 1){
-                client.leave();
+                AsyncTask asyncTask = new AsyncTask() {
+                    @Override
+                    protected Object doInBackground(Object[] objects) {
+                        client.leave();
+                        try {
+                            client.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                };
+                asyncTask.execute();
                 FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.gameActivityLayout, findFrag);
                 ft.commit();
+
                 return true;
             }
         }
