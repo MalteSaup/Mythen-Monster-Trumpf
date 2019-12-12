@@ -1,18 +1,26 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
+<<<<<<< Updated upstream
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
+=======
+import com.projectc.mythicalmonstermatch.GameManager;
+import com.projectc.mythicalmonstermatch.PlayerItem;
+>>>>>>> Stashed changes
 import com.projectc.mythicalmonstermatch.R;
 
 public class HostFragment extends Fragment {
@@ -23,19 +31,20 @@ public class HostFragment extends Fragment {
     private Handler handler;
     private Runnable runnable;
 
+    private Button startBt;
 
     private boolean stoped = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_host, container, false);
+
     }
 
     @Override
@@ -68,6 +77,15 @@ public class HostFragment extends Fragment {
             };
         }
         runnable.run();
+
+        startBt = view.findViewById(R.id.startButton);
+        startBt.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+
 
         super.onActivityCreated(saveInstandesState);
     }

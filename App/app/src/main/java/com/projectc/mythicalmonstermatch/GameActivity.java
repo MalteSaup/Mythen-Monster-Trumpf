@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -96,6 +97,15 @@ public class GameActivity extends FragmentActivity{
 
             //FIND GAME FRAGMENT STARTEN
             //CLIENT STARTEN
+        }
+        else if(code == 2){
+            PlayerItem enemy = new PlayerItem("enemy");
+            playerItems.add(enemy);
+
+            GameManager manager = new GameManager(cardDeck, playerItems);
+            manager.dealOutCards();
+            Log.d("...", manager.getPlayers().toString());
+
         }
 
 
@@ -224,6 +234,7 @@ public class GameActivity extends FragmentActivity{
         }
         return super.onKeyDown(keyCode, event);
     }
+
 }
 
 //TODO newWakeLock(int, String); => WakeLock.acquire() (zum starten) und wenn Activity close Wake.Lock.release() (beendet WakeLock, besser für Akku, aber notwendig um Netzwerkverbindung aufrecht zu halten)
