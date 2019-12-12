@@ -34,6 +34,7 @@ public class Client extends Thread{
     private boolean aknowleagead = true;
     private boolean serverRunning = true;
     public boolean running = true;
+    private boolean leaved = false;
 
     private Socket socket;                                                                          //Socket
 
@@ -111,13 +112,15 @@ public class Client extends Thread{
                         } else if("closing".equalsIgnoreCase(cmd)){
                             handleClosing();
                         } else if("playeranswer".equalsIgnoreCase(cmd)){
+                            Log.d("JETZT LOS", line);
                             tokens = line.split("[;]");
                             handlePlayerAnswer(tokens);
                         } else if("playeradded".equalsIgnoreCase(cmd)){
-                            tokens = line.split(";");
+                            Log.d("JETZT LOS", line);
+                            tokens = line.split("[;]");
                             handlePlayerAdded(tokens);
                         } else if("playerremoved".equalsIgnoreCase(cmd)){
-                            tokens = line.split(";");
+                            tokens = line.split("[;]");
                             handlePlayerRemoved(tokens);
                         }
                     }
@@ -127,7 +130,8 @@ public class Client extends Thread{
             } catch (ConnectException e){
                 Log.d("ERROR", "CONNECTION FAILED");
                 //TODO SERVER NICHT MEHR VORHANDEN NACHRICHT WENN NOCH NICHT GEJOINED
-                if(joined){
+                if(joined && !leaved){
+                    gameActivity.reconnect();
                     //TODO SERVER CONNECTION CLOSED NACHRICHT
                 }
 
@@ -139,6 +143,7 @@ public class Client extends Thread{
     }
 
     private void handlePlayerRemoved(String[] tokens) {
+        Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<Integer> uebergabe = new ArrayList<>();
         for(int i = 0; i < playerItems.size(); i++){
             boolean vorhanden = false;
@@ -157,6 +162,7 @@ public class Client extends Thread{
     }
 
     private void handlePlayerAdded(String[] tokens) {
+        Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<PlayerItem> pIs = new ArrayList<>();
         for(int o = 1; o < tokens.length; o++){
             boolean vorhanden = false;
@@ -187,7 +193,8 @@ public class Client extends Thread{
     }
 
 
-    public void leave() {                                                                          //Sendet Leave Nachricht an Server
+    public void leave() {                                                                           //Sendet Leave Nachricht an Server
+        leaved = true;
         sendMessage("leave");
         running = false;
     }

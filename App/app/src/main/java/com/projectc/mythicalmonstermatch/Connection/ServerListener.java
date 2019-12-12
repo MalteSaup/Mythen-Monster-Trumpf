@@ -119,14 +119,36 @@ public class ServerListener extends Thread{
         }
         else{
             sendMessage("accept");
+            //boolean vorhanden = checkForName(tokens[1]);
+           // if(vorhanden){sendMessage("setName " + login);}
+            this.login = tokens[1];
+
             server.addPlayer(this);
             for(ServerListener sL : server.getServerListeners()){
                 if(sL != this){sL.handlePlayerAdded();}
             }
-            this.login = tokens[1];
 
             return true;
         }
+    }
+
+    private boolean checkForName(String login) {
+        boolean changed = false;
+        int count = 1;
+        String uebergabe = login;
+        ArrayList<ServerListener> sL = server.getServerListeners();
+        Log.d("JETZT LOG", ""+ sL.size());
+        for(int i = 0; i < sL.size(); i++){
+            Log.d("JETZT LOG", ""+i);
+            if(uebergabe.equals(sL.get(i).getLogin())){
+                uebergabe = login + count;
+                count++;
+                i = -1;
+                changed = true;
+            }
+        }
+        if(changed){this.login = uebergabe;}
+        return changed;
     }
 
     public void sendMessage(String msg){
@@ -151,10 +173,11 @@ public class ServerListener extends Thread{
 
     private void leave(){
         Log.d("SERVER", "LEAVE");
+        server.removeItems(this);
         for(ServerListener sL : server.getServerListeners()){
             if(sL != this){sL.handlePlayerRemove();}
         }
-        server.removeItems(this);
+
     }
 
     public String getLogin(){

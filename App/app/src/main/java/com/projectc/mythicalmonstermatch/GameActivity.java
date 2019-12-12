@@ -28,6 +28,8 @@ public class GameActivity extends FragmentActivity{
     public Client client;
     public HostFragment hostFrag;
     public boolean inHost = false;
+    public String servername;
+    public String address;
 
     private PowerManager.WakeLock wakeLock;
 
@@ -150,7 +152,7 @@ public class GameActivity extends FragmentActivity{
 
     public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe) {
         if (hostFrag != null && hostFrag.playerAdapter != null && client.running) {
-            Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
+            //Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
             if (playerItemUebergabe.size() != playerItems.size()) {
                 if (playerItemUebergabe.size() > playerItems.size()) {
                     ArrayList<PlayerItem> uebergabe = new ArrayList<>();
@@ -218,11 +220,18 @@ public class GameActivity extends FragmentActivity{
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.gameActivityLayout, findFrag);
                 ft.commit();
-
+                inHost = false;
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void reconnect() {
+        if(code == 1 && servername != null && address != null){
+            client = new Client(servername, name, address);
+        }
+
     }
 }
 
