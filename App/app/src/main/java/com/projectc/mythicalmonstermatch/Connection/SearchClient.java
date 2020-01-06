@@ -95,12 +95,13 @@ public class SearchClient extends Thread{
 
     private void handleAnswer(String[] tokens) {                                                //Verarbeitet Abfrageergebnis aus ASK Abfrage
         Log.d("JETZT", "HANDLE");
-        if(tokens[1].equalsIgnoreCase("0")){
+        //if(tokens[1].equalsIgnoreCase("0")){
             int playerCount = Integer.parseInt(tokens[2]);
             String serverName = tokens[3];
-            findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address));
-        }
-        sendMessage("ok");
+            int startState = Integer.parseInt(tokens[1]);
+            findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address, startState));
+        //}
+        //sendMessage("ok");
 
         //TODO RECYCLER VIEW HINZUFÜGEN SERVER
     }

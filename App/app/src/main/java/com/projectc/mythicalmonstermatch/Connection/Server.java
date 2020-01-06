@@ -126,4 +126,8 @@ public class Server extends Thread{
             running = false;
         }
     }
+
+    public boolean getStartState(){
+        return gameStarted;
+    }
 }

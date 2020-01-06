@@ -31,6 +31,8 @@ public class GameActivity extends FragmentActivity{
     public String servername;
     public String address;
 
+    public int id = -1;
+
     private PowerManager.WakeLock wakeLock;
 
     public ArrayList<PlayerItem> playerItems = new ArrayList<>();
@@ -112,8 +114,9 @@ public class GameActivity extends FragmentActivity{
 
     }
 
-    public Client createClient(String servername, String login, String address){
-        return new Client(servername, login, address);
+    public Client createClient(String servername, String login, String address, int id){
+        if(id == -1){return new Client(servername, login, address);}
+        else{return new Client(servername, login, address, id);}
     }
 
 
@@ -139,7 +142,7 @@ public class GameActivity extends FragmentActivity{
     public ArrayList<PlayerItem> listenerToPlayerItem(ArrayList<ServerListener> serverListeners){
         ArrayList<PlayerItem> uebergabe = new ArrayList<>();
         for(ServerListener sL : serverListeners){
-            uebergabe.add(new PlayerItem(sL.getLogin()));
+            uebergabe.add(new PlayerItem(sL.getLogin(), sL.getID()));
         }
         //Log.d("JETZT", "size " +  uebergabe.size());
         return uebergabe;

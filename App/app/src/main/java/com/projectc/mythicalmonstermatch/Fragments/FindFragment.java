@@ -195,7 +195,7 @@ public class FindFragment extends Fragment {
     public void join(ServerItem joinItem){
         gA.servername = joinItem.getServername();
         gA.address = joinItem.getAddress();
-        gA.client = gA.createClient(joinItem.getServername(), gA.name, joinItem.getAddress());
+        gA.client = gA.createClient(joinItem.getServername(), gA.name, joinItem.getAddress(), gA.id);
         gA.client.setGameActivity(gA);
         gA.client.start();
 

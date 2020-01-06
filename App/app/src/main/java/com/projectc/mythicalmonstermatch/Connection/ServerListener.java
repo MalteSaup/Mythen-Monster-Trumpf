@@ -15,7 +15,7 @@ public class ServerListener extends Thread{
     private Server server;
     private String login;
 
-    private int count = 0;
+    private int id = -1;
 
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -44,8 +44,9 @@ public class ServerListener extends Thread{
                     if(cmd.equalsIgnoreCase("ask")){
                         handleAsk();
                     }else if(cmd.equalsIgnoreCase("join")){
-                        String[] joinTokens = line.split(" ", 2);
+                        String[] joinTokens = line.split(" ", 3);
                         if(!handleJoin(joinTokens)){
+                            sendMessage("denied");
                             break;
                         }
                     }else if(cmd.equalsIgnoreCase("leave")){
@@ -70,24 +71,25 @@ public class ServerListener extends Thread{
             socket.close();
 
         } catch (IOException e) {
+            handleConnectionLost();
             e.printStackTrace();
         }
     }
 
-    public void handlePlayerAdded() {
+    private void handlePlayerAdded() {
         ArrayList<ServerListener> serverListeners = server.getServerListeners();
         String msg = "playeradded ;";
         for(ServerListener sL : serverListeners){
-            msg += sL.login + ";";
+            msg += sL.login + ":" + sL.id + ";";
         }
         sendMessage(msg);
     }
 
-    public void handlePlayerRemove() {
+    private void handlePlayerRemove() {
         ArrayList<ServerListener> serverListeners = server.getServerListeners();
         String msg = "playerremoved ;";
         for(ServerListener sL : serverListeners){
-            msg += sL.login + ";";
+            msg += sL.login + ":" + sL.id + ";";
         }
         sendMessage(msg);
     }
@@ -96,7 +98,7 @@ public class ServerListener extends Thread{
         ArrayList<ServerListener> serverListeners = server.getServerListeners();
         String msg = "playeranswer ;";
         for(ServerListener sL : serverListeners){
-            msg += sL.login + ";";
+            msg += sL.login + ":" + sL.id + ";";
             Log.d("PLAYER", sL.login);
         }
         Log.d("PLAYER", msg);
@@ -112,43 +114,46 @@ public class ServerListener extends Thread{
         }
     }
 
+    private void joinPlayerAdded(){
+        sendMessage("accept " + this.id);
+        server.addPlayer(this);
+        for(ServerListener sL : server.getServerListeners()){
+            if(sL != this){sL.handlePlayerAdded();}
+        }
+    }
+
     private boolean handleJoin(String[] tokens) {
-        if(server.playerCount() >= 5){
-            sendMessage("denied");
+        if(server.playerCount() >= 5 && !server.getStartState()){
+            return false;
+        } else if(server.getStartState() && Integer.parseInt(tokens[1]) != -1){
+            if(checkID(tokens[1], tokens[2])){
+                this.id = Integer.parseInt(tokens[1]);
+                this.login = tokens[2];
+                joinPlayerAdded();
+                return true;
+            }
             return false;
         }
         else{
-            sendMessage("accept");
-            //boolean vorhanden = checkForName(tokens[1]);
-           // if(vorhanden){sendMessage("setName " + login);}
-            this.login = tokens[1];
-
-            server.addPlayer(this);
-            for(ServerListener sL : server.getServerListeners()){
-                if(sL != this){sL.handlePlayerAdded();}
-            }
+            this.login = tokens[2];
+            this.id = generateID();
+            joinPlayerAdded();
 
             return true;
         }
     }
 
-    private boolean checkForName(String login) {
-        boolean changed = false;
-        int count = 1;
-        String uebergabe = login;
-        ArrayList<ServerListener> sL = server.getServerListeners();
-        Log.d("JETZT LOG", ""+ sL.size());
-        for(int i = 0; i < sL.size(); i++){
-            Log.d("JETZT LOG", ""+i);
-            if(uebergabe.equals(sL.get(i).getLogin())){
-                uebergabe = login + count;
-                count++;
-                i = -1;
-                changed = true;
+    private boolean checkID(String id, String usrName) {
+        int id_numb = Integer.parseInt(id);
+        for(int i = 0; i < server.getServerListeners().size(); i++){
+            ServerListener sL = server.getServerListeners().get(i);
+            if(id_numb == sL.id){
+                if(usrName.equals(sL.login)){
+                    return true;
+                }
             }
         }
-        if(changed){this.login = uebergabe;}
-        return changed;
+        return false;
     }
 
     public void sendMessage(String msg){
@@ -163,11 +168,13 @@ public class ServerListener extends Thread{
     }
 
     private void handleAsk() {
-        sendMessage("ANSWER 0 " + server.playerCount() + " " + server.serverName);
-
+        int started = 0;
+        if(server.getStartState()){started = 1;}
+        sendMessage("ANSWER " + started + " " + server.playerCount() + " " + server.serverName);
     }
 
     private void handleConnectionLost(){
+        //TODO DIFFERENT BEHAVIOUR WHEN GAME STARTED
         leave();
     }
 
@@ -182,5 +189,26 @@ public class ServerListener extends Thread{
 
     public String getLogin(){
         return login;
+    }
+    public int getID(){return id;}
+
+    private int generateID() {
+        int id = -1;
+        boolean idGenerated = false;
+        while (!idGenerated) {
+            id = (int)(Math.random() * 899999999 + 100000000);
+            idGenerated = true;
+            for (int i = 0; i < server.getServerListeners().size(); i++) {
+                if (server.getServerListeners().get(i).id == id) {
+                    idGenerated = false;
+                }
+            }
+        }
+        if (id != -1) {
+            return id;
+        } else {
+            Log.d("ERROR", "HOFFENTLICH NIE VORHANDEN");
+            return generateID();
+        }
     }
 }
