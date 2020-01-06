@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
 import com.projectc.mythicalmonstermatch.GameActivity;
@@ -28,6 +29,9 @@ public class Client extends Thread{
     private String address;                                                                         //Network IP Addresse fürs Verbinden
     private String serverName;                                                                      //???
     private String login;                                                                           //Username
+
+    private CharSequence connectionLostToast = "Connection Lost";
+    private CharSequence connectionNotPossibleToast = "Connection Not Possible";
 
     private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
     private boolean joined = false;
@@ -131,13 +135,22 @@ public class Client extends Thread{
                 Log.d("ERROR", "CONNECTION FAILED");
                 //TODO SERVER NICHT MEHR VORHANDEN NACHRICHT WENN NOCH NICHT GEJOINED
                 if(joined && !leaved){
-                    gameActivity.reconnect();
+                    Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
+                    toast.show();
+                    gameActivity.startFindFrag();
                     //TODO SERVER CONNECTION CLOSED NACHRICHT
+                } else if(!joined && !leaved){
+                    Toast toast = Toast.makeText(gameActivity, connectionNotPossibleToast, Toast.LENGTH_SHORT);
+                    toast.show();
+                    gameActivity.startFindFrag();
                 }
 
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                Log.d("ERROR", "UFF");
+                Log.d("ERROR", "SERVER CLOSED");
+                if(gameActivity.code == 1){
+                    gameActivity.startFindFrag();
+                }
                 e.printStackTrace();
             }
     }
@@ -232,5 +245,4 @@ public class Client extends Thread{
     public void setGameActivity(GameActivity gameActivity){
         this.gameActivity = gameActivity;
     }
-
 }

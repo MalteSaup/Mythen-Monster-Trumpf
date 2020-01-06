@@ -89,12 +89,7 @@ public class GameActivity extends FragmentActivity{
 
         } else if(code == 1){
             //TODO
-
-            FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
-
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.gameActivityLayout, findFrag);
-            ft.commit();
+            startFindFrag();
 
             //FIND GAME FRAGMENT STARTEN
             //CLIENT STARTEN
@@ -216,10 +211,7 @@ public class GameActivity extends FragmentActivity{
                     }
                 };
                 asyncTask.execute();
-                FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.gameActivityLayout, findFrag);
-                ft.commit();
+                startFindFrag();
                 inHost = false;
                 return true;
             }
@@ -233,6 +225,15 @@ public class GameActivity extends FragmentActivity{
         }
 
     }
+
+    public void startFindFrag(){
+        FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.gameActivityLayout, findFrag);
+        ft.commit();
+    }
+
 }
 
 //TODO newWakeLock(int, String); => WakeLock.acquire() (zum starten) und wenn Activity close Wake.Lock.release() (beendet WakeLock, besser für Akku, aber notwendig um Netzwerkverbindung aufrecht zu halten)
