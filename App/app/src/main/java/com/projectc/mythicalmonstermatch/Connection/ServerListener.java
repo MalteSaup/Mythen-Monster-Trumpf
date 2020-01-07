@@ -14,15 +14,17 @@ public class ServerListener extends Thread{
     private Socket socket;
     private Server server;
     private String login;
+    private boolean rejoin;
 
     private int id = -1;
 
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-    public ServerListener(Server server, Socket socket){
+    public ServerListener(Server server, Socket socket, boolean rejoin){
         this.server = server;
         this.socket = socket;
+        this.rejoin = rejoin;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class ServerListener extends Thread{
                         handleAsk();
                     }else if(cmd.equalsIgnoreCase("join")){
                         String[] joinTokens = line.split(" ", 3);
+                        Log.d("JETZT", line);
                         if(!handleJoin(joinTokens)){
                             sendMessage("denied");
                             break;
@@ -116,7 +119,15 @@ public class ServerListener extends Thread{
 
     private void joinPlayerAdded(){
         sendMessage("accept " + this.id);
-        server.addPlayer(this);
+        if(!rejoin){server.addPlayer(this);}
+        else{
+            ArrayList<ServerListener> sLL = server.getServerListeners();
+            for(int i = 0; i < sLL.size(); i++){
+                if(sLL.get(i).getID() == this.id){
+
+                }
+            }
+        }
         for(ServerListener sL : server.getServerListeners()){
             if(sL != this){sL.handlePlayerAdded();}
         }
@@ -145,8 +156,9 @@ public class ServerListener extends Thread{
 
     private boolean checkID(String id, String usrName) {
         int id_numb = Integer.parseInt(id);
-        for(int i = 0; i < server.getServerListeners().size(); i++){
-            ServerListener sL = server.getServerListeners().get(i);
+        ArrayList<ServerListener> sLL = server.getServerListeners();
+        for(int i = 0; i < sLL.size(); i++){
+            ServerListener sL = sLL.get(i);
             if(id_numb == sL.id){
                 if(usrName.equals(sL.login)){
                     return true;
@@ -182,7 +194,11 @@ public class ServerListener extends Thread{
         Log.d("SERVER", "LEAVE");
         server.removeItems(this);
         for(ServerListener sL : server.getServerListeners()){
-            if(sL != this){sL.handlePlayerRemove();}
+            if(server.getStartState()){
+                //TODO CONNECTION LOSS MESSAGE TO EVERYONE
+            } else {
+                if(sL != this){sL.handlePlayerRemove();}
+            }
         }
 
     }
@@ -195,12 +211,15 @@ public class ServerListener extends Thread{
     private int generateID() {
         int id = -1;
         boolean idGenerated = false;
+        ArrayList<ServerListener> sLL = server.getServerListeners();
         while (!idGenerated) {
             id = (int)(Math.random() * 899999999 + 100000000);
             idGenerated = true;
-            for (int i = 0; i < server.getServerListeners().size(); i++) {
-                if (server.getServerListeners().get(i).id == id) {
-                    idGenerated = false;
+            for (int i = 0; i < sLL.size(); i++) {
+                if (sLL.get(i).id == id) {
+                    if(!rejoin || (rejoin && !this.login.equals(sLL.get(i).getLogin()))) {
+                        idGenerated = false;
+                    }
                 }
             }
         }

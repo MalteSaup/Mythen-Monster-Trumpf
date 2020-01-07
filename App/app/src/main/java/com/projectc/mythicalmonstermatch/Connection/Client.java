@@ -54,7 +54,6 @@ public class Client extends Thread{
 
     public ArrayList<PlayerItem> playerItems = new ArrayList<>();
 
-
     public Client (String serverName, String login, String address) {
         this.serverName = serverName;
         this.login = login;
@@ -74,7 +73,7 @@ public class Client extends Thread{
         connect(address);
     }
 
-    private void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
+    public void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
         try {
             Log.d("CLIENT", msg);
             bufferedWriter.write(msg + "\r\n");                                                 //Message wird erstellt
@@ -102,7 +101,9 @@ public class Client extends Thread{
 
                 String line;
 
-                sendMessage("join " + id + login);
+                Hearbeat hearbeat = new Hearbeat(this);
+
+                sendMessage("join " + id + " " + login);
                 joined = true;
 
                 while((line = bufferedReader.readLine()) != null && serverRunning && running){                                  //While Schleife für Nachrichten verarbeitung
@@ -228,6 +229,8 @@ public class Client extends Thread{
 
     private void handleAccept(String id) {                                                                   //Wird aufgerufen wenn der Server den Join akzeptiert
         this.id = Integer.parseInt(id);
+        Log.d("JETZT GA", "" + (gameActivity != null) + " "+ gameActivity.id);
+        gameActivity.id = this.id;
         sendMessage("GETPLAYER");
     }
 

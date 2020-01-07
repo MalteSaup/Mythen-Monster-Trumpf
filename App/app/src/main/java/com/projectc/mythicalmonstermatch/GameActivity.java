@@ -74,6 +74,7 @@ public class GameActivity extends FragmentActivity{
             Log.d("SERVER STATUS", ""+server.running);
 
             client = new Client(this.name, this.name, "localhost");
+            client.setGameActivity(this);
             client.start();
 
             ArrayList<ServerListener> sL = server.getServerListeners();
