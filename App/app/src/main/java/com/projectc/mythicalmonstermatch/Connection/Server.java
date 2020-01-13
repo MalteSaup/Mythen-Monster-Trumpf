@@ -77,7 +77,7 @@ public class Server extends Thread{
                 Socket clientSocket = serverSocket.accept();                                        //Nimmt Clients an
 
                 if(!gameStarted){                                                                   //Started Verbindung mit Client und gibt weitere Verarbeitung an ServerListener weiter
-                    ServerListener sL = new ServerListener(this, clientSocket);
+                    ServerListener sL = new ServerListener(this, clientSocket, false);
                     serverListeners.add(sL);
                     sL.start();
                 }
@@ -86,19 +86,29 @@ public class Server extends Thread{
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
                     String line;
                     long startTime = System.currentTimeMillis();
-
+                    boolean vorhanden = false;
                     while(((line = bufferedReader.readLine()) != null) ||(System.currentTimeMillis()-startTime)<1000){
                         String[] tokens = line.split(" ");
                         if(tokens[0].equalsIgnoreCase("ask")){
                             bufferedWriter.write("answer 1 " + playerList.size() + " " + serverName + "\r\n");
                             bufferedWriter.flush();
                         } else if(tokens[0].equalsIgnoreCase("join")){
-                            bufferedWriter.write("denied\r\n");
-                            bufferedWriter.flush();
+                            String[] split = line.split(" ", 3);
+                            for(ServerListener sL : playerList){
+                                if(sL.getID() == Integer.parseInt(split[1]) && sL.getLogin().equals(split[3])){
+                                    vorhanden = true;
+                                }
+                            }
+                            if(vorhanden){
+                                serverListeners.add(new ServerListener(this, clientSocket, true));
+                            } else{
+                                bufferedWriter.write("denied\r\n");
+                                bufferedWriter.flush();
+                            }
                             break;
                         }
                     }
-                    clientSocket.close();
+                    if(!vorhanden){clientSocket.close();}
                 }
 
             }
@@ -117,7 +127,8 @@ public class Server extends Thread{
 
     public void removeItems(ServerListener sL){
         removeListener(sL);
-        removePlayer(sL);
+        if(!gameStarted){removePlayer(sL);}
+        //TODO ALLE BENACHRICHTIGEN DAS SPIELER VERBINDUNGSFEHLER HAT => IM SERVERLISTENER
     }
 
     public void closeServer(){
@@ -125,5 +136,9 @@ public class Server extends Thread{
             sL.sendMessage("closing");
             running = false;
         }
+    }
+
+    public boolean getStartState(){
+        return gameStarted;
     }
 }

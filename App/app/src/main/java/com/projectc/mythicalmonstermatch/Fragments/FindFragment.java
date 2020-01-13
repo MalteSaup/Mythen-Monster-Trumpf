@@ -78,6 +78,7 @@ public class FindFragment extends Fragment {
             public void onItemClick(int position) {
                 ServerItem joinItem = serverList.get(position);
                 searching = false;
+                gA.inHost = true; 
                 join(joinItem);
                 Log.d("JETZT ITEM", serverList.get(position).getServername());
             }
@@ -192,7 +193,9 @@ public class FindFragment extends Fragment {
     }
 
     public void join(ServerItem joinItem){
-        gA.client = gA.createClient(joinItem.getServername(), gA.name, joinItem.getAddress());
+        gA.servername = joinItem.getServername();
+        gA.address = joinItem.getAddress();
+        gA.client = gA.createClient(joinItem.getServername(), gA.name, joinItem.getAddress(), gA.id);
         gA.client.setGameActivity(gA);
         gA.client.start();
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
 import com.projectc.mythicalmonstermatch.GameActivity;
@@ -29,11 +30,16 @@ public class Client extends Thread{
     private String serverName;                                                                      //???
     private String login;                                                                           //Username
 
+    private CharSequence connectionLostToast = "Connection Lost";
+    private CharSequence connectionNotPossibleToast = "Connection Not Possible";
+
+    private int id = -1;
+
     private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
     private boolean joined = false;
-    private boolean aknowleagead = true;
     private boolean serverRunning = true;
     public boolean running = true;
+    private boolean leaved = false;
 
     private Socket socket;                                                                          //Socket
 
@@ -48,11 +54,17 @@ public class Client extends Thread{
 
     public ArrayList<PlayerItem> playerItems = new ArrayList<>();
 
-
     public Client (String serverName, String login, String address) {
         this.serverName = serverName;
         this.login = login;
         this.address = address;
+    }
+
+    public Client (String serverName, String login, String address, int id) {
+        this.serverName = serverName;
+        this.login = login;
+        this.address = address;
+        this.id = id;
     }
 
     @Override
@@ -61,7 +73,7 @@ public class Client extends Thread{
         connect(address);
     }
 
-    private void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
+    public void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
         try {
             Log.d("CLIENT", msg);
             bufferedWriter.write(msg + "\r\n");                                                 //Message wird erstellt
@@ -89,7 +101,9 @@ public class Client extends Thread{
 
                 String line;
 
-                sendMessage("join " + login);
+                Hearbeat hearbeat = new Hearbeat(this);
+
+                sendMessage("join " + id + " " + login);
                 joined = true;
 
                 while((line = bufferedReader.readLine()) != null && serverRunning && running){                                  //While Schleife für Nachrichten verarbeitung
@@ -100,24 +114,21 @@ public class Client extends Thread{
                         if("denied".equalsIgnoreCase(cmd)){                                         //Wenn Denied Command (Nachfolgenden IF Statements dasselbe bloß anderes Command mit anderer Funktion)
                             handleDenie();
                         } else if("accept".equalsIgnoreCase(cmd)){
-                            handleAccept();
+                            handleAccept(tokens[1]);
                         } else if("start".equalsIgnoreCase(cmd)){
                             handleStart(tokens);
-                        } else if("setName".equalsIgnoreCase(cmd)){
-                            tokens = line.split(" ", 2);                                //Erneute splitung von String da Nachricht im Inhaltsblock Leerzeichen enthalten darf
-                            handleNameChange(tokens[1]);
-                        } else if("aknowledge".equalsIgnoreCase(cmd)){
-                            aknowleagead = true;
                         } else if("closing".equalsIgnoreCase(cmd)){
                             handleClosing();
                         } else if("playeranswer".equalsIgnoreCase(cmd)){
+                            Log.d("JETZT LOS", line);
                             tokens = line.split("[;]");
                             handlePlayerAnswer(tokens);
                         } else if("playeradded".equalsIgnoreCase(cmd)){
-                            tokens = line.split(";");
+                            Log.d("JETZT LOS", line);
+                            tokens = line.split("[;]");
                             handlePlayerAdded(tokens);
                         } else if("playerremoved".equalsIgnoreCase(cmd)){
-                            tokens = line.split(";");
+                            tokens = line.split("[;]");
                             handlePlayerRemoved(tokens);
                         }
                     }
@@ -126,24 +137,35 @@ public class Client extends Thread{
 
             } catch (ConnectException e){
                 Log.d("ERROR", "CONNECTION FAILED");
-                //TODO SERVER NICHT MEHR VORHANDEN NACHRICHT WENN NOCH NICHT GEJOINED
-                if(joined){
-                    //TODO SERVER CONNECTION CLOSED NACHRICHT
+                if(joined && !leaved){
+                    Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
+                    toast.show();
+                    gameActivity.startFindFrag();
+                } else if(!joined && !leaved){
+                    Toast toast = Toast.makeText(gameActivity, connectionNotPossibleToast, Toast.LENGTH_SHORT);
+                    toast.show();
+                    gameActivity.startFindFrag();
                 }
 
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                Log.d("ERROR", "UFF");
+                Log.d("ERROR", "SERVER CLOSED");
+                if(gameActivity.code == 1){
+                    Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
+                    toast.show();
+                    gameActivity.startFindFrag();
+                }
                 e.printStackTrace();
             }
     }
 
     private void handlePlayerRemoved(String[] tokens) {
+        Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<Integer> uebergabe = new ArrayList<>();
         for(int i = 0; i < playerItems.size(); i++){
             boolean vorhanden = false;
             for(int o = 1; o < tokens.length; o++){
-                if(tokens[o].equals(playerItems.get(i).getUsername())){
+                String[] split = tokens[o].split("[:]", 2);
+                if(split[0].equals(playerItems.get(i).getUsername()) && Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
@@ -157,16 +179,18 @@ public class Client extends Thread{
     }
 
     private void handlePlayerAdded(String[] tokens) {
+        Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<PlayerItem> pIs = new ArrayList<>();
         for(int o = 1; o < tokens.length; o++){
             boolean vorhanden = false;
+            String[] split = tokens[0].split("[:]", 2);
             for(int i = 0; i < playerItems.size(); i++){
-                if(tokens[o].equals(playerItems.get(i).getUsername())){
+                if(split[0].equals(playerItems.get(i).getUsername()) && Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
             if(!vorhanden){
-                pIs.add(new PlayerItem(tokens[o]));
+                pIs.add(new PlayerItem(split[0], Integer.parseInt(split[1])));
             }
         }
         for(PlayerItem pI : pIs){
@@ -178,7 +202,8 @@ public class Client extends Thread{
         Log.d("CLIENT ANSWER PLAYER", ""  + tokens.length);
         playerItems = new ArrayList<>();
         for(int i = 1; i < tokens.length; i++){
-            playerItems.add(new PlayerItem(tokens[i]));
+            String[] split = tokens[i].split("[:]", 2);
+            playerItems.add(new PlayerItem(split[0], Integer.parseInt(split[1])));
         }
     }
 
@@ -187,29 +212,26 @@ public class Client extends Thread{
     }
 
 
-    public void leave() {                                                                          //Sendet Leave Nachricht an Server
+    public void leave() {                                                                           //Sendet Leave Nachricht an Server
+        leaved = true;
         sendMessage("leave");
         running = false;
-    }
-
-
-
-    private void handleNameChange(String token) {                                                   //Setzt Namenstoken aus Nachricht als Namen
-        login = token;
     }
 
     private void handleStart(String[] tokens) {                                                     //Wird aufgerufen wenn Spiel gestartet wird von Host
         for(int i = 1; i < tokens.length; i++){
             String uebergabe = tokens[i].replace("[^\\d]", "");
             cardList.add(Integer.parseInt(uebergabe));
-            //TODO START GAME FRAGMENT || ACTIVITY
+            //TODO START GAME FRAGMENT
         }
         gameStarted = true;
     }
 
-    private void handleAccept() {                                                                   //Wird aufgerufen wenn der Server den Join akzeptiert
+    private void handleAccept(String id) {                                                                   //Wird aufgerufen wenn der Server den Join akzeptiert
+        this.id = Integer.parseInt(id);
+        Log.d("JETZT GA", "" + (gameActivity != null) + " "+ gameActivity.id);
+        gameActivity.id = this.id;
         sendMessage("GETPLAYER");
-        //TODO START LOBBY FRAGMENT
     }
 
     private void handleDenie() {                                                                    //Wird aufgerufen wenn der Server den Join verweigert
@@ -225,5 +247,4 @@ public class Client extends Thread{
     public void setGameActivity(GameActivity gameActivity){
         this.gameActivity = gameActivity;
     }
-
 }

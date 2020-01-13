@@ -42,10 +42,13 @@ public class ServerAdapter extends RecyclerView.Adapter<ServerAdapter.ServerView
     public void onBindViewHolder(@NonNull ServerAdapter.ServerViewHolder serverViewHolder, int i) {
         String servername = serverList.get(i).getServername();
         int playercount = serverList.get(i).getPlayerCount();
+        int startState = serverList.get(i).getStartState();
         serverViewHolder.servername.setText(servername);
         serverViewHolder.usercount.setText(playercount + "/5");
-        if(playercount >= 5){
+        if(playercount >= 5 && startState == 0){
             serverViewHolder.usercount.setTextColor(context.getColor(R.color.full));
+        } else if(startState == 1){
+            serverViewHolder.usercount.setTextColor(context.getColor(R.color.started));
         }
     }
 
