@@ -15,7 +15,7 @@ public class ServerListener extends Thread{
     private Server server;
     private String login;
     private boolean rejoin;
-
+    private Hearbeat hearbeat;
     private int id = -1;
 
     private BufferedReader bufferedReader;
@@ -33,8 +33,9 @@ public class ServerListener extends Thread{
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            Hearbeat hearbeat = new Hearbeat(this);
-            hearbeat.start();
+
+
+
 
             String line;
             while((line = bufferedReader.readLine()) != null){
@@ -74,8 +75,11 @@ public class ServerListener extends Thread{
             socket.close();
 
         } catch (IOException e) {
+            Log.d("IOEXCEPTION", "JETZT");
             handleConnectionLost();
             e.printStackTrace();
+        } catch (Exception e){
+            Log.d("IOEXCEPTION", "UNCATCHED");
         }
     }
 
@@ -141,6 +145,8 @@ public class ServerListener extends Thread{
                 this.id = Integer.parseInt(tokens[1]);
                 this.login = tokens[2];
                 joinPlayerAdded();
+                hearbeat = new Hearbeat(this);
+                hearbeat.start();
                 return true;
             }
             return false;
@@ -148,6 +154,8 @@ public class ServerListener extends Thread{
         else{
             this.login = tokens[2];
             this.id = generateID();
+            Hearbeat hearbeat = new Hearbeat(this);
+            hearbeat.start();
             joinPlayerAdded();
 
             return true;
@@ -175,7 +183,9 @@ public class ServerListener extends Thread{
             bufferedWriter.flush();
             Log.d("JETZT SERVER", msg);
         } catch (IOException e) {
+            Log.d("IOEXCEPTION", "JETZT SEND MESSAGE");
             e.printStackTrace();
+            handleConnectionLost();
         }
     }
 
@@ -187,6 +197,8 @@ public class ServerListener extends Thread{
 
     private void handleConnectionLost(){
         //TODO DIFFERENT BEHAVIOUR WHEN GAME STARTED
+        Log.d("KILL", "KILL");
+        if(hearbeat != null){hearbeat.running = false;}
         leave();
     }
 
@@ -201,6 +213,11 @@ public class ServerListener extends Thread{
             }
         }
 
+    }
+
+    private void kill(){
+        server.removeItems(this);
+        server.removePlayer(this);
     }
 
     public String getLogin(){

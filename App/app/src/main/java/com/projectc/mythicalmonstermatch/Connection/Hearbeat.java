@@ -1,10 +1,12 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
+import android.util.Log;
+
 public class Hearbeat extends Thread {
     ServerListener sL;
     Client client;
     long startTime;
-    boolean started = false;
+    public boolean running = true;
 
     public Hearbeat(ServerListener sL) {
 
@@ -20,13 +22,23 @@ public class Hearbeat extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            if(sL != null){sL.sendMessage("heartbeat");}
-            if(client != null){client.sendMessage("heartbeat");}
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        Log.d("HEARTBEAT", "  XXX" + sL.getLogin());
+        if(sL.getLogin() != null) {
+            while (running) {
+                try {
+                    if (sL != null) {
+                        sL.sendMessage("heartbeat   " + sL.getLogin());
+                    }
+                    if (sL == null) {
+                        Log.d("IOEXCEPTION", "JETZT HEARBEAT");
+                    }
+                    if (client != null) {
+                        client.sendMessage("heartbeat");
+                    }
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

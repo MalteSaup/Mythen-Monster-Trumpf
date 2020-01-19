@@ -72,7 +72,7 @@ public class GameActivity extends FragmentActivity{
             server = new Server(this.name, hostFrag);
             server.start();
             Log.d("SERVER STATUS", ""+server.running);
-
+            client = null;
             client = new Client(this.name, this.name, "localhost");
             client.setGameActivity(this);
             client.start();
@@ -104,10 +104,12 @@ public class GameActivity extends FragmentActivity{
 
     @Override
     public void onDestroy() {
-
+        if(client != null){   client.running = false;}
         if(server != null){
-            server.closeServer();
+            //server.closeServer();
+
             Client closeClient = new Client("localhost", "localhost", "localhost");
+            closeClient.running = false;
             closeClient.start();
         }
         wakeLock.release();
@@ -200,7 +202,14 @@ public class GameActivity extends FragmentActivity{
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == android.view.KeyEvent.KEYCODE_BACK){
             if(inHost && code == 0){
-                server.closeServer();
+                AsyncTask asyncTask = new AsyncTask() {
+                    @Override
+                    protected Object doInBackground(Object[] objects) {
+                        server.closeServer();
+                        return null;
+                    }
+                };
+                asyncTask.execute();
             } else if(inHost && code == 1){
                 AsyncTask asyncTask = new AsyncTask() {
                     @Override

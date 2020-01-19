@@ -126,6 +126,7 @@ public class Server extends Thread{
 
 
     public void removeItems(ServerListener sL){
+        Log.d("JETZT", sL.getLogin());
         removeListener(sL);
         if(!gameStarted){removePlayer(sL);}
         //TODO ALLE BENACHRICHTIGEN DAS SPIELER VERBINDUNGSFEHLER HAT => IM SERVERLISTENER

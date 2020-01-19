@@ -119,6 +119,7 @@ public class Client extends Thread{
                             handleStart(tokens);
                         } else if("closing".equalsIgnoreCase(cmd)){
                             handleClosing();
+                            break;
                         } else if("playeranswer".equalsIgnoreCase(cmd)){
                             Log.d("JETZT LOS", line);
                             tokens = line.split("[;]");
@@ -183,13 +184,15 @@ public class Client extends Thread{
         ArrayList<PlayerItem> pIs = new ArrayList<>();
         for(int o = 1; o < tokens.length; o++){
             boolean vorhanden = false;
-            String[] split = tokens[0].split("[:]", 2);
+            String[] split = tokens[o].split("[:]", 2);
             for(int i = 0; i < playerItems.size(); i++){
-                if(split[0].equals(playerItems.get(i).getUsername()) && Integer.parseInt(split[1]) == playerItems.get(i).getId()){
+                Log.d("JETZTIWAS", "" +  Integer.parseInt(split[1]) +  ": " + playerItems.get(i).getId());
+                if(Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
             if(!vorhanden){
+                Log.d("ARRAYPR", "" + split.length);
                 pIs.add(new PlayerItem(split[0], Integer.parseInt(split[1])));
             }
         }
