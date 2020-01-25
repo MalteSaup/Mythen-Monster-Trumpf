@@ -15,12 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
-<<<<<<< Updated upstream
+
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
-=======
+
 import com.projectc.mythicalmonstermatch.GameManager;
 import com.projectc.mythicalmonstermatch.PlayerItem;
->>>>>>> Stashed changes
+
 import com.projectc.mythicalmonstermatch.R;
 
 public class HostFragment extends Fragment {
