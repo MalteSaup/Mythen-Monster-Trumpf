@@ -31,7 +31,8 @@ public class HostFragment extends Fragment {
     private Handler handler;
     private Runnable runnable;
 
-    private Button startBt;
+    private Button startButton;
+    private Button cancelButton;
 
     private boolean stoped = false;
 
@@ -78,14 +79,27 @@ public class HostFragment extends Fragment {
         }
         runnable.run();
 
-        startBt = view.findViewById(R.id.startButton);
-        startBt.setOnClickListener(new View.OnClickListener(){
+        startButton = getView().findViewById(R.id.startButton);
+        startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                GameFragment gameFrag = (GameFragment) Fragment.instantiate(gA, GameFragment.class.getName(), null);
+
+                FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.gameActivityLayout, gameFrag);
+                ft.commit();
+
 
             }
         });
 
+        cancelButton = getView().findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                // TODO: Either shut down lobby completely and kick all the players or only remove the leaving player and give host to someone else
+            }
+        });
 
         super.onActivityCreated(saveInstandesState);
     }

@@ -29,6 +29,10 @@ public class GameActivity extends FragmentActivity{
     public Client client;
     public HostFragment hostFrag;
     public boolean inHost = false;
+    public String servername;
+    public String address;
+
+    public int id = -1;
 
     private PowerManager.WakeLock wakeLock;
 
@@ -69,8 +73,9 @@ public class GameActivity extends FragmentActivity{
             server = new Server(this.name, hostFrag);
             server.start();
             Log.d("SERVER STATUS", ""+server.running);
-
+            client = null;
             client = new Client(this.name, this.name, "localhost");
+            client.setGameActivity(this);
             client.start();
 
             ArrayList<ServerListener> sL = server.getServerListeners();
@@ -88,12 +93,7 @@ public class GameActivity extends FragmentActivity{
 
         } else if(code == 1){
             //TODO
-
-            FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
-
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.gameActivityLayout, findFrag);
-            ft.commit();
+            startFindFrag();
 
             //FIND GAME FRAGMENT STARTEN
             //CLIENT STARTEN
@@ -114,10 +114,12 @@ public class GameActivity extends FragmentActivity{
 
     @Override
     public void onDestroy() {
-
+        if(client != null){   client.running = false;}
         if(server != null){
-            server.closeServer();
+            //server.closeServer();
+
             Client closeClient = new Client("localhost", "localhost", "localhost");
+            closeClient.running = false;
             closeClient.start();
         }
         wakeLock.release();
@@ -125,8 +127,9 @@ public class GameActivity extends FragmentActivity{
 
     }
 
-    public Client createClient(String servername, String login, String address){
-        return new Client(servername, login, address);
+    public Client createClient(String servername, String login, String address, int id){
+        if(id == -1){return new Client(servername, login, address);}
+        else{return new Client(servername, login, address, id);}
     }
 
 
@@ -152,7 +155,7 @@ public class GameActivity extends FragmentActivity{
     public ArrayList<PlayerItem> listenerToPlayerItem(ArrayList<ServerListener> serverListeners){
         ArrayList<PlayerItem> uebergabe = new ArrayList<>();
         for(ServerListener sL : serverListeners){
-            uebergabe.add(new PlayerItem(sL.getLogin()));
+            uebergabe.add(new PlayerItem(sL.getLogin(), sL.getID()));
         }
         //Log.d("JETZT", "size " +  uebergabe.size());
         return uebergabe;
@@ -160,7 +163,7 @@ public class GameActivity extends FragmentActivity{
 
     public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe) {
         if (hostFrag != null && hostFrag.playerAdapter != null && client.running) {
-            Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
+            //Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
             if (playerItemUebergabe.size() != playerItems.size()) {
                 if (playerItemUebergabe.size() > playerItems.size()) {
                     ArrayList<PlayerItem> uebergabe = new ArrayList<>();
@@ -209,7 +212,14 @@ public class GameActivity extends FragmentActivity{
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == android.view.KeyEvent.KEYCODE_BACK){
             if(inHost && code == 0){
-                server.closeServer();
+                AsyncTask asyncTask = new AsyncTask() {
+                    @Override
+                    protected Object doInBackground(Object[] objects) {
+                        server.closeServer();
+                        return null;
+                    }
+                };
+                asyncTask.execute();
             } else if(inHost && code == 1){
                 AsyncTask asyncTask = new AsyncTask() {
                     @Override
@@ -224,15 +234,27 @@ public class GameActivity extends FragmentActivity{
                     }
                 };
                 asyncTask.execute();
-                FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.gameActivityLayout, findFrag);
-                ft.commit();
-
+                startFindFrag();
+                inHost = false;
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void reconnect() {
+        if(code == 1 && servername != null && address != null){
+            client = new Client(servername, name, address);
+        }
+
+    }
+
+    public void startFindFrag(){
+        FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.gameActivityLayout, findFrag);
+        ft.commit();
     }
 
 }
