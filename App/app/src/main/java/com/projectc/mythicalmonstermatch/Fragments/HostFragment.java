@@ -4,12 +4,14 @@ package com.projectc.mythicalmonstermatch.Fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
@@ -23,6 +25,8 @@ public class HostFragment extends Fragment {
     private Handler handler;
     private Runnable runnable;
 
+    private Button startButton;
+    private Button cancelButton;
 
     private boolean stoped = false;
 
@@ -68,6 +72,28 @@ public class HostFragment extends Fragment {
             };
         }
         runnable.run();
+
+        startButton = getView().findViewById(R.id.startButton);
+        startButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                GameFragment gameFrag = (GameFragment) Fragment.instantiate(gA, GameFragment.class.getName(), null);
+
+                FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.gameActivityLayout, gameFrag);
+                ft.commit();
+
+
+            }
+        });
+
+        cancelButton = getView().findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                // TODO: Either shut down lobby completely and kick all the players or only remove the leaving player and give host to someone else
+            }
+        });
 
         super.onActivityCreated(saveInstandesState);
     }
