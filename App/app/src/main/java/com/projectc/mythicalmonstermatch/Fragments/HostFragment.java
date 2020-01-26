@@ -36,6 +36,8 @@ public class HostFragment extends Fragment {
 
     private boolean stoped = false;
 
+    public static GameManager manager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +91,12 @@ public class HostFragment extends Fragment {
                 ft.replace(R.id.gameActivityLayout, gameFrag);
                 ft.commit();
 
+                // just for testing with one phone
+                PlayerItem enemy = new PlayerItem("enemy", 123);
+                gA.playerItems.add(enemy);
+
+                manager = new GameManager(gA.cardDeck, gA.playerItems);
+                manager.dealOutCards();
 
             }
         });

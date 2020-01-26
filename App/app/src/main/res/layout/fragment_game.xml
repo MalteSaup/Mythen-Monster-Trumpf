@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView11"
+        android:id="@+id/enemyCard"
         android:layout_width="133dp"
         android:layout_height="246dp"
         android:layout_marginBottom="480dp"
@@ -19,19 +19,19 @@
         app:srcCompat="@drawable/image02" />
 
     <ImageView
-        android:id="@+id/imageView10"
+        android:id="@+id/ownCard"
         android:layout_width="133dp"
         android:layout_height="246dp"
         android:layout_marginBottom="152dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView11"
+        app:layout_constraintTop_toBottomOf="@+id/enemyCard"
         app:layout_constraintVertical_bias="0.841"
         app:srcCompat="@drawable/image01" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/compareButton"
         android:layout_width="187dp"
         android:layout_height="83dp"
         android:text="Compare!"
@@ -39,40 +39,40 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.06"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView10"
+        app:layout_constraintTop_toBottomOf="@+id/ownCard"
         app:layout_constraintVertical_bias="0.85" />
 
     <RadioGroup
-        android:id="@+id/radioGroup"
+        android:id="@+id/statOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.78"
-        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintStart_toStartOf="@+id/compareButton"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/stat1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mass" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/stat2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Speed" />
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/stat3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Cunning" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/stat4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Scariness" />

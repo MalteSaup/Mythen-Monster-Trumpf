@@ -12,9 +12,12 @@ public class GameManager {
     private List<Integer> tempResults;
     private Dictionary playerAndResult;
 
+    private int currentPlayer;
+
     public GameManager(CardClass[] allCards, ArrayList<PlayerItem> players){
         this.allCards = allCards;
         this.players = players;
+        currentPlayer = 0;
     }
 
     public void pushResult(int result, PlayerItem player){
@@ -86,4 +89,27 @@ public class GameManager {
     public ArrayList<PlayerItem> getPlayers(){
         return players;
     }
+
+    public CardClass[] getAllCards(){
+        return allCards;
+    }
+
+    public PlayerItem findPlayerById(int id){
+        for(PlayerItem player : players) {
+            if(player.getId() == id) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public void determineCurrentPlayer(){
+        for (PlayerItem player: players) {
+            player.setAllowedToPlay(false);
+        }
+        players.get(currentPlayer).setAllowedToPlay(true);
+        currentPlayer++;
+    }
+
+
 }

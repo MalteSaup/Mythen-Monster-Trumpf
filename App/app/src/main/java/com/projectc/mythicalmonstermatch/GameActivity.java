@@ -24,7 +24,7 @@ public class GameActivity extends FragmentActivity{
 
     public int code = 2;
     public String name = "";
-    private CardClass[] cardDeck = new CardClass[30];
+    public CardClass[] cardDeck = new CardClass[30];
     public Server server;
     public Client client;
     public HostFragment hostFrag;
@@ -99,17 +99,9 @@ public class GameActivity extends FragmentActivity{
             //CLIENT STARTEN
         }
         else if(code == 2){
-            PlayerItem enemy = new PlayerItem("enemy");
-            playerItems.add(enemy);
-
-            GameManager manager = new GameManager(cardDeck, playerItems);
-            manager.dealOutCards();
-            Log.d("...", manager.getPlayers().toString());
 
         }
 
-
-        Log.d("HALLO", " " + cardDeck.length + " " + code + " " + name);
     }
 
     @Override
