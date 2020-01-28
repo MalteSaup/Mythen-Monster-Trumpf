@@ -113,6 +113,12 @@ public class FindFragment extends Fragment {
                 int counting4 = 2;
 
                 public void restart(){
+                    while(serverList.size() > 0){
+                        serverList.remove(0);
+                        Log.d("WHILE SCHLEIFE", "1");
+                    }
+                    serverAdapter.notifyDataSetChanged();
+                    serverAdapter.notifyDataSetChanged();
                     counting3 = start3Stelle;
                     counting4 = 1;
                 }

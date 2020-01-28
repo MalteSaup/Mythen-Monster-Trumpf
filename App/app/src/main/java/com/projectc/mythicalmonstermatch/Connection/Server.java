@@ -135,6 +135,7 @@ public class Server extends Thread{
     public void closeServer(){
         for(ServerListener sL : serverListeners){
             sL.sendMessage("closing");
+            sL.closeHeartbeat();
             running = false;
         }
     }
