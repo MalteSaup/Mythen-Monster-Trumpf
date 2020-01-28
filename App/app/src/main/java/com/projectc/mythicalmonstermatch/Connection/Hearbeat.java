@@ -3,9 +3,8 @@ package com.projectc.mythicalmonstermatch.Connection;
 import android.util.Log;
 
 public class Hearbeat extends Thread {
-    ServerListener sL;
-    Client client;
-    long startTime;
+    ServerListener sL = null;
+    Client client = null;
     public boolean running = true;
 
     public Hearbeat(ServerListener sL) {
@@ -23,19 +22,29 @@ public class Hearbeat extends Thread {
     @Override
     public void run() {
         Log.d("HEARTBEAT", "  XXX" + sL.getLogin());
-        if(sL.getLogin() != null) {
-            while (running) {
+        if(sL != null) {
+            if(sL.getLogin() != null){
+                while (running) {
+                    try {
+                        if (sL != null) {
+                            sL.sendMessage("heartbeat");
+                            if(sL.getLogin().equals("localhost")){
+                                running = false;
+                            }
+                        }
+                        this.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else if(client != null){
+            while(running){
                 try {
-                    if (sL != null) {
-                        sL.sendMessage("heartbeat   " + sL.getLogin());
-                    }
-                    if (sL == null) {
-                        Log.d("IOEXCEPTION", "JETZT HEARBEAT");
-                    }
                     if (client != null) {
-                        client.sendMessage("heartbeat");
+                        client.sendMessage("heartbeat " + client.getLogin());
                     }
-                    Thread.sleep(500);
+                    this.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

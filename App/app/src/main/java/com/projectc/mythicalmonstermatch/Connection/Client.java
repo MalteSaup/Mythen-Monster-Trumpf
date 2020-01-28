@@ -1,15 +1,11 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerItem;
-import com.projectc.mythicalmonstermatch.R;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -101,8 +97,6 @@ public class Client extends Thread{
 
                 String line;
 
-                Hearbeat hearbeat = new Hearbeat(this);
-
                 sendMessage("join " + id + " " + login);
                 joined = true;
 
@@ -131,6 +125,8 @@ public class Client extends Thread{
                         } else if("playerremoved".equalsIgnoreCase(cmd)){
                             tokens = line.split("[;]");
                             handlePlayerRemoved(tokens);
+                        } else if("heartbeat".equalsIgnoreCase(cmd)){
+                            handleHeartbeat();
                         }
                     }
                 }
@@ -145,6 +141,7 @@ public class Client extends Thread{
                 } else if(!joined && !leaved){
                     Toast toast = Toast.makeText(gameActivity, connectionNotPossibleToast, Toast.LENGTH_SHORT);
                     toast.show();
+                    gameActivity.inHost = false;
                     gameActivity.startFindFrag();
                 }
 
@@ -153,10 +150,15 @@ public class Client extends Thread{
                 if(gameActivity.code == 1){
                     Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
                     toast.show();
+                    gameActivity.inHost = false;
                     gameActivity.startFindFrag();
                 }
                 e.printStackTrace();
             }
+    }
+
+    private void handleHeartbeat() {
+        sendMessage("heartbeat");
     }
 
     private void handlePlayerRemoved(String[] tokens) {
@@ -239,15 +241,13 @@ public class Client extends Thread{
 
     private void handleDenie() {                                                                    //Wird aufgerufen wenn der Server den Join verweigert
         if(gameActivity != null){
-            FindFragment findFrag = (FindFragment) Fragment.instantiate(gameActivity, FindFragment.class.getName(), null);
-
-            FragmentTransaction ft = gameActivity.getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.gameActivityLayout, findFrag);
-            ft.commit();
+            gameActivity.inHost = false;
+            gameActivity.startFindFrag();
         }
     }
 
     public void setGameActivity(GameActivity gameActivity){
         this.gameActivity = gameActivity;
     }
+    public String getLogin(){return login;}
 }

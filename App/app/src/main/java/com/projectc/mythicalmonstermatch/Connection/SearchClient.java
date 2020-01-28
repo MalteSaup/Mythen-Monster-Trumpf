@@ -19,6 +19,7 @@ import java.net.Socket;
 
 public class SearchClient extends Thread{
 
+    private InterruptedException iE = new InterruptedException();
     private Context context;
     private FindFragment findFragment;
 
@@ -31,6 +32,8 @@ public class SearchClient extends Thread{
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
+    private boolean notEnded = true;
+
     public SearchClient(FindFragment findFragment, Context context, String address){
         this.findFragment = findFragment;
         this.context = context;
@@ -39,7 +42,11 @@ public class SearchClient extends Thread{
 
     @Override
     public void run(){
-        connect();
+        try {
+            connect();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
@@ -54,11 +61,11 @@ public class SearchClient extends Thread{
         }
     }
 
-    public void connect() {
+    public void connect() throws InterruptedException {
         try {
             Log.d("JETZT2", address);
             socket = new Socket();                                         //Verbindung auf Server wird hergestellt
-            socket.connect(new InetSocketAddress(address, 8080), 1000);
+            socket.connect(new InetSocketAddress(address, 8080), 500);
 
             Log.d("JETZT", "CONNECTED");
             inputStream = socket.getInputStream();                                                      //Kriegt In- und Outputstream und versieht diese mit Buffern fürs Lesen und Schreiben für Kommunikation
@@ -73,7 +80,7 @@ public class SearchClient extends Thread{
             sendMessage("ASK");
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             Log.d("JETZT", "" + bufferedReader + "");
-            while((line = bufferedReader.readLine()) != null){                                  //While Schleife für Nachrichten verarbeitung
+            while((line = bufferedReader.readLine()) != null && notEnded){                                  //While Schleife für Nachrichten verarbeitung
                 Log.d("JETZT", "NACHER");
                 String[] tokens = line.split(" ");                                        //Splited Nachricht auf. 1 Nachrichten Block ist Command Token
                 Log.d("JETZTMSG", line);
@@ -93,13 +100,14 @@ public class SearchClient extends Thread{
         }
     }
 
-    private void handleAnswer(String[] tokens) {                                                //Verarbeitet Abfrageergebnis aus ASK Abfrage
+    private void handleAnswer(String[] tokens) throws InterruptedException {                                                //Verarbeitet Abfrageergebnis aus ASK Abfrage
         Log.d("JETZT", "HANDLE");
         //if(tokens[1].equalsIgnoreCase("0")){
             int playerCount = Integer.parseInt(tokens[2]);
             String serverName = tokens[3];
             int startState = Integer.parseInt(tokens[1]);
             findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address, startState));
+            throw iE;
         //}
         //sendMessage("ok");
 

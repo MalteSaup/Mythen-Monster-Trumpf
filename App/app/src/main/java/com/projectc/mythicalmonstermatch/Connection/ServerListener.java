@@ -17,6 +17,7 @@ public class ServerListener extends Thread{
     private boolean rejoin;
     private Hearbeat hearbeat;
     private int id = -1;
+    private int count = 0;
 
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -25,6 +26,7 @@ public class ServerListener extends Thread{
         this.server = server;
         this.socket = socket;
         this.rejoin = rejoin;
+        hearbeat = new Hearbeat(this);
     }
 
     @Override
@@ -66,6 +68,8 @@ public class ServerListener extends Thread{
                         handlePlayerRemove();
                     }else if(cmd.equalsIgnoreCase("playeradded")){
                         handlePlayerAdded();
+                    }else if(cmd.equalsIgnoreCase("heartbeat")){
+                        handleHeartbeat();
                     }
 
                 }
@@ -81,6 +85,10 @@ public class ServerListener extends Thread{
         } catch (Exception e){
             Log.d("IOEXCEPTION", "UNCATCHED");
         }
+    }
+
+    private void handleHeartbeat() {
+        count--;
     }
 
     private void handlePlayerAdded() {
@@ -145,7 +153,6 @@ public class ServerListener extends Thread{
                 this.id = Integer.parseInt(tokens[1]);
                 this.login = tokens[2];
                 joinPlayerAdded();
-                hearbeat = new Hearbeat(this);
                 hearbeat.start();
                 return true;
             }
@@ -154,7 +161,6 @@ public class ServerListener extends Thread{
         else{
             this.login = tokens[2];
             this.id = generateID();
-            Hearbeat hearbeat = new Hearbeat(this);
             hearbeat.start();
             joinPlayerAdded();
 
@@ -181,6 +187,13 @@ public class ServerListener extends Thread{
             bufferedWriter.write(msg + "\r\n");
             //bufferedWriter.newLine();
             bufferedWriter.flush();
+            if(msg.equalsIgnoreCase("heartbeat")){
+                count++;
+                if(count > 3){
+                    handleConnectionLost();
+                }
+                Log.d("HEART", "" + count);
+            }
             Log.d("JETZT SERVER", msg);
         } catch (IOException e) {
             Log.d("IOEXCEPTION", "JETZT SEND MESSAGE");
@@ -198,12 +211,13 @@ public class ServerListener extends Thread{
     private void handleConnectionLost(){
         //TODO DIFFERENT BEHAVIOUR WHEN GAME STARTED
         Log.d("KILL", "KILL");
-        if(hearbeat != null){hearbeat.running = false;}
+        hearbeat.running = false;
         leave();
     }
 
     private void leave(){
         Log.d("SERVER", "LEAVE");
+        hearbeat.running = false;
         server.removeItems(this);
         for(ServerListener sL : server.getServerListeners()){
             if(server.getStartState()){
@@ -246,5 +260,9 @@ public class ServerListener extends Thread{
             Log.d("ERROR", "HOFFENTLICH NIE VORHANDEN");
             return generateID();
         }
+    }
+
+    public void closeHeartbeat() {
+        hearbeat.running = false;
     }
 }
