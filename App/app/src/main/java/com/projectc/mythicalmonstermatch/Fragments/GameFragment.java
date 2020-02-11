@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
 
@@ -23,6 +24,8 @@ public class GameFragment extends Fragment {
     private ImageView ownCard;
     private ImageView enemyCard;
     private PlayerItem myPlayerItem;
+    private GameActivity gA;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +40,8 @@ public class GameFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
-        compareButton = getView().findViewById(R.id.compareButton);
+        View view = getView();
+        compareButton = view.findViewById(R.id.compareButton);
         compareButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
