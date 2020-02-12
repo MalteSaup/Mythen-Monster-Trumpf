@@ -93,14 +93,6 @@ public class MainActivity extends FragmentActivity {
                 bf.decodeResource(getResources(), R.drawable.image07),
                 bf.decodeResource(getResources(), R.drawable.image08),
                 bf.decodeResource(getResources(), R.drawable.image09),
-                /*bf.decodeResource(getResources(), R.drawable.chimaere),
-                bf.decodeResource(getResources(), R.drawable.dschinn),
-                bf.decodeResource(getResources(), R.drawable.einhorn),
-                bf.decodeResource(getResources(), R.drawable.medusa),
-                bf.decodeResource(getResources(), R.drawable.minotaurus),
-                bf.decodeResource(getResources(), R.drawable.pegasus),
-                bf.decodeResource(getResources(), R.drawable.satyr),
-                bf.decodeResource(getResources(), R.drawable.zyklop)*/
         };
 
         Integer[] imgIDs = {
@@ -108,21 +100,10 @@ public class MainActivity extends FragmentActivity {
                 R.drawable.dschinn,
                 R.drawable.einhorn,
                 R.drawable.medusa,
-                R.drawable.minotaurus,
+                R.drawable.minotaur,
                 R.drawable.pegasus,
                 R.drawable.satyr,
                 R.drawable.zyklop
-        };
-
-        String[] imgURLs = {
-                "@drawable/chimaere",
-                "@drawable/dschinn",
-                "@drawable/einhorn",
-                "@drawable/medusa",
-                "@drawable/minotaurus",
-                "@drawable/pegasus",
-                "@drawable/satyr",
-                "@drawable/zyklop",
         };
 
         cardDeck[0] = new CardClass(0, "Chimäre", 4, 6, 6, 5, 7, imgIDs[0]);
