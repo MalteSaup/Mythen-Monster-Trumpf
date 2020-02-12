@@ -1,6 +1,7 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
+
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
+
+import com.projectc.mythicalmonstermatch.GameManager;
+import com.projectc.mythicalmonstermatch.PlayerItem;
+
 import com.projectc.mythicalmonstermatch.R;
 
 public class HostFragment extends Fragment {
@@ -30,16 +36,18 @@ public class HostFragment extends Fragment {
 
     private boolean stoped = false;
 
+    public static GameManager manager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_host, container, false);
+
     }
 
     @Override
@@ -83,6 +91,12 @@ public class HostFragment extends Fragment {
                 ft.replace(R.id.gameActivityLayout, gameFrag);
                 ft.commit();
 
+                // just for testing with one phone
+                PlayerItem enemy = new PlayerItem("enemy", 123);
+                gA.playerItems.add(enemy);
+
+                manager = new GameManager(gA.cardDeck, gA.playerItems);
+                manager.dealOutCards();
 
             }
         });

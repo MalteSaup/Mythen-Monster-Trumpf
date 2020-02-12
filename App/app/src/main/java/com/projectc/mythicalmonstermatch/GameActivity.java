@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,7 +24,7 @@ public class GameActivity extends FragmentActivity{
 
     public int code = 2;
     public String name = "";
-    private CardClass[] cardDeck = new CardClass[30];
+    public CardClass[] cardDeck = new CardClass[30];
     public Server server;
     public Client client;
     public HostFragment hostFrag;
@@ -97,9 +98,10 @@ public class GameActivity extends FragmentActivity{
             //FIND GAME FRAGMENT STARTEN
             //CLIENT STARTEN
         }
+        else if(code == 2){
 
+        }
 
-        Log.d("HALLO", " " + cardDeck.length + " " + code + " " + name);
     }
 
     @Override
