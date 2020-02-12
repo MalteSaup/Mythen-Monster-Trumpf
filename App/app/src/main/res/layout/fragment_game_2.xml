@@ -6,6 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/compareButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/roundedbutton"
+        android:text="@string/haken"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBot2"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight2"
+        app:layout_constraintStart_toStartOf="@+id/guideline10"
+        app:layout_constraintTop_toTopOf="@+id/guideline9" />
+
     <android.support.constraint.Guideline
         android:id="@+id/guidelineTop2"
         android:layout_width="wrap_content"
@@ -19,13 +35,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.95" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guidelineButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelineLeft2"
@@ -49,7 +58,7 @@
         app:layout_constraintGuide_percent="0.45" />
 
     <fragment
-        android:id="@+id/fragment6"
+        android:id="@+id/enemy1_fragment"
         android:name="com.projectc.mythicalmonstermatch.Fragments.CardFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -60,13 +69,29 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineTop2" />
 
     <fragment
-        android:id="@+id/fragment7"
+        android:id="@+id/player_fragment"
         android:name="com.projectc.mythicalmonstermatch.Fragments.CardFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineButton2"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBot2"
         app:layout_constraintEnd_toStartOf="@+id/guidelineRight2"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guidelineLeft2"
-        app:layout_constraintTop_toTopOf="@+id/guideline8" />
+        app:layout_constraintTop_toTopOf="@+id/guideline8"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="601dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="290dp" />
 
 </android.support.constraint.ConstraintLayout>

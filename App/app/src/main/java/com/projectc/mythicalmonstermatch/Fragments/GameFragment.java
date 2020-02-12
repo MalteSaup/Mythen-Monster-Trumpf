@@ -6,21 +6,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.TextView;
 
+import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
 
 public class GameFragment extends Fragment {
 
     private Button compareButton;
-    private RadioGroup statOptions;
-    private RadioButton stat1, stat2, stat3, stat4;
-    private ImageView ownCard;
-    private ImageView enemyCard;
     private PlayerItem myPlayerItem;
+
+    private View playerFrag;
+    private View enemie1Frag;
+
+    private GameActivity gA;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,53 @@ public class GameFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
+        gA = (GameActivity) getActivity();
+        View view = getView();
+        compareButton = view.findViewById(R.id.compareButton);
+        compareButton.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View view) { gA.submit();
+                                             }
+                                         });
+
+        compareButton.setVisibility(View.GONE);
+
+        playerFrag = view.findViewById(R.id.player_fragment);
+        enemie1Frag = view.findViewById(R.id.enemy1_fragment);
+
+        playerFrag.findViewById(R.id.submitBtn).setVisibility(View.GONE);
+        TextView[] playerTextViews = {
+                playerFrag.findViewById(R.id.cardName),
+                playerFrag.findViewById(R.id.attributeWert1),
+                playerFrag.findViewById(R.id.attributeWert2),
+                playerFrag.findViewById(R.id.attributeWert3),
+                playerFrag.findViewById(R.id.attributeWert4),
+                playerFrag.findViewById(R.id.attributeWert5),
+        };
+
+        playerTextViews[0].setText(gA.cardDeck[0].name);
+        playerTextViews[1].setText("" + gA.cardDeck[0].attributeMap.get("attribute1"));
+        playerTextViews[2].setText("" + gA.cardDeck[0].attributeMap.get("attribute2"));
+        playerTextViews[3].setText("" + gA.cardDeck[0].attributeMap.get("attribute3"));
+        playerTextViews[4].setText("" + gA.cardDeck[0].attributeMap.get("attribute4"));
+        playerTextViews[5].setText("" + gA.cardDeck[0].attributeMap.get("attribute5"));
+
+        enemie1Frag.findViewById(R.id.submitBtn).setVisibility(View.GONE);
+        TextView[] enemie1TextViews = {
+                enemie1Frag.findViewById(R.id.cardName),
+                enemie1Frag.findViewById(R.id.attributeWert1),
+                enemie1Frag.findViewById(R.id.attributeWert2),
+                enemie1Frag.findViewById(R.id.attributeWert3),
+                enemie1Frag.findViewById(R.id.attributeWert4),
+                enemie1Frag.findViewById(R.id.attributeWert5),
+        };
+
+        for(int i = 0; i < playerTextViews.length; i++){
+            enemie1TextViews[i].setText("  ");
+        }
+        //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
+
+
         /*compareButton = getView().findViewById(R.id.compareButton);
         compareButton.setOnClickListener(new View.OnClickListener(){
             @Override
