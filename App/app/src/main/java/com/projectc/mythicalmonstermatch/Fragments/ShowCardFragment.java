@@ -1,20 +1,18 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.projectc.mythicalmonstermatch.CardClass;
 import com.projectc.mythicalmonstermatch.MainActivity;
-import com.projectc.mythicalmonstermatch.OnSwipeTouchListener;
 import com.projectc.mythicalmonstermatch.R;
 
 
@@ -31,7 +29,7 @@ public class ShowCardFragment extends Fragment {
 
     private ImageButton leftButton;
     private ImageButton rightButton;
-    private ImageButton close;
+    private Button close;
 
 
     @Override
@@ -128,6 +126,7 @@ public class ShowCardFragment extends Fragment {
                 mainActivity.mainFrag.onCard = false;
             }
         });
+        close.setVisibility(View.GONE);
         Log.d("WAS", " "  + view.findViewById(R.id.ueberschrift));
         super.onActivityCreated(saveInstandesState);
     }
@@ -140,29 +139,39 @@ public class ShowCardFragment extends Fragment {
     public void updateImages(){
         int countStart = 9 * (pageCount - 1);
         for(int i = 0; i < 9; i++){
-            imageViews[i].setImageBitmap(ccDeck[countStart+i].img);
+            if(ccDeck[countStart+i].img != null){imageViews[i].setImageBitmap(ccDeck[countStart+i].img);}
+            else if(ccDeck[countStart+i].imgID != null){imageViews[i].setImageResource(ccDeck[countStart+i].imgID);}
+
         }
     }
 
     public void activateFrag(int uebergabe){
         int count = (9 * (pageCount - 1)) + uebergabe;
         ImageView iV = cardView.findViewById(R.id.imageView);
+        cardView.findViewById(R.id.submitBtn).setVisibility(View.GONE);
         TextView[] textViews = {
                 cardView.findViewById(R.id.cardName),
-                cardView.findViewById(R.id.attribute1),
-                cardView.findViewById(R.id.attribute2),
-                cardView.findViewById(R.id.attribute3),
-                cardView.findViewById(R.id.attribute4),
-                cardView.findViewById(R.id.attribute5),
+                cardView.findViewById(R.id.attributeWert1),
+                cardView.findViewById(R.id.attributeWert2),
+                cardView.findViewById(R.id.attributeWert3),
+                cardView.findViewById(R.id.attributeWert4),
+                cardView.findViewById(R.id.attributeWert5),
         };
 
         textViews[0].setText(ccDeck[count].name);
+        textViews[1].setText("" + ccDeck[count].attributeMap.get("attribute1"));
+        textViews[2].setText("" + ccDeck[count].attributeMap.get("attribute2"));
+        textViews[3].setText("" + ccDeck[count].attributeMap.get("attribute3"));
+        textViews[4].setText("" + ccDeck[count].attributeMap.get("attribute4"));
+        textViews[5].setText("" + ccDeck[count].attributeMap.get("attribute5"));
 
-        for(int i = 1; i < 6; i++){
-            textViews[i].setText("Attribute " + i + ": " + ccDeck[count].attributeMap.get("attribute" + i));
-        }
 
-        iV.setImageBitmap(ccDeck[count].img);
+        /*for(int i = 1; i < 6; i++){
+            textViews[i].setText("Masse: " + i + ": " + ccDeck[count].attributeMap.get("attribute" + i));
+        }*/
+
+        if(ccDeck[count].img != null){iV.setImageBitmap(ccDeck[count].img);}
+        else if(ccDeck[count].imgID != null){iV.setImageResource(ccDeck[count].imgID);}
 
         Log.d("ONCLICK", ccDeck.length + " " + count);
     }

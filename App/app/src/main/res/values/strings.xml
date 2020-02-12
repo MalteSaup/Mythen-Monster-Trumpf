@@ -12,6 +12,13 @@
     <string name="servername">Servername</string>
     <string name="playercount">1/5</string>
     <string name="refresh">Refresh</string>
+    <string name="haken">✓</string>
+    <string name="close">X</string>
+    <string name="attribute1">Masse</string>
+    <string name="attribute2">Killability</string>
+    <string name="attribute3">Speed</string>
+    <string name="attribute4">Gerissenheit</string>
+    <string name="attribute5">Scarriness</string>
     <!--<string name=""></string>!-->
 
     <string name="info_text">
