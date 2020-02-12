@@ -27,55 +27,64 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/enemyCard"
-        app:layout_constraintVertical_bias="0.841"
+        app:layout_constraintVertical_bias="0.24000001"
         app:srcCompat="@drawable/image01" />
 
     <Button
         android:id="@+id/compareButton"
         android:layout_width="187dp"
         android:layout_height="83dp"
+        android:layout_marginBottom="32dp"
         android:text="Compare!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ownCard"
-        app:layout_constraintVertical_bias="0.85" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <RadioGroup
         android:id="@+id/statOptions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="83dp"
+        android:layout_height="105dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.78"
-        app:layout_constraintStart_toStartOf="@+id/compareButton"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.76">
 
         <RadioButton
             android:id="@+id/stat1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Mass" />
+            android:layout_height="21dp"
+            android:text="Mass"
+            android:textSize="12sp" />
 
         <RadioButton
             android:id="@+id/stat2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Speed" />
+            android:layout_height="21dp"
+            android:text="Killability"
+            android:textSize="12sp" />
 
         <RadioButton
             android:id="@+id/stat3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cunning" />
+            android:layout_height="21dp"
+            android:text="Speed"
+            android:textSize="12sp" />
 
         <RadioButton
             android:id="@+id/stat4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Scariness" />
+            android:layout_height="21dp"
+            android:text="Cunning"
+            android:textSize="12sp" />
+
+        <RadioButton
+            android:id="@+id/stat5"
+            android:layout_width="match_parent"
+            android:layout_height="21dp"
+            android:text="Scariness"
+            android:textSize="12sp" />
 
     </RadioGroup>
 </android.support.constraint.ConstraintLayout>

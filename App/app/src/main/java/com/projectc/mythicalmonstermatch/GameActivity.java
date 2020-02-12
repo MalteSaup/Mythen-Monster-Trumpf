@@ -16,6 +16,7 @@ import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
+import com.projectc.mythicalmonstermatch.Fragments.GameFragment;
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class GameActivity extends FragmentActivity{
     public boolean inHost = false;
     public String servername;
     public String address;
+    public static GameManager manager;
 
     public int id = -1;
 
@@ -243,10 +245,34 @@ public class GameActivity extends FragmentActivity{
 
     public void startFindFrag(){
         FindFragment findFrag = (FindFragment) Fragment.instantiate(this, FindFragment.class.getName(), null);
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.gameActivityLayout, findFrag);
         ft.commit();
+    }
+
+    public void startGame(){
+        if (playerItems.size() > 1){
+            GameFragment gameFrag = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
+            gameFrag.setMyPlayerItem(findOwnPlayerItem());
+            FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.gameActivityLayout, gameFrag);
+            ft.commit();
+
+
+            manager = new GameManager(cardDeck, playerItems);
+            manager.dealOutCards();
+
+        }
+
+    }
+
+    PlayerItem findOwnPlayerItem(){
+        for (PlayerItem playerItem : playerItems){
+            if (playerItem.getId() == id){
+                return playerItem;
+            }
+        }
+        return null;
     }
 
 }

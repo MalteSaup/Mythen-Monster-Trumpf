@@ -2,6 +2,7 @@ package com.projectc.mythicalmonstermatch.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
 
@@ -19,7 +21,7 @@ public class GameFragment extends Fragment {
 
     private Button compareButton;
     private RadioGroup statOptions;
-    private RadioButton stat1, stat2, stat3, stat4;
+    private RadioButton stat1, stat2, stat3, stat4, stat5;
     private ImageView ownCard;
     private ImageView enemyCard;
     private PlayerItem myPlayerItem;
@@ -42,7 +44,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v){
                 if (myPlayerItem.getAllowedToPlay()){
-                    HostFragment.manager.pushResult(myPlayerItem.getCard(0).attributeMap.get("attribute"+ myPlayerItem.getSelectedStat()).intValue(), myPlayerItem);
+                    GameActivity.manager.pushResult(myPlayerItem.getCard(0).attributeMap.get("attribute"+ myPlayerItem.getSelectedStat()).intValue(), myPlayerItem);
 
                 }
             }
@@ -55,23 +57,28 @@ public class GameFragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // find which radio button is selected
+
                 if (myPlayerItem.getAllowedToPlay()) {
                     if (checkedId == R.id.stat1) {
                         Toast.makeText(getContext(), "choice: Mass",
                                 Toast.LENGTH_SHORT).show();
                         myPlayerItem.setSelectedStat(1);
                     } else if (checkedId == R.id.stat2) {
-                        Toast.makeText(getContext(), "choice: Speed",
+                        Toast.makeText(getContext(), "choice: Kiillability",
                                 Toast.LENGTH_SHORT).show();
                         myPlayerItem.setSelectedStat(2);
                     } else if (checkedId == R.id.stat3) {
-                        Toast.makeText(getContext(), "choice: Cunning",
+                        Toast.makeText(getContext(), "choice: Speed",
                                 Toast.LENGTH_SHORT).show();
                         myPlayerItem.setSelectedStat(3);
                     } else if (checkedId == R.id.stat4) {
-                        Toast.makeText(getContext(), "choice: Scariness",
+                        Toast.makeText(getContext(), "choice: Cunnings",
                                 Toast.LENGTH_SHORT).show();
                         myPlayerItem.setSelectedStat(4);
+                    }else if (checkedId == R.id.stat5) {
+                        Toast.makeText(getContext(), "choice: Scariness",
+                                Toast.LENGTH_SHORT).show();
+                        myPlayerItem.setSelectedStat(5);
                     }
                 }
                 else {
@@ -85,8 +92,12 @@ public class GameFragment extends Fragment {
         stat2 = (RadioButton) getView().findViewById(R.id.stat2);
         stat3 = (RadioButton) getView().findViewById(R.id.stat3);
         stat4 = (RadioButton) getView().findViewById(R.id.stat4);
-
+        stat5 = (RadioButton) getView().findViewById(R.id.stat5);
         super.onActivityCreated(saveInstandesState);
+    }
+
+    public void setMyPlayerItem(PlayerItem playerItem){
+        myPlayerItem = playerItem;
     }
 
 }

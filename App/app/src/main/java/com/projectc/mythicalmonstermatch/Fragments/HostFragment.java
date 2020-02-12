@@ -85,19 +85,13 @@ public class HostFragment extends Fragment {
         startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                GameFragment gameFrag = (GameFragment) Fragment.instantiate(gA, GameFragment.class.getName(), null);
-
-                FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.gameActivityLayout, gameFrag);
-                ft.commit();
 
                 // just for testing with one phone
                 PlayerItem enemy = new PlayerItem("enemy", 123);
                 gA.playerItems.add(enemy);
 
-                manager = new GameManager(gA.cardDeck, gA.playerItems);
-                manager.dealOutCards();
 
+                gA.startGame();
             }
         });
 
