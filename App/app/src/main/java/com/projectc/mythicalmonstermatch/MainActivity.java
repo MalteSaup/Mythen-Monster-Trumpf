@@ -2,8 +2,7 @@ package com.projectc.mythicalmonstermatch;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,122 +10,111 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.projectc.mythicalmonstermatch.Fragments.MainFragment;
 
 public class MainActivity extends FragmentActivity {
 
-    public MainFragment mainFrag;
-    public String name = "";
-    private CardClass[] cardDeck = new CardClass[30];
-
-    private SharedPreferences data;
-    private SharedPreferences.Editor data_editor;
+    public MainFragment mainFrag;                                                                   //DAS MAIN FRAGMENT ENTHÄLT DAS MENÜ UND BUTTONS
+    public String name = "";                                                                        //SPIELER NAME
+    private CardClass[] cardDeck;                                                                   //KARTEN DECK
+    WifiManager wifiManager;                                                                        //WIFI MANAGER FÜR CHECK OB WLAN VERBINDUNG STEHT
+    private SharedPreferences data;                                                                 //GESPEICHERTE DATEN DAMIT USERNAME AUCH NACH NEUSTART DER APP VORHANDEN IST
+    private SharedPreferences.Editor data_editor;                                                   //EDITOR FÜR GESPEICHERTE DATEN
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainFrag = (MainFragment) Fragment.instantiate(this, MainFragment.class.getName(), null);
+        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);          //INITIALISIERT WIFI MANAGER
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        mainFrag = (MainFragment) Fragment.instantiate(this, MainFragment.class.getName(), null);   //INITIALISIERT MAIN FRAGMENT
+
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();                    //STARTET MAIN FRAGMENT
         ft.add(R.id.mainActivityLayout, mainFrag);
         ft.commit();
 
-        createCardDeck();
+        createCardDeck();                                                                           //KARTEN DECK WIRD ERSTELLT, BENÖTIGT FÜR SHOWCARDFRAGMENT
 
         
-        data = getApplicationContext().getSharedPreferences("user_name", 0);
+        data = getApplicationContext().getSharedPreferences("user_name", 0);                  //GESPEICHERTE DATEN WERDEN INITIALISIERT
 
         if(data.getString("user_name", null) != null){
-            name = data.getString("user_name", null);
+            name = data.getString("user_name", null);                                        //FALLS DATEN VORHANDEN => AUSGELESEN UND NAME GESETZT
         }
 
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK && (mainFrag.isInMenu || mainFrag.isInCards)){
-            if(!mainFrag.onCard){
+        if(keyCode == KeyEvent.KEYCODE_BACK && (mainFrag.isInMenu)){                                //CHECKT OB DER RETURN TASTE GEDRÜCKT WURDE UND IN WELCHEM MENÜ GERADE
+            if(!mainFrag.onCard){                                                                   //WENN IM SHOWCARDFRAGMENT (OHNE GEÖFFNET KARTE) ODER MENUFRAGMENT => RETURN ZUM MAINFRAGMENT
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.mainActivityLayout, mainFrag);
                 ft.commit();
                 mainFrag.isInMenu = false;
                 return true;
-            } else {
+            } else {                                                                                //WENN IM SHOWCARDFRAGMENT UND KARTE GEÖFFNET => KARTE GESCHLOSSEN
                 View frag = findViewById(R.id.fragment);
-                frag.setVisibility(View.GONE);
+                frag.setVisibility(View.GONE);                                                      //DEAKTIVIERUNG KARTE
                 Button close = findViewById(R.id.closeCard);
-                close.setVisibility(View.GONE);
-                mainFrag.onCard = false;
+                close.setVisibility(View.GONE);                                                     //DEAKTIVIERUNG SCHLIEß BUTTON FÜR KARTE
+                mainFrag.onCard = false;                                                            //ONCARD FLAG WIEDER AUF FALSCH GESETZT
                 return true;
             }
 
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyDown(keyCode, event);                                                     //FALLS IN KEINEM MENÜ PUNKT => APP GESCHLOSSEN
     }
 
-    public String getName(){
+    public String getName(){                                                                        //GIBT NAMEN ZURÜCK
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name){                                                               //SETZT UND SPEICHERT NAMEN
         this.name = name;
         data_editor = data.edit();
         data_editor.putString("user_name", name);
         data_editor.apply();
     }
-    public CardClass[] getCardDeck(){return  cardDeck;}
+    public CardClass[] getCardDeck(){return  cardDeck;}                                             //GIBT KARTEN DECK ZURÜCK
 
     public void createCardDeck(){
-        BitmapFactory bf = new BitmapFactory();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap[] b = {
-                bf.decodeResource(getResources(), R.drawable.image01),
-                bf.decodeResource(getResources(), R.drawable.image02),
-                bf.decodeResource(getResources(), R.drawable.image03),
-                bf.decodeResource(getResources(), R.drawable.image04),
-                bf.decodeResource(getResources(), R.drawable.image05),
-                bf.decodeResource(getResources(), R.drawable.image06),
-                bf.decodeResource(getResources(), R.drawable.image07),
-                bf.decodeResource(getResources(), R.drawable.image08),
-                bf.decodeResource(getResources(), R.drawable.image09),
-        };
+        CardSupportClass cSS = new CardSupportClass(this);
+        cardDeck = cSS.createDeck();
+    }
 
-        Integer[] imgIDs = {
-                R.drawable.chimaere,
-                R.drawable.dschinn,
-                R.drawable.einhorn,
-                R.drawable.medusa,
-                R.drawable.minotaur,
-                R.drawable.pegasus,
-                R.drawable.satyr,
-                R.drawable.zyklop
-        };
+    public void startGameActivity(int code){                                                        //STARTET GAME ACTIVITY
 
-        cardDeck[0] = new CardClass(0, "Chimäre", 4, 6, 6, 5, 7, imgIDs[0]);
-        cardDeck[1] = new CardClass(1, "Dschinn", 1, 9 , 1, 10, 2, imgIDs[1]);
-        cardDeck[2] = new CardClass(2, "Einhorn", 3, 2, 7 , 2, 1, imgIDs[2]);
-        cardDeck[3] = new CardClass(3, "Medusa", 2, 8 , 3 , 7, 7, imgIDs[3]);
-        cardDeck[4] = new CardClass(4, "Minotaur", 4, 3, 3, 3, 6, imgIDs[4]);
-        cardDeck[5] = new CardClass(5, "Pegasus", 3, 3, 10, 2, 1, imgIDs[5]);
-        cardDeck[6] = new CardClass(6, "Satyr", 2, 1, 5, 7, 2, imgIDs[6]);
-        cardDeck[7] = new CardClass(7, "Zyklop", 5, 3, 2, 1, 4, imgIDs[7]);
+        if(checkWiFiState() && nameIsSet()){                                                        //CHECKT OB WLAN AKITVIERT UND VERBUNDEN, UND OB NAME GESETZT IST
+            Intent intent = new Intent(this, GameActivity.class);
+            intent.putExtra("USERNAME", this.name);                                           //ÜBERGIBT NAMEN AN NEUE ACTIVITY
+            intent.putExtra("CODE", code);                                                    //ÜBERGIBT CODE AN NEUE ACTIVTY: 0 == Host, 1 == Client
 
-        for(int i = 8; i < 30; i++){
-            cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i, b[i%9]);
+            startActivity(intent);
+        } else if(!checkWiFiState()){                                                               //FALLS WLAN NICHT AKTIVIERT ODER VERBUNDE GIBT MELDUNG IN Toast AUS
+            createToast("WLAN Verbindung nicht vorhanden");
+        } else if(!nameIsSet()){
+            createToast("Name noch nicht gesetzt");                                          //FALLS USERNAME NICHT GESETZT GIBT MELDUNG IN Toast AUS
         }
-
     }
 
-    public void startGameActivity(int code){
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra("USERNAME", this.name);
-        intent.putExtra("CODE", code);                                                        //code 0 == Host, code 1 == Client
-
-        startActivity(intent);
+    private void createToast(CharSequence inhalt){                                                  //ERSTELLT UND ZEIGT TOAST
+        Toast toast = Toast.makeText(this, inhalt, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
+    private boolean nameIsSet() {                                                                   //CHECKT OB USERNAME GESETZT
+        if(!name.trim().isEmpty()){return true;}
+        return false;
+    }
+
+    private boolean checkWiFiState() {                                                              //CHECKT OB WLAN AKTIVIERT UND VERBUNDEN
+        if(wifiManager.getWifiState() == 3 && wifiManager.getConnectionInfo().getSupplicantState().toString().equalsIgnoreCase("COMPLETED")){return true;}
+        return false;
+    }
 }

@@ -1,7 +1,5 @@
 package com.projectc.mythicalmonstermatch;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -24,7 +22,7 @@ public class GameActivity extends FragmentActivity{
 
     public int code = 2;
     public String name = "";
-    public CardClass[] cardDeck = new CardClass[30];
+    public CardClass[] cardDeck;
     public Server server;
     public Client client;
     public HostFragment hostFrag;
@@ -48,6 +46,7 @@ public class GameActivity extends FragmentActivity{
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "APP::WAKELOCK");
         wakeLock.acquire();
+        Log.d("WAKELOCK", wakeLock.toString());
 
         setContentView(R.layout.game_activity);
 
@@ -86,14 +85,6 @@ public class GameActivity extends FragmentActivity{
             for(ServerListener sLL : sL){
                 Log.d("SL", " " + sLL.getLogin());
             }
-
-            //Server server = new Server (8080, 0, name);
-            //server.start();
-            //Client client = new Client("TODO", 8080, name, 1);
-            //SERVER STARTEN
-            //CLIENT STARTEN
-            //LOBBY FRAGMENT STARTEN
-
         } else if(code == 1){
             //TODO
             //startFindFrag();
@@ -102,8 +93,6 @@ public class GameActivity extends FragmentActivity{
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.gameActivityLayout, findFrag);
             ft.commit();
-            //FIND GAME FRAGMENT STARTEN
-            //CLIENT STARTEN
         }
         else if(code == 2){
 
@@ -111,20 +100,7 @@ public class GameActivity extends FragmentActivity{
 
     }
 
-    @Override
-    public void onDestroy() {
-        if(client != null){   client.running = false;}
-        if(server != null){
-            //server.closeServer();
 
-            Client closeClient = new Client("localhost", "localhost", "localhost");
-            closeClient.running = false;
-            closeClient.start();
-        }
-        wakeLock.release();
-        super.onDestroy();
-
-    }
 
     public Client createClient(String servername, String login, String address, int id){
         if(id == -1){return new Client(servername, login, address);}
@@ -133,45 +109,8 @@ public class GameActivity extends FragmentActivity{
 
 
     public void createCardDeck(){
-        BitmapFactory bf = new BitmapFactory();
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap[] b = {
-                bf.decodeResource(getResources(), R.drawable.image01),
-                bf.decodeResource(getResources(), R.drawable.image02),
-                bf.decodeResource(getResources(), R.drawable.image03),
-                bf.decodeResource(getResources(), R.drawable.image04),
-                bf.decodeResource(getResources(), R.drawable.image05),
-                bf.decodeResource(getResources(), R.drawable.image06),
-                bf.decodeResource(getResources(), R.drawable.image07),
-                bf.decodeResource(getResources(), R.drawable.image08),
-                bf.decodeResource(getResources(), R.drawable.image09),
-        };
-
-        Integer[] imgIDs = {
-                R.drawable.chimaere,
-                R.drawable.dschinn,
-                R.drawable.einhorn,
-                R.drawable.medusa,
-                R.drawable.minotaur,
-                R.drawable.pegasus,
-                R.drawable.satyr,
-                R.drawable.zyklop
-        };
-
-        cardDeck[0] = new CardClass(0, "Chimäre", 4, 6, 6, 5, 7, imgIDs[0]);
-        cardDeck[1] = new CardClass(1, "Dschinn", 1, 9 , 1, 10, 2, imgIDs[1]);
-        cardDeck[2] = new CardClass(2, "Einhorn", 3, 2, 7 , 2, 1, imgIDs[2]);
-        cardDeck[3] = new CardClass(3, "Medusa", 2, 8 , 3 , 7, 7, imgIDs[3]);
-        cardDeck[4] = new CardClass(4, "Minotaur", 4, 3, 3, 3, 6, imgIDs[4]);
-        cardDeck[5] = new CardClass(5, "Pegasus", 3, 3, 10, 2, 1, imgIDs[5]);
-        cardDeck[6] = new CardClass(6, "Satyr", 2, 1, 5, 7, 2, imgIDs[6]);
-        cardDeck[7] = new CardClass(7, "Zyklop", 5, 3, 2, 1, 4, imgIDs[7]);
-
-        for(int i = 8; i < 30; i++){
-            cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i, b[i%9]);
-        }
-
+        CardSupportClass cSS = new CardSupportClass(this);
+        cardDeck = cSS.createDeck();
     }
 
     public ArrayList<PlayerItem> listenerToPlayerItem(ArrayList<ServerListener> serverListeners){
@@ -285,6 +224,27 @@ public class GameActivity extends FragmentActivity{
 
     public void submit(){
         //TODO START COMPARING PROCESS ON GAME LOGIC
+    }
+
+    @Override
+    public void onDestroy() {
+        if(client != null){   client.running = false;}
+        if(server != null){
+            //server.closeServer();
+
+            Client closeClient = new Client("localhost", "localhost", "localhost");
+            closeClient.running = false;
+            closeClient.start();
+        }
+        wakeLock.release();
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onPause(){
+        Log.d("WAKELOCK", "GA PAUSIERT");
+        super.onPause();
     }
 
 }
