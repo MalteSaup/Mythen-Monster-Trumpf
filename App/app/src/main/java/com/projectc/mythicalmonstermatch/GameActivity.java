@@ -13,7 +13,6 @@ import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
-import com.projectc.mythicalmonstermatch.Fragments.GameFragment;
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
 
 import java.util.ArrayList;
@@ -87,12 +86,12 @@ public class GameActivity extends FragmentActivity{
             }
         } else if(code == 1){
             //TODO
-            //startFindFrag();
-            GameFragment findFrag = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
+            startFindFrag();
+            /*GameFragment findFrag = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.gameActivityLayout, findFrag);
-            ft.commit();
+            ft.commit();*/
         }
         else if(code == 2){
 

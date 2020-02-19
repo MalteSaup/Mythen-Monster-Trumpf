@@ -4,11 +4,7 @@ import android.util.Log;
 
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -60,7 +56,7 @@ public class Server extends Thread{
         playerList.remove(sL);
     }
 
-    public synchronized ArrayList<ServerListener> getServerListeners(){                             //GIBT CLIENT LISTE AN (OHNE SEARCH CLIENT)
+    public synchronized ArrayList<ServerListener> getServerListeners(){                             //GIBT CLIENT LISTE AN (OHNE SEARCH CLIENT) KOMMENTAR: UNGLÜCKLICH GEWÄHLTER NAME DER FUNKTIOIN... SORRY
         return playerList;
     }
 
@@ -70,44 +66,11 @@ public class Server extends Thread{
             ServerSocket serverSocket = new ServerSocket(port);                                     //ERZEUGT SERVER SOCKET
             while(running) {
                 Log.d("SERVER LOG", "Waiting for Users...");
-                Socket clientSocket = serverSocket.accept();                                        //NIMMT CLIENTS AN
+                Socket clientSocket = serverSocket.accept();                                        //NIMMT VERBINDUNG AN UND ARBEITET DIESE IN EINEN SERVERLISTENER AB
 
-                if(!gameStarted){                                                                   //STARTET VERBINDUNG UND FÜGT CLIENTS ERSTMAL ZUR "UNSAUBEREN" LISTE, WENN SPIEL NICHT GESTARTET
-                    ServerListener sL = new ServerListener(this, clientSocket, false);
-                    serverListeners.add(sL);
-                    sL.start();
-                }
-                else{                                                                               //WENN SPIEL GESTARTET WIRD NUR ANHAND DER ÜBERGEBENEN ID GEPRÜFT OB DER SPIELER TEIL DES SPIELS IST UM REJOIN ZU ERMÖGLICHEN ALLE ANDEREN WERDEN DENIED
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                    String line;
-                    long startTime = System.currentTimeMillis();
-                    boolean vorhanden = false;
-                    while(((line = bufferedReader.readLine()) != null) ||(System.currentTimeMillis()-startTime)<1000){  //ERZEUGT WHILE LOOP FÜR NACHRICHTEN VERARBEITUNG MIT 1s LEBENSDAUER
-                        String[] tokens = line.split(" ");                                    //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
-                        //COMMAND VERARBEITUNG
-                        if(tokens[0].equalsIgnoreCase("ask")){
-                            bufferedWriter.write("answer 1 " + playerList.size() + " " + serverName + "\r\n");  //ANTWORT AUF SERVER STATUS ANFRAGE
-                            bufferedWriter.flush();
-                        } else if(tokens[0].equalsIgnoreCase("join")){                  //VERARBEITUNG JOIN ANFRAGE
-                            String[] split = line.split(" ", 3);
-                            for(ServerListener sL : playerList){
-                                if(sL.getID() == Integer.parseInt(split[1]) && sL.getLogin().equals(split[3])){ //ID UND LOGIN ÜBERPRÜFUNG OB VORHANDEN
-                                    vorhanden = true;                                               //VORHANDEN FLAG GESETZT
-                                }
-                            }
-                            if(vorhanden){                                                          //VORHANDEN FLAG GEPRÜFT
-                                serverListeners.add(new ServerListener(this, clientSocket, true));  //CLIENT HINZUGEFÜGT
-                            } else{                                                                 //FALLS NICHT VORHANDEN JOIN ANFRAGE DENIED
-                                bufferedWriter.write("denied\r\n");
-                                bufferedWriter.flush();
-                            }
-                            break;
-                        }
-                    }
-                    if(!vorhanden){clientSocket.close();}
-                }
-
+                ServerListener sL = new ServerListener(this, clientSocket, false);     //ERZEUGT SERVERLISTENER ANHAND DER VERBINDUNG
+                serverListeners.add(sL);                                                            //FÜGT SERVERLISTENER DER SERVERLISTENERLISTE HINZU
+                sL.start();                                                                         //SERVERLISTENER GESTARTET
             }
         } catch (BindException e){
             if(e.toString().equals("java.net.BindException: bind failed: EADDRINUSE (Address already in use)")){

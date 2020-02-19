@@ -161,10 +161,10 @@ public class Client extends Thread{
         Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<Integer> uebergabe = new ArrayList<>();
         for(int i = 0; i < playerItems.size(); i++){                                                //CHECKT WELCHE SPIELER GELEAVED SIND UND UPDATED DANACH DEN RECYCLER VIEW DER DIE SPIELER ANZEIGT
-            boolean vorhanden = false;
+            boolean vorhanden = false;                                                              //VERGLEICHT DAZU OB ELEMENTE AUS DER PLAYERITEMS LISTE NOCH IN ÜBERTRAGENDER LISTE SIND
             for(int o = 1; o < tokens.length; o++){
                 String[] split = tokens[o].split("[:]", 2);                             //SPLITED EINZELNE SEGMENT NOCHMAL UM ID UND NAME ZU TRENNEN
-                if(split[0].equals(playerItems.get(i).getUsername()) && Integer.parseInt(split[1]) == playerItems.get(i).getId()){
+                if(Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
@@ -173,24 +173,21 @@ public class Client extends Thread{
             }
         }
         for(int i : uebergabe) {
-            playerItems.remove(i);                                                                  //ENTFERNT SPIELER AUS DER SPIELERLISTE
+            playerItems.remove(i);                                                                  //ENTFERNT SPIELER AUS DER SPIELERLISTE ANHAND LISTEN POSITION
         }
     }
 
     private void handlePlayerAdded(String[] tokens) {
-        Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<PlayerItem> pIs = new ArrayList<>();
         for(int o = 1; o < tokens.length; o++){                                                     //CHECKT WELCHE SPIELER GEJOINED SIND UND UPDATED DANACH DEN RECYCLER VIEW DER DIE SPIELER ANZEIGT
-            boolean vorhanden = false;
+            boolean vorhanden = false;                                                              //VERGLEICHT DAZU OB ÜBERTRAGENDE LISTENELEMENTE SCHON IN DER PLAYERITEMS LISTE IST
             String[] split = tokens[o].split("[:]", 2);
             for(int i = 0; i < playerItems.size(); i++){
-                Log.d("JETZTIWAS", "" +  Integer.parseInt(split[1]) +  ": " + playerItems.get(i).getId());
                 if(Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
             if(!vorhanden){
-                Log.d("ARRAYPR", "" + split.length);
                 pIs.add(new PlayerItem(split[0], Integer.parseInt(split[1])));
             }
         }

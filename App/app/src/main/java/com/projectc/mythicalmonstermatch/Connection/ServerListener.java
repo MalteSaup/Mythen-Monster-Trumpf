@@ -11,116 +11,98 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerListener extends Thread{
-    private Socket socket;
-    private Server server;
-    private String login;
-    private boolean rejoin;
-    private Hearbeat hearbeat;
-    private int id = -1;
-    private int count = 0;
+    private Socket socket;                                                                          //SOCKET
+    private Server server;                                                                          //SERVER UM ZUGRIFF AUF DESSEN VARIABLEN ZU BEKOMMEN
+    private String login;                                                                           //USERNAME
+    private boolean rejoin;                                                                         //REJOIN FLAG
+    private Hearbeat hearbeat;                                                                      //HEARTBEAT
+    private int id = -1;                                                                            //USER ID
+    private int count = 0;                                                                          //COUNT UM TIMEOUT ZU BEMERKEN
 
-    private BufferedReader bufferedReader;
+    private BufferedReader bufferedReader;                                                          //BUFFERED READER UND WRITER FÜR KOMMUNIKATION VON SERVER UND CLIENT
     private BufferedWriter bufferedWriter;
 
     public ServerListener(Server server, Socket socket, boolean rejoin){
-        this.server = server;
+        this.server = server;                                                                       //SERVER UND SOCKET VARIABLEN GESETZT
         this.socket = socket;
-        this.rejoin = rejoin;
-        hearbeat = new Hearbeat(this);
+        this.rejoin = rejoin;                                                                       //REJOIN FLAG GESETZT
+        hearbeat = new Hearbeat(this);                                                          //HEARTBEAT ERSTELLT, ABER NOCH NICHT GESTARTET
     }
 
     @Override
     public void run(){
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));    //BUFFERED READER UND WRITER WERDEN ERSTELLT
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-
-
-
-
             String line;
-            while((line = bufferedReader.readLine()) != null){
-                Log.d("JETZT SERVER", line);
-                String tokens[] = line.split(" ");
+            while((line = bufferedReader.readLine()) != null){                                      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
+                String tokens[] = line.split(" ");                                            //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
                 if(tokens != null && tokens.length > 0){
                     String cmd = tokens[0];
                     Log.d("SERVER CMD", cmd);
-                    if(cmd.equalsIgnoreCase("ask")){
+                    //COMMAND VERARBEITUNG
+                    if(cmd.equalsIgnoreCase("ask")){                                    //ASK ANFRAGE WIRD BEARBEITET
                         handleAsk();
-                    }else if(cmd.equalsIgnoreCase("join")){
-                        String[] joinTokens = line.split(" ", 3);
-                        Log.d("JETZT", line);
+                    }else if(cmd.equalsIgnoreCase("join")){                             //JOIN ANFRAGE WIRD BEARBEITET
+                        String[] joinTokens = line.split(" ", 3);                       //NACHRICHT NOCHMAL AUGETEILT UM ID UND NAME ABZUTRENNEN
                         if(!handleJoin(joinTokens)){
-                            sendMessage("denied");
+                            sendMessage("denied");                                             //SENDET DENIED NACHRICHT FALLS ABGELEHNT
                             break;
                         }
-                    }else if(cmd.equalsIgnoreCase("leave")){
+                    }else if(cmd.equalsIgnoreCase("leave")){                            //LEAVE NACHRICHT WIRD BEARBEITET
                         leave();
-                        break;
-                    }else if(cmd.equalsIgnoreCase("start")){
+                        break;                                                                      //WHILE SCHLEIFE BEENDET
+                    }else if(cmd.equalsIgnoreCase("start")){                            //SPIEL WIRD GESTARTET
                         handleStart(login);
-                    }/*else if(cmd.equalsIgnoreCase("ok")){
-                        break;
-                    }*/else if(cmd.equalsIgnoreCase("getplayer")){
+                    } else if(cmd.equalsIgnoreCase("getplayer")){                       //SPIELER ANFRAGE WIRD BEARBEITET
                         handlePlayerRequest();
-                    }else if(cmd.equalsIgnoreCase("playerremoved")){
+                    }else if(cmd.equalsIgnoreCase("playerremoved")){                    //SPIELER HAT LOBBY VERLASSEN WIRD BEARBEITET
                         handlePlayerRemove();
-                    }else if(cmd.equalsIgnoreCase("playeradded")){
+                    }else if(cmd.equalsIgnoreCase("playeradded")){                      //SPIELER HAT LOBBY BETRETEN WIRD BEARBEITET
                         handlePlayerAdded();
-                    }else if(cmd.equalsIgnoreCase("heartbeat")){
+                    }else if(cmd.equalsIgnoreCase("heartbeat")){                        //HEARTBEAT NACHRICHT VOM CLIENT UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
                         handleHeartbeat();
                     }
 
                 }
 
             }
-            Log.d("JETZT LISTERNER", "ZUENDE");
-            socket.close();
+            socket.close();                                                                         //SOCKET WIRD AM ENDE GESCHLOSSEN
 
         } catch (IOException e) {
             Log.d("IOEXCEPTION", "JETZT");
-            handleConnectionLost();
+            handleConnectionLost();                                                                 //CONNECTION LOST WIRD BEARBEITET
             e.printStackTrace();
         } catch (Exception e){
             Log.d("IOEXCEPTION", "UNCATCHED");
         }
     }
 
-    private void handleHeartbeat() {
+    private void handleHeartbeat() {                                                                //COUNT WIRD DEKREMENTIERT WENN HEARTBEAT ERHALTEN
         count--;
     }
 
-    private void handlePlayerAdded() {
+    private String createPlayerInfo(String cmd){
         ArrayList<ServerListener> serverListeners = server.getServerListeners();
-        String msg = "playeradded ;";
         for(ServerListener sL : serverListeners){
-            msg += sL.login + ":" + sL.id + ";";
+            cmd += sL.login + ":" + sL.id + ";";                                                    //NACHRICHT ERSTELLUNG MIT CMD UND ALLEN USERNAMEN UND IDs VON GEJOINEDTEN CLIENTS
         }
-        sendMessage(msg);
+        return cmd;
+    }
+    private void handlePlayerAdded() {                                                              //NACHRICHT AN CLIENT WENN SPIELER GEJOINED IST
+        sendMessage(createPlayerInfo("playeradded ;"));
     }
 
-    private void handlePlayerRemove() {
-        ArrayList<ServerListener> serverListeners = server.getServerListeners();
-        String msg = "playerremoved ;";
-        for(ServerListener sL : serverListeners){
-            msg += sL.login + ":" + sL.id + ";";
-        }
-        sendMessage(msg);
+    private void handlePlayerRemove() {                                                             //NACHRICHT AN CLIENT WENN SPIELER GELEAVED IST
+        sendMessage(createPlayerInfo("playerremoved ;"));
     }
 
-    private void handlePlayerRequest() {
-        ArrayList<ServerListener> serverListeners = server.getServerListeners();
-        String msg = "playeranswer ;";
-        for(ServerListener sL : serverListeners){
-            msg += sL.login + ":" + sL.id + ";";
-            Log.d("PLAYER", sL.login);
-        }
-        Log.d("PLAYER", msg);
-        sendMessage(msg);
+    private void handlePlayerRequest() {                                                            //NACHRICHT AN CLIENT NACH PLAYER REQUEST
+        sendMessage(createPlayerInfo("playeranswer ;"));
     }
 
-    private void handleStart(String login) {
+    private void handleStart(String login) {                                                        //SPIEL WIRD GESTARTET ???
         if(server.startGame(login)){
             ArrayList<ServerListener> listenerList = server.getServerListeners();
             for(ServerListener sL : listenerList) {
@@ -129,48 +111,49 @@ public class ServerListener extends Thread{
         }
     }
 
-    private void joinPlayerAdded(){
-        sendMessage("accept " + this.id);
-        if(!rejoin){server.addPlayer(this);}
-        else{
+    private void joinPlayerAdded(){                                                                 //NACH ERFOLGREICHEN JOIN SENDET NACHRICHT AN ALLE CLIENTS DAS ER GEJOINED IST
+        sendMessage("accept " + this.id);                                                      //JOIN BESTÄTIGUNG AN CLIENT
+        if(!rejoin){server.addPlayer(this);}                                                    //FALLS KEIN REJOIN WIRD NEUES ITEM IN PLAYERLIST HINZUGEFÜGT
+        else{                                                                                       //BEI REJOIN WIRD ANHAND DER ID DER SERVERLISTENER AN EIN VORHANDENDES PLAYERITEM GEKNÜPFT
             ArrayList<ServerListener> sLL = server.getServerListeners();
             for(int i = 0; i < sLL.size(); i++){
                 if(sLL.get(i).getID() == this.id){
-
+                    //TODO BEI REJOIN KOPPLUNG AN VORHANDENDES ITEM IN PLAYERLIST
                 }
             }
         }
         for(ServerListener sL : server.getServerListeners()){
-            if(sL != this){sL.handlePlayerAdded();}
+            if(sL != this){sL.handlePlayerAdded();}                                                 //NACHRICHT AN ALLE CLIENTS
         }
     }
 
-    private boolean handleJoin(String[] tokens) {
-        if(server.playerCount() >= 5 && !server.getStartState()){
+    private boolean handleJoin(String[] tokens) {                                                   //VERARBEITUNG JOIN ANFRAGE
+        if(server.playerCount() >= 5 && !server.getStartState()){                                   //WENN SPIELER COUNT GRÖßER GLEICH 5 UND SPIEL NICHT GESTARTET ANFRAGE ABGELEHNT
             return false;
-        } else if(server.getStartState() && Integer.parseInt(tokens[1]) != -1){
+        } else if(server.getStartState() && Integer.parseInt(tokens[1]) != -1){                     //WENN SPIEL GESTARTET UND ID VORHANDEN -> ÜBERPRÜFT OB ES EIN REJOIN IST ANHAND ID UND USERNAME
             if(checkID(tokens[1], tokens[2])){
-                this.id = Integer.parseInt(tokens[1]);
-                this.login = tokens[2];
+                rejoin = true;                                                                      //REJOIN FLAG GESETZT
+                this.id = Integer.parseInt(tokens[1]);                                              //ID GESETZT
+                this.login = tokens[2];                                                             //USERNAME GESETZT
                 joinPlayerAdded();
-                hearbeat.start();
+                hearbeat.start();                                                                   //HEARTBEAT GESTARTET
                 return true;
             }
-            return false;
+            return false;                                                                           //FALLS KEIN REJOIN, DANN ABEGELEHNT
         }
-        else{
-            this.login = tokens[2];
-            this.id = generateID();
-            hearbeat.start();
+        else{                                                                                       //WENN SPIELER COUNT KLEINER ALS 5 UND SPIEL NICHT GESTARTET ANFRAGE ANGENOMMEN
+            this.login = tokens[2];                                                                 //USERNAMEN GESETZT
+            this.id = generateID();                                                                 //ID ERZEUGT
+            hearbeat.start();                                                                       //HEARTBEAT GESTARTET
             joinPlayerAdded();
 
             return true;
         }
     }
 
-    private boolean checkID(String id, String usrName) {
+    private boolean checkID(String id, String usrName) {                                            //ÜBERPRÜFT OB VORHANDENE ID UND USERNAME ÜBEREINSTIMMT MIT ÜBERMITTELTER ID UND USERNAME
         int id_numb = Integer.parseInt(id);
-        ArrayList<ServerListener> sLL = server.getServerListeners();
+        ArrayList<ServerListener> sLL = server.getServerListeners();                                //RUFT DAFÜR PLAYERLIST AB
         for(int i = 0; i < sLL.size(); i++){
             ServerListener sL = sLL.get(i);
             if(id_numb == sL.id){
@@ -182,45 +165,40 @@ public class ServerListener extends Thread{
         return false;
     }
 
-    public void sendMessage(String msg){
+    public void sendMessage(String msg){                                                            //SENDET NACHRICHT AN CLIENT
         try {
             bufferedWriter.write(msg + "\r\n");
-            //bufferedWriter.newLine();
             bufferedWriter.flush();
             if(msg.equalsIgnoreCase("heartbeat")){
-                count++;
-                if(count > 3){
+                count++;                                                                            //INKREMENTIERT COUNT
+                if(count > 3){                                                                      //WENN COUNT GRÖßER ALS 3 IST WIRD DIE VERBINDUNG AUFGELÖST DA SCHEINBAR VERLOREN
                     handleConnectionLost();
                 }
-                Log.d("HEART", "" + count);
             }
-            Log.d("JETZT SERVER", msg);
         } catch (IOException e) {
-            Log.d("IOEXCEPTION", "JETZT SEND MESSAGE");
             e.printStackTrace();
-            handleConnectionLost();
+            handleConnectionLost();                                                                 //CONNECTION LOST WIRD BEARBEITET
         }
     }
 
-    private void handleAsk() {
+    private void handleAsk() {                                                                      //ANFRAGE WIRD BEARBEITET
         int started = 0;
         if(server.getStartState()){started = 1;}
-        sendMessage("ANSWER " + started + " " + server.playerCount() + " " + server.serverName);
+        sendMessage("ANSWER " + started + " " + server.playerCount() + " " + server.serverName);    //SENDET NACHRICHT MIT SERVERNAME PLAYERCOUNT UND OB DAS SPIEL GESTARTET IST
     }
 
-    private void handleConnectionLost(){
+    private void handleConnectionLost(){                                                            //CONNECTION LOST WIRD BEARBEITET
         //TODO DIFFERENT BEHAVIOUR WHEN GAME STARTED
         Log.d("KILL", "KILL");
-        hearbeat.running = false;
-        leave();
+        leave();                                                                                    //LEAVE WIRD GESTARTET
     }
 
-    private void leave(){
+    private void leave(){                                                                           //LEAVE WIRD BEARBEITET
         Log.d("SERVER", "LEAVE");
-        hearbeat.running = false;
-        server.removeItems(this);
+        hearbeat.running = false;                                                                   //HEARTBEAT WIRD BEENDET
+        server.removeItems(this);                                                               //SERVER LÖSCHT SERVER LISTENER AUS LISTEN
         for(ServerListener sL : server.getServerListeners()){
-            if(server.getStartState()){
+            if(server.getStartState()){                                                             //TODO ANDERES VERHALTEN WENN SPIEL GESTARTET
                 //TODO CONNECTION LOSS MESSAGE TO EVERYONE
             } else {
                 if(sL != this){sL.handlePlayerRemove();}
@@ -229,7 +207,7 @@ public class ServerListener extends Thread{
 
     }
 
-    private void kill(){
+    private void kill(){                                                                            //MOMENTAN NICHT BENÖTIGT EVTL SPÄTER GELÖSCHT
         server.removeItems(this);
         server.removePlayer(this);
     }
@@ -239,16 +217,16 @@ public class ServerListener extends Thread{
     }
     public int getID(){return id;}
 
-    private int generateID() {
-        int id = -1;
-        boolean idGenerated = false;
+    private int generateID() {                                                                      //ID GENERATOR
+        int id = -1;                                                                                //PLATZHALTER ID
+        boolean idGenerated = false;                                                                //ID GENERATED FLAG
         ArrayList<ServerListener> sLL = server.getServerListeners();
-        while (!idGenerated) {
-            id = (int)(Math.random() * 899999999 + 100000000);
-            idGenerated = true;
-            for (int i = 0; i < sLL.size(); i++) {
+        while (!idGenerated) {                                                                      //ERZEUGUNG NEUER ID SOLANGE BIS VALIDE ID ENTSTANDEN IST
+            id = (int)(Math.random() * 899999999 + 100000000);                                      //ID IMMER ZWISCHEN 100000000 UND 999999999
+            idGenerated = true;                                                                     //ID GENERATED FLAG GESETZT
+            for (int i = 0; i < sLL.size(); i++) {                                                  //VERGLEICH OB GENERIERTE ID SCHON VORHANDEN
                 if (sLL.get(i).id == id) {
-                    if(!rejoin || (rejoin && !this.login.equals(sLL.get(i).getLogin()))) {
+                    if(!rejoin || (rejoin && !this.login.equals(sLL.get(i).getLogin()))) {          //WENN VORHANDEN FLAG WIEDER GELÖSCHT
                         idGenerated = false;
                     }
                 }
@@ -256,13 +234,13 @@ public class ServerListener extends Thread{
         }
         if (id != -1) {
             return id;
-        } else {
+        } else {                                                                                    //FALLS IWIE KEINE ID GENERIERT WURDE REKURSIVER AUFRUF
             Log.d("ERROR", "HOFFENTLICH NIE VORHANDEN");
             return generateID();
         }
     }
 
-    public void closeHeartbeat() {
+    public void closeHeartbeat() {                                                                  //HEARTBEAT BEENDEN FUNKTION 
         hearbeat.running = false;
     }
 }
