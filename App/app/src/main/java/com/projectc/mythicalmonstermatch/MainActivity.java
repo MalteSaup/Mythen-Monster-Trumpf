@@ -18,7 +18,7 @@ public class MainActivity extends FragmentActivity {
 
     public MainFragment mainFrag;                                                                   //DAS MAIN FRAGMENT ENTHÄLT DAS MENÜ UND BUTTONS
     public String name = "";                                                                        //SPIELER NAME
-    private CardClass[] cardDeck;                                                                   //KARTEN DECK
+    public CardClass[] cardDeck;                                                                   //KARTEN DECK
     WifiManager wifiManager;                                                                        //WIFI MANAGER FÜR CHECK OB WLAN VERBINDUNG STEHT
     private SharedPreferences data;                                                                 //GESPEICHERTE DATEN DAMIT USERNAME AUCH NACH NEUSTART DER APP VORHANDEN IST
     private SharedPreferences.Editor data_editor;                                                   //EDITOR FÜR GESPEICHERTE DATEN
@@ -115,6 +115,6 @@ public class MainActivity extends FragmentActivity {
 
     private boolean checkWiFiState() {                                                              //CHECKT OB WLAN AKTIVIERT UND VERBUNDEN
         if(wifiManager.getWifiState() == 3 && wifiManager.getConnectionInfo().getSupplicantState().toString().equalsIgnoreCase("COMPLETED")){return true;}
-        return false;
+        return true;
     }
 }

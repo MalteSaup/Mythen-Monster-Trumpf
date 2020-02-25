@@ -30,21 +30,6 @@
         app:layout_constraintTop_toTopOf="@+id/guideline3"
         tools:src="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/submitBtn"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/haken"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline7"
-        app:layout_constraintStart_toStartOf="@+id/guideline8"
-        app:layout_constraintTop_toTopOf="@+id/guideline6" />
-
     <android.support.constraint.Guideline
         android:id="@+id/guideline1"
         android:layout_width="wrap_content"
@@ -71,14 +56,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.66" />
+        app:layout_constraintGuide_percent="0.78" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.67" />
+        app:layout_constraintGuide_percent="0.81" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline6"
@@ -101,7 +86,18 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.09" />
 
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
     <TableLayout
+        android:id="@+id/tableLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:stretchColumns="1"
@@ -134,101 +130,6 @@
                 android:textSize="18sp" />
         </TableRow>
 
-        <TableRow
-            android:id="@+id/row2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/attribute2"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/attribute2"
-                android:textAlignment="textStart"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/attributeWert2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAlignment="textEnd"
-                android:textSize="18sp" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/row3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/attribute3"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/attribute3"
-                android:textAlignment="textStart"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/attributeWert3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAlignment="textEnd"
-                android:textSize="18sp" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/row4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/attribute4"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/attribute4"
-                android:textAlignment="textStart"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/attributeWert4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAlignment="textEnd"
-                android:textSize="18sp" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/row5"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/attribute5"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/attribute5"
-                android:textAlignment="textStart"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/attributeWert5"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAlignment="textEnd"
-                android:textSize="18sp" />
-        </TableRow>
     </TableLayout>
 
 
