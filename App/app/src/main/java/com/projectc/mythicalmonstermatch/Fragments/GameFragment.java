@@ -76,7 +76,7 @@ public class GameFragment extends Fragment {
 
         TextView[] playerTextViews = {
                 playerFrag.findViewById(R.id.cardName),
-                playerFrag.findViewById(R.id.attributeWert1),
+                playerFrag.findViewById(R.id.attributeWert),
                 playerFrag.findViewById(R.id.attributeWert2),
                 playerFrag.findViewById(R.id.attributeWert3),
                 playerFrag.findViewById(R.id.attributeWert4),
@@ -146,21 +146,24 @@ public class GameFragment extends Fragment {
         playerTextViews[4].setText("" + gA.cardDeck[0].attributeMap.get("attribute4"));
         playerTextViews[5].setText("" + gA.cardDeck[0].attributeMap.get("attribute5"));
 
-        enemie1Frag.findViewById(R.id.submitBtn).setVisibility(View.GONE);
         TextView[] enemie1TextViews = {
                 enemie1Frag.findViewById(R.id.cardName),
-                enemie1Frag.findViewById(R.id.attributeWert1),
-                enemie1Frag.findViewById(R.id.attributeWert2),
-                enemie1Frag.findViewById(R.id.attributeWert3),
-                enemie1Frag.findViewById(R.id.attributeWert4),
-                enemie1Frag.findViewById(R.id.attributeWert5),
+                enemie1Frag.findViewById(R.id.attribut),
+                enemie1Frag.findViewById(R.id.attributeWert)
         };
 
-        for(int i = 0; i < playerTextViews.length; i++){
-            enemie1TextViews[i].setText("  ");
-        }
+        ImageView[] enemieImageViews = {
+                enemie1Frag.findViewById(R.id.background),
+                enemie1Frag.findViewById(R.id.imageView)
+        };
 
 
+        enemie1TextViews[0].setText(gA.cardDeck[4].name);
+        enemie1TextViews[1].setText("Scarriness");
+        enemie1TextViews[2].setText("" + gA.cardDeck[4].attributeMap.get("attribute2"));
+
+        enemieImageViews[0].setImageResource(R.drawable.background);
+        enemieImageViews[1].setImageResource(gA.cardDeck[4].imgID);
 
         //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
 

@@ -117,7 +117,7 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/attribute1"
+                android:id="@+id/attribut"
                 android:layout_width="116dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -126,7 +126,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/attributeWert1"
+                android:id="@+id/attributeWert"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"

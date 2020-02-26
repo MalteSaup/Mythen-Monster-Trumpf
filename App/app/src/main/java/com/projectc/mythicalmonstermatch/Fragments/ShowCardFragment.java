@@ -148,7 +148,7 @@ public class ShowCardFragment extends Fragment {
         cardView.findViewById(R.id.submitBtn).setVisibility(View.GONE);                             //MACHT SUBMIT BUTTON UNSICHTBAR (WIRD NUR FÜRS SPIEL BENÖTIGT)
         TextView[] textViews = {                                                                    //SETZT KARTEN NAME UND ATTRIBUTE, HOLT DAFÜR DIE ENTSPRECHENDEN TV's
                 cardView.findViewById(R.id.cardName),
-                cardView.findViewById(R.id.attributeWert1),
+                cardView.findViewById(R.id.attributeWert),
                 cardView.findViewById(R.id.attributeWert2),
                 cardView.findViewById(R.id.attributeWert3),
                 cardView.findViewById(R.id.attributeWert4),
