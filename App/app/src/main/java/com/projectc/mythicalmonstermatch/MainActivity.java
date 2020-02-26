@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.projectc.mythicalmonstermatch.Fragments.MainFragment;
 
+import java.lang.reflect.Method;
+
 public class MainActivity extends FragmentActivity {
 
     public MainFragment mainFrag;                                                                   //DAS MAIN FRAGMENT ENTHÄLT DAS MENÜ UND BUTTONS
@@ -30,9 +32,7 @@ public class MainActivity extends FragmentActivity {
 
         wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);          //INITIALISIERT WIFI MANAGER
 
-
         mainFrag = (MainFragment) Fragment.instantiate(this, MainFragment.class.getName(), null);   //INITIALISIERT MAIN FRAGMENT
-
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();                    //STARTET MAIN FRAGMENT
         ft.add(R.id.mainActivityLayout, mainFrag);
@@ -115,6 +115,12 @@ public class MainActivity extends FragmentActivity {
 
     private boolean checkWiFiState() {                                                              //CHECKT OB WLAN AKTIVIERT UND VERBUNDEN
         if(wifiManager.getWifiState() == 3 && wifiManager.getConnectionInfo().getSupplicantState().toString().equalsIgnoreCase("COMPLETED")){return true;}
-        return true;
+        try{
+            Method method = wifiManager.getClass().getMethod("getWifiApState");
+            if(13 == (Integer) method.invoke(wifiManager)){return true;}                            //CHECKT OB EIN MOBILER HOTSPOT GEHOSTET WIRD
+        } catch(Exception e){
+
+        }
+        return false;
     }
 }
