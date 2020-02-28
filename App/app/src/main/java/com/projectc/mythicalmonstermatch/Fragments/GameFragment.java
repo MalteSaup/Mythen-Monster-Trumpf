@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.constraint.Guideline;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,19 +43,19 @@ public class GameFragment extends Fragment {
 
     private TextView[] enemieTextViews[];
     private ImageView[] enemieImageViews[];
-    private Guideline[] enemieGuideLines[];
     private TextView[] playerTextViews;
 
     private int[] game_fragments = new int[]{
             R.layout.fragment_game_2,
-            R.layout.fragment_game_3
+            R.layout.fragment_game_3,
+            R.layout.fragment_game_4
     };
-    private int playerCount = 2; //HARDCODED
+    private int playerCount = 4; //HARDCODED
 
     private CardAnimator cardAnimator;
 
     private AnimationHolder playerAnimation;
-    private AnimationHolder[] enemieAnimations;
+    private AnimationHolder[] enemieAnimations[];
 
 
     @Override
@@ -77,7 +76,7 @@ public class GameFragment extends Fragment {
             case 4: return inflater.inflate(game_fragments[2], container, false);
             case 5: return inflater.inflate(game_fragments[3], container, false);
         }*/
-        return inflater.inflate(R.layout.fragment_game_2, container, false);
+        return inflater.inflate(R.layout.fragment_game_4, container, false);//HARDCODED
     }
 
     @Override
@@ -89,11 +88,12 @@ public class GameFragment extends Fragment {
         cardAnimator = new CardAnimator(gA);
 
         initializePlayerFrag();
-        initializeEnemieFrags(playerCount);
+        initializeEnemieFrags();
 
         updatePlayerFrag(1);
         updateEnemieFrag(0, 4, "Scarriness");
-        //updateEnemieFrag(1, 3, "Scarriness");
+        updateEnemieFrag(1, 3, "Scarriness");
+        updateEnemieFrag(2, 5, "Scarriness");
 
         showBackground(background);
 
@@ -102,28 +102,23 @@ public class GameFragment extends Fragment {
 
 
         //Log.d("HEIGHT", " " + enemieFrags[0].getMeasuredHeight() + " " + enemieFrags[0].getHeight());
-        switch (playerCount) {
-            case 2: {
-                AsyncTask asyncTask = new AsyncTask() {
-                    @Override
-                    protected Object doInBackground(Object[] objects) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        createEnemieAnimation1();
-                        return null;
-                    }
-                };
-                asyncTask.execute();
+        AsyncTask asyncTask = new AsyncTask() {
+                @Override
+                protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                createEnemieAnimations();
+                return null;
             }
-        }
-
+        };
+        asyncTask.execute();
         super.onActivityCreated(saveInstandesState);
     }
 
-    private void initializeEnemieFrags(int playerCount){
+    private void initializeEnemieFrags(){
 
 
         Resources res = getResources();
@@ -132,20 +127,15 @@ public class GameFragment extends Fragment {
         enemieFrags = new View[playerCount-1];
         enemieTextViews = new TextView[playerCount-1][];
         enemieImageViews = new ImageView[playerCount-1][];
-        enemieGuideLines = new Guideline[playerCount-1][];
-        enemieAnimations = new AnimationHolder[playerCount-1];
+        enemieAnimations = new AnimationHolder[playerCount-1][];
 
         enemieAnimationDirection = new boolean[playerCount-1];
-
-        Log.d("ENEMIE22", "" + playerCount + " " + enemieAnimationDirection.length + " " + enemieAnimationDirection[0]);
 
         for(int i = 0; i < playerCount-1; i++){
             String uebergabe = enemyString + (i+1);
             int id = res.getIdentifier(uebergabe, "id", gA.getPackageName());
             enemieFrags[i] = view.findViewById(id);
-
-            Log.d("ENEMIE", "" + enemieFrags[i]);
-
+            Log.d("SCHONWIEDER", uebergabe + " " + id + " " + enemieFrags[i]);
             enemieTextViews[i] = new TextView[]{
                     enemieFrags[i].findViewById(R.id.cardName),
                     enemieFrags[i].findViewById(R.id.attribut),
@@ -155,44 +145,42 @@ public class GameFragment extends Fragment {
                     enemieFrags[i].findViewById(R.id.background),
                     enemieFrags[i].findViewById(R.id.imageView)
             };
-
-            if(playerCount > 3){
-                enemieGuideLines[i] = new Guideline[]{
-                    enemieFrags[i].findViewById(R.id.enemyCardLeft),
-                    enemieFrags[i].findViewById(R.id.enemyCardRight),
-                    enemieFrags[i].findViewById(R.id.enemyCardBot),
-                    //enemieFrags[i-1].findViewById(R.id.enemyCardTop) //TODO WENN LAYOUT VORHANDEN FÜR 4 UND MEHR SPIELER
-                };
-            } else {
-                enemieGuideLines[i] = new Guideline[]{
-                    enemieFrags[i].findViewById(R.id.enemyCardLeft),
-                    enemieFrags[i].findViewById(R.id.enemyCardRight),
-                    enemieFrags[i].findViewById(R.id.enemyCardBot),
-                };
-            }
-
-            Log.d("ARRAYID", "" + enemieTextViews.length + " " + enemieTextViews[i].length);
         }
     }
 
-    public void createEnemieAnimation1(){
-        final AnimationHolder animationHolder = cardAnimator.createSingleEnemyCardAnimation(enemieFrags[0]);
-        enemieAnimations[0] = animationHolder;
-        enemieFrags[0].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!background){
-                    if (!enemieAnimationDirection[0]) {
-                        checkIfAnimationsAreActive();
-                        enemieFrags[0].bringToFront();
-                        enemieAnimations[0].start();
-                    } else {
-                        enemieAnimations[0].reverse();
-                    }
-                    enemieAnimationDirection[0] = !enemieAnimationDirection[0];
-                }
+    public void createEnemieAnimations(){
+        for(int i = 0; i < playerCount-1; i++){
+            AnimationHolder cardFlipAnimation = cardAnimator.createCardFlip(enemieFrags[i]);
+            AnimationHolder onClickAnimation = null;
+            switch (playerCount){
+                case 2:
+                    onClickAnimation = cardAnimator.createSingleEnemyCardAnimation(enemieFrags[i]);
+                    break;
+                case 3:
+                    onClickAnimation = cardAnimator.createTwoEnemyCardAnimation(enemieFrags[i], i+2);
+                    break;
             }
-        });
+            enemieAnimations[i] = new AnimationHolder[]{
+                    onClickAnimation,
+                    cardFlipAnimation
+            };
+            final int finalI = i;
+            enemieFrags[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!background){
+                        if (!enemieAnimationDirection[finalI]) {
+                            checkIfAnimationsAreActive();
+                            enemieFrags[finalI].bringToFront();
+                            enemieAnimations[finalI][0].start();
+                        } else {
+                            enemieAnimations[finalI][0].reverse();
+                        }
+                        enemieAnimationDirection[finalI] = !enemieAnimationDirection[finalI];
+                    }
+                }
+            });
+        }
     }
 
     public void initializePlayerFrag(){
@@ -298,7 +286,7 @@ public class GameFragment extends Fragment {
         }
         for(int i = 0; i < playerCount-1; i++){
             if(enemieAnimationDirection[i]){
-                enemieAnimations[i].reverse();
+                enemieAnimations[i][0].reverse();
                 enemieAnimationDirection[i] = !enemieAnimationDirection[i];
             }
         }
