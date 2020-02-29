@@ -1,6 +1,5 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
-import android.animation.ObjectAnimator;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -91,7 +90,7 @@ public class GameFragment extends Fragment {
         initializeEnemieFrags();
 
         updatePlayerFrag(1);
-        updateEnemieFrag(0, 4, "Scarriness");
+        updateEnemieFrag(0, 4, "Scarriness");      //HARDCODED
         updateEnemieFrag(1, 3, "Scarriness");
         updateEnemieFrag(2, 5, "Scarriness");
 
@@ -158,6 +157,9 @@ public class GameFragment extends Fragment {
                     break;
                 case 3:
                     onClickAnimation = cardAnimator.createTwoEnemyCardAnimation(enemieFrags[i], i+2);
+                    break;
+                case 4:
+                    onClickAnimation = cardAnimator.createThreeEnemyCardAnimation(enemieFrags[i], i);
                     break;
             }
             enemieAnimations[i] = new AnimationHolder[]{
@@ -232,8 +234,7 @@ public class GameFragment extends Fragment {
 
 
 
-        final ObjectAnimator objectAnimator = cardAnimator.createPlayerCardAnimation(playerFrag);
-        playerAnimation = new AnimationHolder(objectAnimator);
+        playerAnimation = cardAnimator.createPlayerCardAnimation(playerFrag);
         playerFrag.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -250,6 +251,7 @@ public class GameFragment extends Fragment {
     }
 
     private void updateEnemieFrag(int number, int card, String attribute){
+        Log.d("NUMBER", "" + number);
         enemieTextViews[number][0].setText(gA.cardDeck[card].name);
         enemieTextViews[number][1].setText(attribute);
         enemieTextViews[number][2].setText("" + gA.cardDeck[card].attributeMap.get("attribute2"));

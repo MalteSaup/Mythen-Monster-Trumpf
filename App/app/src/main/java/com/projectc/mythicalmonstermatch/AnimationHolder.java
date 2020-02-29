@@ -8,38 +8,38 @@ public class AnimationHolder {
     ObjectAnimator oA2 = null;
     ValueAnimator vA1 = null;
     ValueAnimator vA2 = null;
+    ObjectAnimator[] objectAnimators = null;
+    ValueAnimator[] valueAnimators = null;
     int animationFlag = -1;
     public AnimationHolder() {
 
     }
 
     public AnimationHolder(ObjectAnimator change_y_position){
-        oA1 = change_y_position;
+        //oA1 = change_y_position;
+        objectAnimators = new ObjectAnimator[]{change_y_position};
         animationFlag = 1;
     }
 
-    public AnimationHolder(ObjectAnimator change_y_position, ValueAnimator change_x, ValueAnimator change_y){
-        oA1 = change_y_position;
-        vA1 = change_x;
-        vA2 = change_y;
+    public AnimationHolder(ValueAnimator[] valueAnimators) {
+        this.valueAnimators = valueAnimators;
+    }
+
+    public AnimationHolder(ObjectAnimator[] objectAnimators, ValueAnimator[] valueAnimators){
+        this.objectAnimators = objectAnimators;
+        this.valueAnimators = valueAnimators;
         animationFlag = 2;
     }
 
-    public AnimationHolder(ObjectAnimator change_x_position, ObjectAnimator change_y_position, ValueAnimator change_x, ValueAnimator change_y) {
-        oA1 = change_x_position;
-        oA2 = change_y_position;
-        vA1 = change_x;
-        vA2 = change_y;
-        animationFlag = 3;
-    }
 
 
     public void start(){
         switch (animationFlag){
             case 1:
-                oA1.start();
+                //oA1.start();
+                objectAnimators[0].start();
                 break;
-            case 2:
+            /*case 2:
                 oA1.start();
                 vA1.start();
                 vA2.start();
@@ -51,6 +51,14 @@ public class AnimationHolder {
                 vA2.start();
                 break;
             case 4:
+                break;*/
+            default:
+                for(ValueAnimator vA : valueAnimators){
+                    vA.start();
+                }
+                for(ObjectAnimator oA : objectAnimators){
+                    oA.start();
+                }
                 break;
         }
     }
@@ -58,22 +66,21 @@ public class AnimationHolder {
     public void reverse(){
         switch (animationFlag){
             case 1:
-                oA1.reverse();
+                objectAnimators[0].reverse();
                 break;
-            case 2:
-                oA1.reverse();
-                vA1.reverse();
-                vA2.reverse();
-                break;
-            case 3:
-                oA1.reverse();
-                oA2.reverse();
-                vA1.reverse();
-                vA2.reverse();
-                break;
-            case 4:
+            default:
+                for(ObjectAnimator oA : objectAnimators){
+                    oA.reverse();
+                }
+                for(ValueAnimator vA : valueAnimators){
+                    vA.reverse();
+                }
                 break;
         }
+    }
+
+    public ValueAnimator[] getValueAnimators(){
+        return valueAnimators;
     }
 
 }
