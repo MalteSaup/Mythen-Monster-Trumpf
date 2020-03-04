@@ -3,7 +3,6 @@ package com.projectc.mythicalmonstermatch;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 
@@ -17,6 +16,7 @@ public class CardAnimator {
     boolean fragChanged = false;
     boolean fragDirection = false;
 
+    float prevVal = 0;
 
     public CardAnimator(MainActivity gA){
         Display display = gA.getWindowManager().getDefaultDisplay();
@@ -165,6 +165,28 @@ public class CardAnimator {
         return new AnimationHolder(objectAnimators, valueAnimators);
     }
 
+    public AnimationHolder createFourEnemyCardAnimation(final View view, int direction, boolean anim){            //0
+        float y = view.getHeight();
+        float newY = (float) (height*0.9);
+
+        float dir_y;
+
+        if(direction < 2){
+            dir_y = (newY - y) / 2;
+        }else{
+            dir_y = (newY - y) / 2 - newY * 0.26f;
+        }
+
+        ValueAnimator[] valueAnimators = createResizeAnimation(view, anim).getValueAnimators();
+
+        ObjectAnimator change_x_position = ObjectAnimator.ofFloat(view, "translationX", (float)(width*0.23*Math.pow(-1,direction+2)));
+        ObjectAnimator change_y_position = ObjectAnimator.ofFloat(view, "translationY", dir_y);
+
+        change_x_position.setDuration(500);
+        change_y_position.setDuration(500);
+        return new AnimationHolder(new ObjectAnimator[]{change_x_position, change_y_position}, valueAnimators);
+    }
+
     public AnimationHolder createResizeAnimation(final View view, final boolean anim){
         float x = view.getWidth();
         final float y = view.getHeight();
@@ -197,23 +219,23 @@ public class CardAnimator {
         change_y.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float animatedValue = (float)animation.getAnimatedValue();
-                if(anim){Log.d("ENEMYANIM", "" + animatedValue+ "Y: " + y + " NEW Y: "+ newY + " DIFFY: " + diffY + "_ : " + fragChanged); }
+                float animatedValue = (float) animation.getAnimatedValue();
+                if (prevVal < animatedValue && fragDirection) {
+                    fragDirection = !fragDirection;
+                    fragChanged = false;
+                } else if (prevVal > animatedValue && !fragDirection) {
+                    fragDirection = !fragDirection;
+                    fragChanged = false;
+                }
+                prevVal = animatedValue; 
                 if(!fragDirection){
-                    //Log.d("ENEMYANIM", "" + anim + " " + (animatedValue-y > diffY *0.5));
                     if(animatedValue-y > diffY * 0.015f && !fragChanged && animatedValue < newY){
-                        Log.d("ENEMYANIM", "" + anim + " " +fragChanged + " " + fragDirection);
                         if(anim){
-                            //view.setVisibility(View.VISIBLE);
                             view.setAlpha(1.0f);
-                            Log.d("ENEMYANIM", "ANIM VISIBLE");
                             fragChanged = true;
                         }
                         else{
-                            //view.setVisibility(View.GONE);
                             view.setAlpha(0.0f);
-                            Log.d("ENEMYANIM", "ANIM GONE");
-                            //fragChanged =true;
                         }
 
                     }else if(animatedValue >= newY){
@@ -221,19 +243,14 @@ public class CardAnimator {
                         fragChanged = false;
                     }
                 }else{
-                    if(animatedValue-y < diffY * 0.02f && !fragChanged && animatedValue > y){
+                    if(animatedValue-y < diffY * 0.15f && !fragChanged && animatedValue > y){
                         if(!anim){
-                            //view.setVisibility(View.VISIBLE);
                             view.setAlpha(1.0f);
-                            Log.d("ENEMYANIM", "ANIM VISIBLE2");
                         }
                         else{
-                            //view.setVisibility(View.GONE);
                             view.setAlpha(0.0f);
-                            Log.d("ENEMYANIM", "ANIM GONE2");
                             fragChanged = true;
                         }
-
                     }else if(animatedValue <= y){
                         fragDirection = false;
                         fragChanged = false;

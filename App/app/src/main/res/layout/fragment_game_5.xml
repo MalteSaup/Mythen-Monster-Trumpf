@@ -86,19 +86,25 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.53" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline18"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.30" />
+    <fragment
+        android:id="@+id/enemy_fragment_great1"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline19"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.70" />
+    <fragment
+        android:id="@+id/enemy_fragment_great2"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight3"
+        app:layout_constraintStart_toStartOf="@+id/guideline14"
+        app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
         android:id="@+id/enemy_fragment_great3"
@@ -109,16 +115,6 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
         app:layout_constraintTop_toTopOf="@+id/guideline12" />
-
-    <fragment
-        android:id="@+id/enemy_fragment_great1"
-        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline10"
-        app:layout_constraintEnd_toStartOf="@+id/guideline19"
-        app:layout_constraintStart_toStartOf="@+id/guideline18"
-        app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
         android:id="@+id/enemy_fragment_great4"
@@ -136,8 +132,18 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
-        app:layout_constraintEnd_toStartOf="@+id/guideline19"
-        app:layout_constraintStart_toStartOf="@+id/guideline18"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
+
+    <fragment
+        android:id="@+id/enemy_fragment2"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight3"
+        app:layout_constraintStart_toStartOf="@+id/guideline14"
         app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
