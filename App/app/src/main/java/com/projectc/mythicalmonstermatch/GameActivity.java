@@ -1,5 +1,7 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -108,6 +110,8 @@ public class GameActivity extends FragmentActivity{
 
 
     public void createCardDeck(){
+        CardSupportClass csc = new CardSupportClass(this);
+        cardDeck = csc.createDeck();
         BitmapFactory bf = new BitmapFactory();
         Bitmap[] b = {
                 bf.decodeResource(getResources(), R.drawable.image01),
@@ -231,7 +235,7 @@ public class GameActivity extends FragmentActivity{
         ft.commit();
     }
 
-    private void startGame(){
+    public void startGame(){
         gameManager = new GameManager(cardDeck, playerItems);
     }
 
