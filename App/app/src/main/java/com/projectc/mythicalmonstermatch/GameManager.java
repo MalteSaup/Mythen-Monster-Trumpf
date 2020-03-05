@@ -1,5 +1,7 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 public class GameManager {
+
     private CardClass[] allCards;
     private ArrayList<PlayerItem> players;
     private List<Integer> tempResults;
@@ -34,6 +37,10 @@ public class GameManager {
         for (int i = 0; i < allCards.length; i++){
             callAddToPlayerDeck(players.get(i % players.size()), allCards[i]); // player1 cards0 becomes allCards0, player2 cards0 becomes allCards1 etc.
         }
+        for (PlayerItem p : players){
+            Log.d("cardDealing", p.getUsername() + " " + p.getPlayerDeck().size());
+        }
+
     }
 
     public void compareResults(List<Integer> results, Dictionary playerAndIndex){

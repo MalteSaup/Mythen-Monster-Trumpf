@@ -138,7 +138,7 @@ public class GameActivity extends FragmentActivity{
                 bf.decodeResource(getResources(), R.drawable.image08),
                 bf.decodeResource(getResources(), R.drawable.image09)
         };
-        for(int i = 0; i < 30; i++){
+        for(int i = 0; i < cardDeck.length; i++){
             cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i, b[i%9]);
         }
 
