@@ -225,8 +225,8 @@ public class GameFragment extends Fragment {
                             enemieAnimations[finalI][0].start();
                             if(playerCount > 3){
                                 Log.d("ENEMYANIM", "THEORIE" + enemieAnimationFrags[finalI]);
-                                enemieAnimAnimations[finalI].start();
                                 enemieAnimationFrags[finalI].bringToFront();
+                                enemieAnimAnimations[finalI].start();
                             }
                         } else {
                             enemieAnimations[finalI][0].reverse();

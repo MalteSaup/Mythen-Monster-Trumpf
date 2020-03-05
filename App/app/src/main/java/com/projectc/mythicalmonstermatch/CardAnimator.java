@@ -232,6 +232,7 @@ public class CardAnimator {
                     if(animatedValue-y > diffY * 0.015f && !fragChanged && animatedValue < newY){
                         if(anim){
                             view.setAlpha(1.0f);
+                            view.bringToFront();
                             fragChanged = true;
                         }
                         else{
