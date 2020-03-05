@@ -108,8 +108,22 @@ public class GameActivity extends FragmentActivity{
 
 
     public void createCardDeck(){
-        CardSupportClass cSS = new CardSupportClass(this);
-        cardDeck = cSS.createDeck();
+        BitmapFactory bf = new BitmapFactory();
+        Bitmap[] b = {
+                bf.decodeResource(getResources(), R.drawable.image01),
+                bf.decodeResource(getResources(), R.drawable.image02),
+                bf.decodeResource(getResources(), R.drawable.image03),
+                bf.decodeResource(getResources(), R.drawable.image04),
+                bf.decodeResource(getResources(), R.drawable.image05),
+                bf.decodeResource(getResources(), R.drawable.image06),
+                bf.decodeResource(getResources(), R.drawable.image07),
+                bf.decodeResource(getResources(), R.drawable.image08),
+                bf.decodeResource(getResources(), R.drawable.image09)
+        };
+        for(int i = 0; i < cardDeck.length; i++){
+            cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i, b[i%9]);
+        }
+
     }
 
     public ArrayList<PlayerItem> listenerToPlayerItem(ArrayList<ServerListener> serverListeners){
