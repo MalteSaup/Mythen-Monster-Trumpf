@@ -59,7 +59,7 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
-        android:id="@+id/enemy_fragment3"
+        android:id="@+id/enemy_fragment2"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"

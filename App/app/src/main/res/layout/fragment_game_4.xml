@@ -101,7 +101,7 @@
         app:layout_constraintGuide_percent="0.70" />
 
     <fragment
-        android:id="@+id/enemy_fragment_great3"
+        android:id="@+id/enemy_fragment_great2"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -121,7 +121,7 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
-        android:id="@+id/enemy_fragment_great4"
+        android:id="@+id/enemy_fragment_great3"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -141,7 +141,7 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
-        android:id="@+id/enemy_fragment3"
+        android:id="@+id/enemy_fragment2"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -151,7 +151,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline12" />
 
     <fragment
-        android:id="@+id/enemy_fragment4"
+        android:id="@+id/enemy_fragment3"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
         android:layout_width="0dp"
         android:layout_height="0dp"

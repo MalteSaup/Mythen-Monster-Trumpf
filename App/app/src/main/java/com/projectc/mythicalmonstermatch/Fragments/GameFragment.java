@@ -54,7 +54,7 @@ public class GameFragment extends Fragment {
             R.layout.fragment_game_4,
             R.layout.fragment_game_5
     };
-    private int playerCount = 5; //HARDCODED
+    private int playerCount = 3; //HARDCODED
 
     private CardAnimator cardAnimator;
 
@@ -81,7 +81,7 @@ public class GameFragment extends Fragment {
             case 4: return inflater.inflate(game_fragments[2], container, false);
             case 5: return inflater.inflate(game_fragments[3], container, false);
         }*/
-        return inflater.inflate(R.layout.fragment_game_5, container, false);//HARDCODED
+        return inflater.inflate(R.layout.fragment_game_3, container, false);//HARDCODED
     }
 
     @Override
@@ -98,10 +98,11 @@ public class GameFragment extends Fragment {
         updatePlayerFrag(1);
         updateEnemieFrag(0, 4, "Scarriness");      //HARDCODED
         updateEnemieFrag(1, 3, "Scarriness");
-        updateEnemieFrag(2, 5, "Scarriness");
-        updateEnemieFrag(3, 6, "Scarriness");
+        /*updateEnemieFrag(2, 5, "Scarriness");
+        updateEnemieFrag(3, 6, "Scarriness");*/
 
         showBackground(background);
+
 
 
 
@@ -196,7 +197,8 @@ public class GameFragment extends Fragment {
                     onClickAnimation = cardAnimator.createSingleEnemyCardAnimation(enemieFrags[i]);
                     break;
                 case 3:
-                    onClickAnimation = cardAnimator.createTwoEnemyCardAnimation(enemieFrags[i], i+2);
+                    /*onClickAnimation = cardAnimator.createTwoEnemyCardAnimation(enemieFrags[i], i+2);*/
+                    onClickAnimation = cardAnimator.createCardFlip(enemieFrags[i]);
                     break;
                 case 4:
                     onClickAnimation = cardAnimator.createThreeEnemyCardAnimation(enemieFrags[i], i, false);
