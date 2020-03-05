@@ -1,6 +1,5 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
-import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,43 +19,41 @@ import java.util.ArrayList;
 
 public class Client extends Thread{
 
-    private Context context;
-
-    private String address;                                                                         //Network IP Addresse fürs Verbinden
-    private String serverName;                                                                      //???
-    private String login;                                                                           //Username
+    private String serverName;                                                                      //SERVER NAME
+    private String address;                                                                         //NETWORK IP ADDRESSE FÜRS VERBINDEN
+    private String login;                                                                           //USERNAME
 
     private CharSequence connectionLostToast = "Connection Lost";
     private CharSequence connectionNotPossibleToast = "Connection Not Possible";
 
     private int id = -1;
 
-    private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
-    private boolean joined = false;
-    private boolean serverRunning = true;
-    public boolean running = true;
-    private boolean leaved = false;
+    private boolean gameStarted = false;                                                            //SPIEL GESTARTET FLAG
+    private boolean joined = false;                                                                 //SERVER GEJOINT FLAG
+    private boolean serverRunning = true;                                                           //SERVER LÄUFT FLAG
+    public boolean running = true;                                                                  //CLIENT RUNNING FLAG FÜRS CLIENT KILLEN WENN ZURÜCK ZU MAIN ACTIVITY
+    private boolean leaved = false;                                                                 //LEAVED FLAG
 
-    private Socket socket;                                                                          //Socket
+    private Socket socket;                                                                          //SOCKET
 
-    private ArrayList<Integer> cardList = new ArrayList<>();                                        //Liste an Karten die im Deck sind
+    private ArrayList<Integer> cardList = new ArrayList<>();                                        //KARTEN DECK
 
-    private OutputStream outputStream;                                                              //Für Kommunikation zwischen Client und Server
+    private OutputStream outputStream;                                                              //IN- UND OUTPUT STREAM(BUFFERED READER UND WRITER) FÜR KOMMUNIKATION VON CLIENT UND SERVER
     private InputStream inputStream;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-    private GameActivity gameActivity;
+    private GameActivity gameActivity;                                                              //GAME ACTIVITY
 
-    public ArrayList<PlayerItem> playerItems = new ArrayList<>();
+    public ArrayList<PlayerItem> playerItems = new ArrayList<>();                                   //LISTE DER GEJOINTEN SPIELER
 
-    public Client (String serverName, String login, String address) {
+    public Client (String serverName, String login, String address) {                               //INITIALISIERUNG DES CLIENTS OHNE VORHANDEN ID
         this.serverName = serverName;
         this.login = login;
         this.address = address;
     }
 
-    public Client (String serverName, String login, String address, int id) {
+    public Client (String serverName, String login, String address, int id) {                       //INITIALISIERUNG DES CLIENTS MIT VORHANDENER ID
         this.serverName = serverName;
         this.login = login;
         this.address = address;
@@ -64,16 +61,14 @@ public class Client extends Thread{
     }
 
     @Override
-    public void run(){
-        Log.d("JETZT ADDRESS", "WAT" + address);
-        connect(address);
+    public void run(){                                                                              //STARTET CLIENT
+        connect(address);                                                                           //VERSUCHT SICH MIT SERVER ZU CONNECTEN
     }
 
-    public void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
+    public void sendMessage(String msg) {                                                           //SENDET NACHRICHT AN SERVER
         try {
-            Log.d("CLIENT", msg);
-            bufferedWriter.write(msg + "\r\n");                                                 //Message wird erstellt
-            bufferedWriter.flush();                                                                 //Message wird zum Server gesendet
+            bufferedWriter.write(msg + "\r\n");                                                 //NACHRICHT GESCHRIEBEN; \r\n UM ENDE DER NACHRICHT ANZUZEIGEN
+            bufferedWriter.flush();                                                                 //NACHRICHT SICHER GESENDET
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,48 +79,49 @@ public class Client extends Thread{
     }
 
 
-    public void connect(String address) {
+    public void connect(String address) {                                                           //VERBINDUNGSAUFBAU FUNKTION
         Log.d("JETZT ADDRESS", address);
             try {
-                socket = new Socket(address, 8080);                              //Verbindung auf Server wird hergestellt
-                inputStream = socket.getInputStream();                                              //Kriegt In- und Outputstream und versieht diese mit Buffern fürs Lesen und Schreiben für Kommunikation
+                socket = new Socket(address, 8080);                                            //VERBINDUNG MIT SERVER AUF ÜBERGEBENDER IP ADDRESSE
+                inputStream = socket.getInputStream();                                              //IN UND OUTPUT STREMA WERDEN VOM SOCKET AUSGELESEN FÜR NACHRICHTVERKEHR
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 outputStream = socket.getOutputStream();
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
 
-                //WICHTIG \r\n am Ende der Zeile sonst nicht gelesen
+
 
                 String line;
 
-                sendMessage("join " + id + " " + login);
-                joined = true;
+                sendMessage("join " + id + " " + login);                                       //NACHRICHT AN SERVER DAS MAN JOINEN WILL
+                joined = true;                                                                      //JOIN FLAG WIRD TRUE GESETZT
 
-                while((line = bufferedReader.readLine()) != null && serverRunning && running){                                  //While Schleife für Nachrichten verarbeitung
-                    String[] tokens = line.split(" ");                                        //Splited Nachricht auf. 1 Nachrichten Block ist Command Token
+                while((line = bufferedReader.readLine()) != null && serverRunning && running){      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
+                    String[] tokens = line.split(" ");                                        //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
                     if(tokens != null && tokens.length > 0) {
                         String cmd = tokens[0];
                         Log.d("CLIENT", cmd);
-                        if("denied".equalsIgnoreCase(cmd)){                                         //Wenn Denied Command (Nachfolgenden IF Statements dasselbe bloß anderes Command mit anderer Funktion)
+                        //COMMAND VERARBEITUNG
+                        if("denied".equalsIgnoreCase(cmd)){                                         //JOIN WIRD ABGELEHNT
                             handleDenie();
-                        } else if("accept".equalsIgnoreCase(cmd)){
+                        } else if("accept".equalsIgnoreCase(cmd)){                                  //JOIN WIRD AKZEPTIERT
                             handleAccept(tokens[1]);
-                        } else if("start".equalsIgnoreCase(cmd)){
+                        } else if("start".equalsIgnoreCase(cmd)){                                   //SPIEL WIRD GESTARTET
                             handleStart(tokens);
-                        } else if("closing".equalsIgnoreCase(cmd)){
+                        } else if("closing".equalsIgnoreCase(cmd)){                                 //SERVER WIRD GESCHLOSSEN
                             handleClosing();
                             break;
-                        } else if("playeranswer".equalsIgnoreCase(cmd)){
+                        } else if("playeranswer".equalsIgnoreCase(cmd)){                            //ANTWORT NACH JOIN WELCHE SPIELER AUF SERVER SIND
                             Log.d("JETZT LOS", line);
-                            tokens = line.split("[;]");
+                            tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
                             handlePlayerAnswer(tokens);
-                        } else if("playeradded".equalsIgnoreCase(cmd)){
+                        } else if("playeradded".equalsIgnoreCase(cmd)){                             //NACHRICHT VOM SERVER WENN ANDERER SPIELER GEJOINT IST
                             Log.d("JETZT LOS", line);
-                            tokens = line.split("[;]");
+                            tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
                             handlePlayerAdded(tokens);
-                        } else if("playerremoved".equalsIgnoreCase(cmd)){
-                            tokens = line.split("[;]");
+                        } else if("playerremoved".equalsIgnoreCase(cmd)){                           //NACHRICHT VOM SERVER WENN ANDERER SPIELER GELEAVED IST
+                            tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
                             handlePlayerRemoved(tokens);
-                        } else if("heartbeat".equalsIgnoreCase(cmd)){
+                        } else if("heartbeat".equalsIgnoreCase(cmd)){                               //HEARTBEAT NACHRICHT VOM SERVER UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
                             handleHeartbeat();
                         }
                     }
@@ -134,41 +130,41 @@ public class Client extends Thread{
 
             } catch (ConnectException e){
                 Log.d("ERROR", "CONNECTION FAILED");
-                if(joined && !leaved){
+                if(joined && !leaved){                                                              //VERBINDUNG NACH JOIN VERLOREN
                     Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
                     toast.show();
-                    gameActivity.startFindFrag();
-                } else if(!joined && !leaved){
+                    gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
+                } else if(!joined && !leaved){                                                      //VERBINDUNG NICHT MÖGLICH
                     Toast toast = Toast.makeText(gameActivity, connectionNotPossibleToast, Toast.LENGTH_SHORT);
                     toast.show();
                     gameActivity.inHost = false;
-                    gameActivity.startFindFrag();
+                    gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
                 }
 
             } catch (IOException e) {
-                Log.d("ERROR", "SERVER CLOSED");
-                if(gameActivity.code == 1){
+                Log.d("ERROR", "SERVER CLOSED");                                          //VERBINDUNG ZUM SERVER VERLOREN (EVTL SERVER ABSTURZ)
+                if(gameActivity.code == 1){                                                         //NUR WENN CLIENT
                     Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
                     toast.show();
-                    gameActivity.inHost = false;
-                    gameActivity.startFindFrag();
+                    gameActivity.inHost = false;                                                    //SETZT INHOST FLAG AUF FALSE
+                    gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
                 }
                 e.printStackTrace();
             }
     }
 
     private void handleHeartbeat() {
-        sendMessage("heartbeat");
+        sendMessage("heartbeat");                                                              //ANTWORTET AUF HEARTBEAT
     }
 
     private void handlePlayerRemoved(String[] tokens) {
         Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<Integer> uebergabe = new ArrayList<>();
-        for(int i = 0; i < playerItems.size(); i++){
-            boolean vorhanden = false;
+        for(int i = 0; i < playerItems.size(); i++){                                                //CHECKT WELCHE SPIELER GELEAVED SIND UND UPDATED DANACH DEN RECYCLER VIEW DER DIE SPIELER ANZEIGT
+            boolean vorhanden = false;                                                              //VERGLEICHT DAZU OB ELEMENTE AUS DER PLAYERITEMS LISTE NOCH IN ÜBERTRAGENDER LISTE SIND
             for(int o = 1; o < tokens.length; o++){
-                String[] split = tokens[o].split("[:]", 2);
-                if(split[0].equals(playerItems.get(i).getUsername()) && Integer.parseInt(split[1]) == playerItems.get(i).getId()){
+                String[] split = tokens[o].split("[:]", 2);                             //SPLITED EINZELNE SEGMENT NOCHMAL UM ID UND NAME ZU TRENNEN
+                if(Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
@@ -177,33 +173,30 @@ public class Client extends Thread{
             }
         }
         for(int i : uebergabe) {
-            playerItems.remove(i);
+            playerItems.remove(i);                                                                  //ENTFERNT SPIELER AUS DER SPIELERLISTE ANHAND LISTEN POSITION
         }
     }
 
     private void handlePlayerAdded(String[] tokens) {
-        Log.d("JETZT TOKENS", tokens[1]);
         ArrayList<PlayerItem> pIs = new ArrayList<>();
-        for(int o = 1; o < tokens.length; o++){
-            boolean vorhanden = false;
+        for(int o = 1; o < tokens.length; o++){                                                     //CHECKT WELCHE SPIELER GEJOINED SIND UND UPDATED DANACH DEN RECYCLER VIEW DER DIE SPIELER ANZEIGT
+            boolean vorhanden = false;                                                              //VERGLEICHT DAZU OB ÜBERTRAGENDE LISTENELEMENTE SCHON IN DER PLAYERITEMS LISTE IST
             String[] split = tokens[o].split("[:]", 2);
             for(int i = 0; i < playerItems.size(); i++){
-                Log.d("JETZTIWAS", "" +  Integer.parseInt(split[1]) +  ": " + playerItems.get(i).getId());
                 if(Integer.parseInt(split[1]) == playerItems.get(i).getId()){
                     vorhanden = true;
                 }
             }
             if(!vorhanden){
-                Log.d("ARRAYPR", "" + split.length);
                 pIs.add(new PlayerItem(split[0], Integer.parseInt(split[1])));
             }
         }
         for(PlayerItem pI : pIs){
-            playerItems.add(pI);
+            playerItems.add(pI);                                                                    //FÜGT SPIELER DER SPIELERLISTE HINZU
         }
     }
 
-    private void handlePlayerAnswer(String[] tokens) {
+    private void handlePlayerAnswer(String[] tokens) {                                              //FÜGT SPIELER DER SPIELERLIST UND DEM RECYCLER VIEW HINZU => DA ERSTER KONTAKT MIT SERVER DESHALB KEIN VERGLEICHSFUNKTION MIT VORHANDEN SPIELERN BENÖTIGT
         Log.d("CLIENT ANSWER PLAYER", ""  + tokens.length);
         playerItems = new ArrayList<>();
         for(int i = 1; i < tokens.length; i++){
@@ -213,41 +206,41 @@ public class Client extends Thread{
     }
 
     private void handleClosing() {
-        serverRunning = false;
+        serverRunning = false;                                                                      //STOPT CLIENT WENN SERVER GESCHLOSSEN WIRD
     }
 
 
-    public void leave() {                                                                           //Sendet Leave Nachricht an Server
+    public void leave() {                                                                           //STOPT CLIENT WENN SERVER GELEAVED WIRD UND SENDET SERVER ENTSPRECHENDE NACHRICHT
         leaved = true;
         sendMessage("leave");
         running = false;
     }
 
-    private void handleStart(String[] tokens) {                                                     //Wird aufgerufen wenn Spiel gestartet wird von Host
+    private void handleStart(String[] tokens) {                                                     //SETZT SPIEL START FLAG UND STARTET GAME FRAGMENT
         for(int i = 1; i < tokens.length; i++){
             String uebergabe = tokens[i].replace("[^\\d]", "");
-            cardList.add(Integer.parseInt(uebergabe));
+            cardList.add(Integer.parseInt(uebergabe));                                              //BEKOMMT KARTENLIST TODO EVTL VERÄNDERUNG WEIL GAME MANAGER
             //TODO START GAME FRAGMENT
         }
-        gameStarted = true;
+        gameStarted = true;                                                                         //SETZT GAME START FLAG
     }
 
-    private void handleAccept(String id) {                                                                   //Wird aufgerufen wenn der Server den Join akzeptiert
-        this.id = Integer.parseInt(id);
+    private void handleAccept(String id) {                                                          //SERVER AKZEPTIERT JOIN ANFRAGE
+        this.id = Integer.parseInt(id);                                                             //SERVER SENDET SPIELER ID ZU
         Log.d("JETZT GA", "" + (gameActivity != null) + " "+ gameActivity.id);
-        gameActivity.id = this.id;
-        sendMessage("GETPLAYER");
+        gameActivity.id = this.id;                                                                  //ID WIRD GESETZT
+        sendMessage("GETPLAYER");                                                              //ANFRAGE AN SERVERT DIE SPIELER ZU SCHICKEN
     }
 
-    private void handleDenie() {                                                                    //Wird aufgerufen wenn der Server den Join verweigert
+    private void handleDenie() {                                                                    //SERVER LEHNT JOIN ANFRAGE AB
         if(gameActivity != null){
-            gameActivity.inHost = false;
-            gameActivity.startFindFrag();
+            gameActivity.inHost = false;                                                            //IN HOST FLAG WIRD ZURÜCK GESETZT
+            gameActivity.startFindFrag();                                                           //FIND FRAGMENT WIRD GESTARTET
         }
     }
 
     public void setGameActivity(GameActivity gameActivity){
-        this.gameActivity = gameActivity;
+        this.gameActivity = gameActivity;                                                           //CLIENT SETZT GAME ACTIVITY
     }
     public String getLogin(){return login;}
 }

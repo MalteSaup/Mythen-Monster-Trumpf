@@ -110,7 +110,7 @@ public class FindFragment extends Fragment {
 
             Thread searchThread = new Thread(new Runnable() {
                 int counting3 = start3Stelle;
-                int counting4 = 2;
+                int counting4 = 0;
 
                 public void restart(){
                     while(serverList.size() > 0){
@@ -163,7 +163,7 @@ public class FindFragment extends Fragment {
                             }
                         } else{
                             counting3 = 1;
-                            counting4 = 2;
+                            counting4 = 0;
                         }
 
                     }

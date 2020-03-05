@@ -4,11 +4,7 @@ import android.util.Log;
 
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,13 +19,13 @@ public class Server extends Thread{
 
     private HostFragment hostFragment;
 
-    private boolean gameStarted = false;                                                            //Zeigt an ob das Spiel gestartet wurde
-    public boolean running = true;
+    private boolean gameStarted = false;                                                            //GAME STARTED FLAG
+    public boolean running = true;                                                                  //RUNNING FLAG
 
-    public String serverName;                                                                       //Name des Servers (Servername == Name des Hosts)
+    public String serverName;                                                                       //SERVERNAME
 
-    private ArrayList<ServerListener> serverListeners = new ArrayList<>();                          //Liste der gejointen Clients
-    private ArrayList<ServerListener> playerList = new ArrayList<>();                               //Liste der gejointen Spielen (Clients != Spieler in diesem Fall)
+    private ArrayList<ServerListener> serverListeners = new ArrayList<>();                          //LISTE GEJOINTER CLIENTS (AUCH SEARCH CLIENTS DIE MOMENTAN ANFRAGE STELLEN)
+    private ArrayList<ServerListener> playerList = new ArrayList<>();                               //LISTE GEJOINTER CLIENTS (NUR SPIELER, KEINE SEARCH CLIENTS)
 
     public Server(String serverName, HostFragment hostFragment) {
 
@@ -37,82 +33,45 @@ public class Server extends Thread{
         this.hostFragment = hostFragment;
     }
 
-    public void removeListener(ServerListener sL){                                                  //Entfernt Listener aus der Client Liste
+    public void removeListener(ServerListener sL){                                                  //ENTFERNT CLIENTS (LISTE MIT SEARCH CLIENTS)
         serverListeners.remove(sL);
     }
 
-    public boolean startGame(String login){                                                         //Startet das Spiel
+    public boolean startGame(String login){                                                         //STARTET SPIEL TODO EVTL IST HIER IWAS FALSCH WARUM MIT LOGIN??
         if(serverName.equalsIgnoreCase(login) && !gameStarted){
-            gameStarted = true;
+            gameStarted = true;                                                                     //SETZT GAME STARTED FLAG
         }
         return gameStarted;
     }
 
-    public int playerCount(){                                                                       //Gibt an wieviele Spieler aufm Server sind
+    public int playerCount(){                                                                       //GIBT SPIELER ANZAHL AN
         return playerList.size();
     }
 
-    public void addPlayer(ServerListener sL){                                                       //Fügt Spieler hinzu
+    public void addPlayer(ServerListener sL){                                                       //FÜGT SPIELER HINZU
         playerList.add(sL);
-
-        Log.d("SERVER", "HINZU " + sL.getLogin());
     }
 
-    public void removePlayer(ServerListener sL){                                                    //Entfernt Spieler
+    public void removePlayer(ServerListener sL){                                                    //ENTFERNT SPIELER
         playerList.remove(sL);
-
-        Log.d("SERVER", "ENTFERNT " + sL.getLogin());
     }
 
-    public synchronized ArrayList<ServerListener> getServerListeners(){                                          //Gibt Client List zurück
+    public synchronized ArrayList<ServerListener> getServerListeners(){                             //GIBT CLIENT LISTE AN (OHNE SEARCH CLIENT) KOMMENTAR: UNGLÜCKLICH GEWÄHLTER NAME DER FUNKTIOIN... SORRY
         return playerList;
     }
 
     @Override
-    public void run(){
+    public void run(){                                                                              //STARTET SERVER
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(port);                                     //ERZEUGT SERVER SOCKET
             while(running) {
                 Log.d("SERVER LOG", "Waiting for Users...");
-                Socket clientSocket = serverSocket.accept();                                        //Nimmt Clients an
+                Socket clientSocket = serverSocket.accept();                                        //NIMMT VERBINDUNG AN UND ARBEITET DIESE IN EINEN SERVERLISTENER AB
 
-                if(!gameStarted){                                                                   //Started Verbindung mit Client und gibt weitere Verarbeitung an ServerListener weiter
-                    ServerListener sL = new ServerListener(this, clientSocket, false);
-                    serverListeners.add(sL);
-                    sL.start();
-                }
-                else{                                                                               //Wenn Spiel gestarted blockt es alle Abfragen und Join Versuche ab
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                    String line;
-                    long startTime = System.currentTimeMillis();
-                    boolean vorhanden = false;
-                    while(((line = bufferedReader.readLine()) != null) ||(System.currentTimeMillis()-startTime)<1000){
-                        String[] tokens = line.split(" ");
-                        if(tokens[0].equalsIgnoreCase("ask")){
-                            bufferedWriter.write("answer 1 " + playerList.size() + " " + serverName + "\r\n");
-                            bufferedWriter.flush();
-                        } else if(tokens[0].equalsIgnoreCase("join")){
-                            String[] split = line.split(" ", 3);
-                            for(ServerListener sL : playerList){
-                                if(sL.getID() == Integer.parseInt(split[1]) && sL.getLogin().equals(split[3])){
-                                    vorhanden = true;
-                                }
-                            }
-                            if(vorhanden){
-                                serverListeners.add(new ServerListener(this, clientSocket, true));
-                            } else{
-                                bufferedWriter.write("denied\r\n");
-                                bufferedWriter.flush();
-                            }
-                            break;
-                        }
-                    }
-                    if(!vorhanden){clientSocket.close();}
-                }
-
+                ServerListener sL = new ServerListener(this, clientSocket, false);     //ERZEUGT SERVERLISTENER ANHAND DER VERBINDUNG
+                serverListeners.add(sL);                                                            //FÜGT SERVERLISTENER DER SERVERLISTENERLISTE HINZU
+                sL.start();                                                                         //SERVERLISTENER GESTARTET
             }
-            Log.d("SERVER", "ZUENDE");
         } catch (BindException e){
             if(e.toString().equals("java.net.BindException: bind failed: EADDRINUSE (Address already in use)")){
                 Log.d("ERROR", "YEETISTAN");
@@ -125,22 +84,21 @@ public class Server extends Thread{
 
 
 
-    public void removeItems(ServerListener sL){
-        Log.d("JETZT", sL.getLogin());
+    public void removeItems(ServerListener sL){                                                     //ENTFERNT SPIELER AUS BEIDEN LISTEN, AUßER SPIEL IST SCHON GESTARTET DANN NUR AUS UNSAUBERER LISTE
         removeListener(sL);
         if(!gameStarted){removePlayer(sL);}
         //TODO ALLE BENACHRICHTIGEN DAS SPIELER VERBINDUNGSFEHLER HAT => IM SERVERLISTENER
     }
 
-    public void closeServer(){
-        for(ServerListener sL : serverListeners){
+    public void closeServer(){                                                                      //SERVER WIRD GESCHLOSSEN
+        for(ServerListener sL : serverListeners){                                                   //NACHRICHT AN ALLE CLIENTS DAS SERVER GESCHLOSSEN WIRD
             sL.sendMessage("closing");
-            sL.closeHeartbeat();
-            running = false;
+            sL.closeHeartbeat();                                                                    //ALLE HEARTBEATS WERDEN BEENDET
+            running = false;                                                                        //RUNNING FLAG WIRD FALSE GESETZT
         }
     }
 
     public boolean getStartState(){
-        return gameStarted;
+        return gameStarted;                                                                         //GIBT GAME STARTED FLAG ZURÜCK
     }
 }

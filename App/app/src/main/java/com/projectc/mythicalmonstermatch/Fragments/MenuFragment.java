@@ -1,12 +1,9 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +15,7 @@ import com.projectc.mythicalmonstermatch.R;
 
 public class MenuFragment extends Fragment {
 
-    private EditText enterName;
+    private EditText enterName;                                                                     //EINGABE FELD
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,25 +31,20 @@ public class MenuFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
-        enterName = getView().findViewById(R.id.editName);
-        final MainActivity activity = (MainActivity) getActivity();
-        String uebergabeString = activity.getName();
-        if(!uebergabeString.isEmpty()){
+        enterName = getView().findViewById(R.id.editName);                                          //EINGABEFELD AUS FRAGMENT AUSGELESEN
+        final MainActivity activity = (MainActivity) getActivity();                                 //MAIN ACTIVITY AUSGELESEN, FINAL DA ER IM TEXTCHANGELISTENER VERWENDET WERDEN MUSS
+        String uebergabeString = activity.getName();                                                //FALLS NAME SCHON GESETZT WIRD ER IM EINGABEFELD ANGEZEIGT => DAFÜR NAME AUS MAINACTIVITY GEZOGEN
+        if(!uebergabeString.trim().isEmpty()){                                                      //ÜBERPRÜFT OB STRING NICHT LEER IST (trim FÜR LÖSCHEN UNNÖTIGEN WHITESPACE)
             enterName.setText(uebergabeString);
         }
-        enterName.addTextChangedListener(new TextWatcher() {
+        enterName.addTextChangedListener(new TextWatcher() {                                        //TEXTCHANGELISTENER ZUM EINGABEFELD HINZUGEFÜGT
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}      //BEFOR UND ONTEXTCHANGE MÜSSEN VORHANDEN SEIN FÜR TEXTCHANGELISTENER
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged(Editable editable) {                                       //WENN TEXT GEÄNDERT WIRD ER IN ACTIVITY GEÄNDERT
                 activity.setName(editable.toString());
             }
         });

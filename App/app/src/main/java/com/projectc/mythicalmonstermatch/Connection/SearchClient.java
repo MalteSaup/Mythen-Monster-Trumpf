@@ -1,7 +1,6 @@
 package com.projectc.mythicalmonstermatch.Connection;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
 import com.projectc.mythicalmonstermatch.ServerItem;
@@ -19,20 +18,20 @@ import java.net.Socket;
 
 public class SearchClient extends Thread{
 
-    private InterruptedException iE = new InterruptedException();
+    private InterruptedException iE = new InterruptedException();                                   //CUSTOM EXCEPTION FÜRS CLIENT KILLEN
     private Context context;
-    private FindFragment findFragment;
+    private FindFragment findFragment;                                                              //FIND FRAGMENT UM ZUGRIFF AUF RECYCLER VIEW ZU BEKOMMEN
 
-    private String address;
+    private String address;                                                                         //IP ADDRESSE AN DER WIR MOMENTAN SIND
 
-    private Socket socket;                                                                          //Socket
+    private Socket socket;                                                                          //SOCKET
 
-    private OutputStream outputStream;                                                              //Für Kommunikation zwischen Client und Server
+    private OutputStream outputStream;                                                              //IN- UND OUTPUT STREAM(BUFFERED READER UND WRITER) FÜR KOMMUNIKATION VON CLIENT UND SERVER
     private InputStream inputStream;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-    private boolean notEnded = true;
+    private boolean notEnded = true;                                                                //NOT ENDED FLAG
 
     public SearchClient(FindFragment findFragment, Context context, String address){
         this.findFragment = findFragment;
@@ -41,7 +40,7 @@ public class SearchClient extends Thread{
     }
 
     @Override
-    public void run(){
+    public void run(){                                                                              //STARTET SUCH FUNKTION
         try {
             connect();
         } catch (InterruptedException e) {
@@ -49,68 +48,50 @@ public class SearchClient extends Thread{
         }
     }
 
-    private void sendMessage(String msg) {                                                          //Funktion fürs Senden von Nachrichten an Server
+    private void sendMessage(String msg) {                                                          //SENDET NACHRICHT AN SERVER
         try {
-            Log.d("JETZT FLUSH VORHER", msg + "\r\n");
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-            bufferedWriter.write(msg + " \r\n");                                                 //Message wird erstellt
-            bufferedWriter.flush();                                                                 //Message wird zum Server gesendet
-            Log.d("JETZT FLUSH", msg);
+            bufferedWriter.write(msg + " \r\n");                                                //NACHRICHT GESCHRIEBEN; \r\n UM ENDE DER NACHRICHT ANZUZEIGEN
+            bufferedWriter.flush();                                                                 //NACHRICHT SICHER GESENDET
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void connect() throws InterruptedException {
+    public void connect() throws InterruptedException {                                             //SUCH FUNKTION
         try {
-            Log.d("JETZT2", address);
-            socket = new Socket();                                         //Verbindung auf Server wird hergestellt
-            socket.connect(new InetSocketAddress(address, 8080), 500);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(address, 8080), 500);                 //VERBINDUNG ZU SERVER AN ANGEGEBENER IP ADDRESSE WIRD AUFGEBAUT, TIMEOUT FALLS SERVER NICHT INNERHALB 500ms ANTWORTET
 
-            Log.d("JETZT", "CONNECTED");
-            inputStream = socket.getInputStream();                                                      //Kriegt In- und Outputstream und versieht diese mit Buffern fürs Lesen und Schreiben für Kommunikation
-            Log.d("JETZT", " " + inputStream);
+            inputStream = socket.getInputStream();                                                  //IN UND OUTPUT STREMA WERDEN VOM SOCKET AUSGELESEN FÜR NACHRICHTVERKEHR
             outputStream = socket.getOutputStream();
-            //bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-
-            Log.d("JETZT ALLES ANDERE", " " + (bufferedReader!= null) + " " + bufferedWriter);
-            //WICHTIG \r\n am Ende der Zeile sonst nicht gelesen
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
 
             String line;
-            sendMessage("ASK");
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            Log.d("JETZT", "" + bufferedReader + "");
-            while((line = bufferedReader.readLine()) != null && notEnded){                                  //While Schleife für Nachrichten verarbeitung
-                Log.d("JETZT", "NACHER");
-                String[] tokens = line.split(" ");                                        //Splited Nachricht auf. 1 Nachrichten Block ist Command Token
-                Log.d("JETZTMSG", line);
+
+            sendMessage("ASK");                                                                //SENDET ANFRAGE NACHRICHT WIE DER SERVER STATUS IST
+
+            while((line = bufferedReader.readLine()) != null && notEnded){                          //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
+                String[] tokens = line.split(" ");                                            //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
                 if(tokens != null && tokens.length > 0) {
                     String cmd = tokens[0];
-                    if("ANSWER".equalsIgnoreCase(cmd)){
+                    //COMMAND VERARBEITUNG
+                    if("ANSWER".equalsIgnoreCase(cmd)){                                             //ANTWORT VON SERVER AUF STATUS ANFRAGE
                         handleAnswer(line.split(" ", 4));
                     }
                 }
             }
         } catch (ConnectException e){
-            Log.d("JETZT", "CONNECTION FAILED");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            Log.d("JETZT", "UFF" + e);
             e.printStackTrace();
         }
     }
 
-    private void handleAnswer(String[] tokens) throws InterruptedException {                                                //Verarbeitet Abfrageergebnis aus ASK Abfrage
-        Log.d("JETZT", "HANDLE");
-        //if(tokens[1].equalsIgnoreCase("0")){
-            int playerCount = Integer.parseInt(tokens[2]);
-            String serverName = tokens[3];
-            int startState = Integer.parseInt(tokens[1]);
-            findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address, startState));
-            throw iE;
-        //}
-        //sendMessage("ok");
-
-        //TODO RECYCLER VIEW HINZUFÜGEN SERVER
+    private void handleAnswer(String[] tokens) throws InterruptedException {                        //VERARBEITET ANTWORT
+        int playerCount = Integer.parseInt(tokens[2]);                                              //ANZAHL GEJOINTER SPIELER
+        String serverName = tokens[3];                                                              //SERVER NAME
+        int startState = Integer.parseInt(tokens[1]);                                               //OB SERVER SCHON GESTARTET IST
+        findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address, startState));  //FÜGT SERVER DER SERVERLISTE HINZU
+        throw iE;                                                                                   //SCHMEIßT EXCEPTION WENN FERTIG
     }
 }
