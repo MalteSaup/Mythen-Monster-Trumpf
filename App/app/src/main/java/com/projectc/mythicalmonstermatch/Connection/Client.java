@@ -123,6 +123,16 @@ public class Client extends Thread{
                             handlePlayerRemoved(tokens);
                         } else if("heartbeat".equalsIgnoreCase(cmd)){                               //HEARTBEAT NACHRICHT VOM SERVER UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
                             handleHeartbeat();
+                        } else if("turn".equalsIgnoreCase(cmd)){
+                            handleTurnMsg(tokens);
+                        } else if("compared".equalsIgnoreCase(cmd)){
+                            handleCompare(tokens);
+                        } else if("playerinf".equalsIgnoreCase(cmd)){
+                            handlePlayerInfo(line.split("[;]"));
+                        } else if("win".equalsIgnoreCase(cmd)){
+                            handleWin();
+                        } else if("lose".equalsIgnoreCase(cmd)){
+                            handleLose();
                         }
                     }
                 }
@@ -151,6 +161,41 @@ public class Client extends Thread{
                 }
                 e.printStackTrace();
             }
+    }
+
+    private void handleLose() {
+        gameActivity.gameFragment.lose();
+    }
+
+    private void handleWin() {
+        gameActivity.gameFragment.win();
+    }
+
+    private void handlePlayerInfo(String[] tokens) {
+        String[] uebergabe[] = new String[tokens.length][];
+        for(int i = 1; i < tokens.length; i++){
+            String[] split = tokens[i].split("[:]", 2);
+            uebergabe[i-1] = split;
+        }
+        gameActivity.gameFragment.updateAll(uebergabe);
+    }
+
+    private void handleCompare(String[] tokens) {
+        if(tokens[1].equalsIgnoreCase("0")){
+            //LOSE ANZEIGEN
+        } else if(tokens[1].equalsIgnoreCase("1")){
+            //WIN ANZEIGEN
+        } else if(tokens[1].equalsIgnoreCase("2")){
+            //DRAW LAUNCHEN
+        }
+        int winnerID = Integer.parseInt(tokens[2]);                 //TODO AN GAME FRAGMENT WEITERREICHEN UND ATTRIBUTE AN DEN VERSCHIEDENEN KARTEN EINFÄRBEN
+    }
+
+    private void handleTurnMsg(String[] tokens) {
+        if(tokens[1].equalsIgnoreCase("1")){
+            gameActivity.turn = true;
+        }
+        int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
     }
 
     private void handleHeartbeat() {
@@ -217,11 +262,11 @@ public class Client extends Thread{
     }
 
     private void handleStart(String[] tokens) {                                                     //SETZT SPIEL START FLAG UND STARTET GAME FRAGMENT
-        for(int i = 1; i < tokens.length; i++){
+        /*for(int i = 1; i < tokens.length; i++){
             String uebergabe = tokens[i].replace("[^\\d]", "");
-            cardList.add(Integer.parseInt(uebergabe));                                              //BEKOMMT KARTENLIST TODO EVTL VERÄNDERUNG WEIL GAME MANAGER
+            *//*cardList.add(Integer.parseInt(uebergabe));   *//*                                           //BEKOMMT KARTENLIST TODO EVTL VERÄNDERUNG WEIL GAME MANAGER
             //TODO START GAME FRAGMENT
-        }
+        }*/
         gameStarted = true;                                                                         //SETZT GAME START FLAG
     }
 

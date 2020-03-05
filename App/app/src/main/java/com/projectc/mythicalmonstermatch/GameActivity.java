@@ -15,6 +15,7 @@ import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
+import com.projectc.mythicalmonstermatch.Fragments.GameFragment;
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class GameActivity extends FragmentActivity{
     public Client client;
     public HostFragment hostFrag;
     public boolean inHost = false;
+    public boolean turn = false;    //TODO AN GAME FRAGMENT WEITER REICHEN EVTL DORT
     public String servername;
     public String address;
 
@@ -35,6 +37,8 @@ public class GameActivity extends FragmentActivity{
     public int id = -1;
 
     public GameManager gameManager;
+
+    public GameFragment gameFragment = null;
 
     private PowerManager.WakeLock wakeLock;
 
@@ -73,7 +77,7 @@ public class GameActivity extends FragmentActivity{
             ft.replace(R.id.gameActivityLayout, hostFrag);
             ft.commit();
 
-            server = new Server(this.name, hostFrag);
+            server = new Server(this.name, hostFrag, this);
             server.start();
             Log.d("SERVER STATUS", ""+server.running);
             client = null;
@@ -236,7 +240,8 @@ public class GameActivity extends FragmentActivity{
     }
 
     public void startGame(){
-        gameManager = new GameManager(cardDeck, playerItems);
+
+        gameManager = new GameManager(cardDeck, playerItems, server);
     }
 
     public void submit(){

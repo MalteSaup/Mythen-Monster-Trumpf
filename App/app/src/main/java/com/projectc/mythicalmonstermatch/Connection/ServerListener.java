@@ -18,6 +18,7 @@ public class ServerListener extends Thread{
     private Hearbeat hearbeat;                                                                      //HEARTBEAT
     private int id = -1;                                                                            //USER ID
     private int count = 0;                                                                          //COUNT UM TIMEOUT ZU BEMERKEN
+    public boolean connectionLoss = false;
 
     private BufferedReader bufferedReader;                                                          //BUFFERED READER UND WRITER FÜR KOMMUNIKATION VON SERVER UND CLIENT
     private BufferedWriter bufferedWriter;
@@ -63,6 +64,8 @@ public class ServerListener extends Thread{
                         handlePlayerAdded();
                     }else if(cmd.equalsIgnoreCase("heartbeat")){                        //HEARTBEAT NACHRICHT VOM CLIENT UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
                         handleHeartbeat();
+                    }else if(cmd.equalsIgnoreCase("nextturn")){
+                        handleNextTurn(); 
                     }
 
                 }
@@ -77,6 +80,10 @@ public class ServerListener extends Thread{
         } catch (Exception e){
             Log.d("IOEXCEPTION", "UNCATCHED");
         }
+    }
+
+    private void handleNextTurn() {
+
     }
 
     private void handleHeartbeat() {                                                                //COUNT WIRD DEKREMENTIERT WENN HEARTBEAT ERHALTEN
@@ -190,6 +197,7 @@ public class ServerListener extends Thread{
     private void handleConnectionLost(){                                                            //CONNECTION LOST WIRD BEARBEITET
         //TODO DIFFERENT BEHAVIOUR WHEN GAME STARTED
         Log.d("KILL", "KILL");
+        connectionLoss = true;
         leave();                                                                                    //LEAVE WIRD GESTARTET
     }
 

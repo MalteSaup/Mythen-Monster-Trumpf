@@ -9,7 +9,7 @@ public class PlayerItem {
 
     private String username;
     private int id;
-    private int selectedStat;
+    private int selectedState;
 
     public PlayerItem(String username, int id){
         this.username = username;
@@ -45,11 +45,11 @@ public class PlayerItem {
         return playerDeck;
     }
 
-    public void setSelectedStat(int selectedStat) {
-        this.selectedStat = selectedStat;
+    public void setSelectedStat(int selectedState) {
+        this.selectedState = selectedState;
     }
 
     public int getSelectedStat() {
-        return selectedStat;
+        return selectedState;
     }
 }

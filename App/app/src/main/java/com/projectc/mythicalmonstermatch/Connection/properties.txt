@@ -15,3 +15,8 @@ ANSWER <STATUS 0 = NICHT GESTARTET 1 = GESTARTET> <SPIELER ANZAHL> <SERVER NAME>
 ACCEPT <ID FALLS JOIN ID = 0>                                                       |JOIN AKZEPTIERT
 DENIED                                                                              |JOIN BLOCKIERT
 CLOSING                                                                             |SERVER WIRD VOM HOST BEENDET
+TURN <STATUS 0 = NICHT DRAN 1 = DRAN> <KARTEN ID>
+COMPARED <STATUS 0 = LOSE 1 = WIN 2 = DRAW> <SPIELER ID WINNER/DRAW GEGNER>
+PLAYERINFO; <PLAYER ID:CARD ID>; usw
+WIN
+LOSE

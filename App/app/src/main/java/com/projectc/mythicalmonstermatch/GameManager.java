@@ -2,11 +2,13 @@ package com.projectc.mythicalmonstermatch;
 
 import android.util.Log;
 
+import com.projectc.mythicalmonstermatch.Connection.Server;
+import com.projectc.mythicalmonstermatch.Connection.ServerListener;
+
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class GameManager {
 
@@ -14,13 +16,24 @@ public class GameManager {
     private ArrayList<PlayerItem> players;
     private List<Integer> tempResults;
     private Dictionary playerAndResult;
+    private Server server;
+    private ArrayList<ServerListener> playerList;
 
     private int currentPlayer;
 
-    public GameManager(CardClass[] allCards, ArrayList<PlayerItem> players){
+    public GameManager(CardClass[] allCards, ArrayList<PlayerItem> players, Server server){
         this.allCards = allCards;
         this.players = players;
-        currentPlayer = 0;
+        this.server = server;
+        this.playerList = server.getServerListeners();
+        currentPlayer = (int)(playerList.size() + Math.random())-1;
+        if(currentPlayer < 0){currentPlayer = 0;}
+    }
+
+    public void startGame(){
+        for(ServerListener sL : playerList){
+            sL.sendMessage("start");
+        }
     }
 
     public void pushResult(int result, PlayerItem player){
@@ -57,7 +70,7 @@ public class GameManager {
                 currentWinners.add(i);
             }
         }
-        if (currentWinners.size() > 1){ // winner gets awarded
+        if (currentWinners.size() == 1){ // winner gets awarded
             awardWinner(players.indexOf(playerAndIndex.get(currentWinners.get(0))));
         }
         else{ // draw round begins
@@ -119,4 +132,8 @@ public class GameManager {
     }
 
 
+    public void nextTurn() {
+        ArrayList<ServerListener> serverListener = server.getServerListeners();
+        //TODO NEXT TURN MSG AN ALLE
+    }
 }

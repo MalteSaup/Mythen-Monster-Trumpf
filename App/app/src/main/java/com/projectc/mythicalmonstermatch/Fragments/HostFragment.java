@@ -1,11 +1,9 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,12 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
-
-import com.projectc.mythicalmonstermatch.PlayerAdapter;
-
 import com.projectc.mythicalmonstermatch.GameManager;
+import com.projectc.mythicalmonstermatch.PlayerAdapter;
 import com.projectc.mythicalmonstermatch.PlayerItem;
-
 import com.projectc.mythicalmonstermatch.R;
 
 public class HostFragment extends Fragment {
@@ -89,8 +84,6 @@ public class HostFragment extends Fragment {
                 // just for testing with one phone
                 PlayerItem enemy = new PlayerItem("enemy", 123);
                 gA.playerItems.add(enemy);
-
-
                 gA.startGame();
             }
         });

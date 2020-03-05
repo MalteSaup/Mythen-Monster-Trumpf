@@ -88,6 +88,7 @@ public class GameFragment extends Fragment {
     public void onActivityCreated(Bundle saveInstandesState) {
         //gA = (GameActivity) getActivity();
         gA = (MainActivity) getActivity();
+        //gA.gameFragment = this;
         view = getView();
 
         cardAnimator = new CardAnimator(gA);
@@ -389,6 +390,18 @@ public class GameFragment extends Fragment {
         }
     }
 
+    public void updateAll(String[][] uebergabe) {
+        updatePlayerFrag(Integer.parseInt(uebergabe[0][1]));
+        //TODO GEGNER ANHAND VON ID ZU UPDATEN
+    }
+
+    public void win() {
+        //TODO CREATE GAME WON SCREEN
+    }
+
+    public void lose(){
+        //TODO CREATE GAME LOSE SCREEN
+    }
 }
 
 //TODO wenn richtig eingebunden in richtiger activity den return button bei erfolgter animation dazu verwenden diese wieder reversen zu lassen und nicht animation zu schlißen, momentan aber noch nicht möglich da zum testen die game activity nicht so gut geeignet ist das der server das spiel nicht starten lässt bisher

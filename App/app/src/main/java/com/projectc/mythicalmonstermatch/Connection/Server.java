@@ -3,6 +3,7 @@ package com.projectc.mythicalmonstermatch.Connection;
 import android.util.Log;
 
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
+import com.projectc.mythicalmonstermatch.GameActivity;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -26,11 +27,14 @@ public class Server extends Thread{
 
     private ArrayList<ServerListener> serverListeners = new ArrayList<>();                          //LISTE GEJOINTER CLIENTS (AUCH SEARCH CLIENTS DIE MOMENTAN ANFRAGE STELLEN)
     private ArrayList<ServerListener> playerList = new ArrayList<>();                               //LISTE GEJOINTER CLIENTS (NUR SPIELER, KEINE SEARCH CLIENTS)
+    private ArrayList<Boolean> nextTurn = new ArrayList<>();
+    private GameActivity gameActivity;
 
-    public Server(String serverName, HostFragment hostFragment) {
+    public Server(String serverName, HostFragment hostFragment, GameActivity gameActivity) {
 
         this.serverName = serverName;
         this.hostFragment = hostFragment;
+        this.gameActivity = gameActivity;
     }
 
     public void removeListener(ServerListener sL){                                                  //ENTFERNT CLIENTS (LISTE MIT SEARCH CLIENTS)
@@ -41,6 +45,7 @@ public class Server extends Thread{
         if(serverName.equalsIgnoreCase(login) && !gameStarted){
             gameStarted = true;                                                                     //SETZT GAME STARTED FLAG
         }
+        for(int i = 0; i < playerList.size(); i++){nextTurn.set(i, false);}
         return gameStarted;
     }
 
@@ -100,5 +105,26 @@ public class Server extends Thread{
 
     public boolean getStartState(){
         return gameStarted;                                                                         //GIBT GAME STARTED FLAG ZURÜCK
+    }
+    public void setNextTurn(int id){
+        for(int i = 0; i < playerList.size(); i++){
+            if(id == playerList.get(i).getID()){
+                nextTurn.set(i, true);
+                break;
+            }
+        }
+        boolean allNextTurn = true;
+        for(int i = 0; i < playerList.size(); i++){
+            if(!nextTurn.get(i) && !playerList.get(i).connectionLoss){
+                allNextTurn = false;
+            }
+        }
+        if(allNextTurn){
+            startNextTurn();
+        }
+    }
+
+    private void startNextTurn() {
+        gameActivity.gameManager.nextTurn();
     }
 }
