@@ -268,7 +268,6 @@ public class GameActivity extends FragmentActivity{
         Log.d("WAKELOCK", "GA PAUSIERT");
         super.onPause();
     }
-
 }
 
 //TODO newWakeLock(int, String); => WakeLock.acquire() (zum starten) und wenn Activity close Wake.Lock.release() (beendet WakeLock, besser für Akku, aber notwendig um Netzwerkverbindung aufrecht zu halten)

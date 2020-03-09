@@ -11,6 +11,7 @@ public class AnimationHolder {
     ObjectAnimator[] objectAnimators = null;
     ValueAnimator[] valueAnimators = null;
     int animationFlag = -1;
+    public boolean gotPlayed = false;
     public AnimationHolder() {
 
     }
@@ -82,5 +83,6 @@ public class AnimationHolder {
     public ValueAnimator[] getValueAnimators(){
         return valueAnimators;
     }
+    public ObjectAnimator[] getObjectAnimators() {return objectAnimators;}
 
 }

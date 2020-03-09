@@ -164,11 +164,11 @@ public class Client extends Thread{
     }
 
     private void handleLose() {
-        gameActivity.gameFragment.lose();
+        gameActivity.gameFragment.createWinLoseScreen(0);
     }
 
     private void handleWin() {
-        gameActivity.gameFragment.win();
+        gameActivity.gameFragment.createWinLoseScreen(1);
     }
 
     private void handlePlayerInfo(String[] tokens) {
@@ -184,7 +184,7 @@ public class Client extends Thread{
         if(tokens[1].equalsIgnoreCase("0")){
             //LOSE ANZEIGEN
         } else if(tokens[1].equalsIgnoreCase("1")){
-            //WIN ANZEIGEN
+            gameActivity.gameFragment.getPlayerFrag();
         } else if(tokens[1].equalsIgnoreCase("2")){
             //DRAW LAUNCHEN
         }

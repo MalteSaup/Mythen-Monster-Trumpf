@@ -18,7 +18,7 @@ public class CardAnimator {
 
     float prevVal = 0;
 
-    public CardAnimator(MainActivity gA){
+    public CardAnimator(GameActivity gA){
         Display display = gA.getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -263,5 +263,13 @@ public class CardAnimator {
         });
 
         return new AnimationHolder(valueAnimators);
+    }
+
+    public AnimationHolder createDeckAnimation(final View view, int direction){
+
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, "translationX", width * 0.8f * (float)Math.pow(-1, direction));
+        objectAnimator.setDuration(500);
+
+        return new AnimationHolder(objectAnimator);
     }
 }

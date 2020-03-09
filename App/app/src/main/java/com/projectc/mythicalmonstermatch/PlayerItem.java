@@ -21,9 +21,6 @@ public class PlayerItem {
         return username;
     }
     public int getId(){return id;}
-    public void setUsername(String username){
-        this.username = username;
-    }
 
     public void addToPlayerDeck(CardClass card){
         playerDeck.add(card);

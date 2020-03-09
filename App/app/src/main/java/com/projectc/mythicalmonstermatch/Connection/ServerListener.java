@@ -83,7 +83,7 @@ public class ServerListener extends Thread{
     }
 
     private void handleNextTurn() {
-
+        server.setNextTurn(this.id);
     }
 
     private void handleHeartbeat() {                                                                //COUNT WIRD DEKREMENTIERT WENN HEARTBEAT ERHALTEN
