@@ -66,7 +66,7 @@ public class GameFragment extends Fragment {
             R.layout.fragment_game_4,
             R.layout.fragment_game_5
     };
-    private int playerCount = 3; //HARDCODED
+    private int playerCount; //HARDCODED
 
     private CardAnimator cardAnimator;
 
@@ -90,6 +90,7 @@ public class GameFragment extends Fragment {
                              Bundle savedInstanceState) {
         //ACTIVITY HOLEN UND SPIELERZAHL AUSLESEN
         gA = (GameActivity) getActivity();
+        playerCount = gA.playerItems.size();
         //playerCount = gA.server.playerCount();
         /*switch (playerCount){
             case 2: return inflater.inflate(game_fragments[0], container, false);
@@ -97,7 +98,7 @@ public class GameFragment extends Fragment {
             case 4: return inflater.inflate(game_fragments[2], container, false);
             case 5: return inflater.inflate(game_fragments[3], container, false);
         }*/
-        return inflater.inflate(R.layout.fragment_game_3, container, false);//HARDCODED
+        return inflater.inflate(game_fragments[playerCount-2], container, false);//HARDCODED
     }
 
     @Override
@@ -111,12 +112,6 @@ public class GameFragment extends Fragment {
 
         initializePlayerFrag();
         initializeEnemieFrags();
-
-        updatePlayerFrag(1);
-        updateEnemieFrag(0, 4, "Scarriness");      //HARDCODED
-        updateEnemieFrag(1, 3, "Scarriness");
-        /*updateEnemieFrag(2, 5, "Scarriness");
-        updateEnemieFrag(3, 6, "Scarriness");*/
 
         showBackground(background);
 

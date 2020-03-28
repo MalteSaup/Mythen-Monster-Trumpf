@@ -1,22 +1,27 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
 
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.GameManager;
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
 import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
+
+import static android.content.Context.WIFI_SERVICE;
 
 public class HostFragment extends Fragment {
 
@@ -30,6 +35,8 @@ public class HostFragment extends Fragment {
     private Button cancelButton;
 
     private boolean stoped = false;
+    private TextView connectionIP;
+
 
     public static GameManager manager;
 
@@ -56,12 +63,23 @@ public class HostFragment extends Fragment {
         Log.d("WAS", " "+ view.findViewById(R.id.ueberschrift));
 
         handler = new Handler();
+
+        connectionIP = getView().findViewById(R.id.connectionIP);
+        startButton = getView().findViewById(R.id.startButton);
+
         if(gA.code == 0){
             runnable = new Runnable() {
                 @Override
                 public void run() {
                     Log.d("JETZT SL", "" + gA.server.getServerListeners().size());
                     gA.updateHostFragment(gA.listenerToPlayerItem(gA.server.getServerListeners()));
+
+                    WifiManager wifiManager = (WifiManager) gA.getApplicationContext().getSystemService(WIFI_SERVICE);              //Initialisierung WifiManager => IP Address erfahren
+                    String address = "";
+                    if(wifiManager != null) {
+                        address = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());                 //IP-Address abfragen und in passende Form bringen
+                    }
+                    connectionIP.setText("Connected to IP: " + address);
                     if(!stoped){handler.postDelayed(this, 500);}
                 }
             };
@@ -70,13 +88,15 @@ public class HostFragment extends Fragment {
                 @Override
                 public void run() {
                     gA.updateHostFragment(gA.client.playerItems);
+                    connectionIP.setText("Connected to IP: " + gA.client.getAddress());
+                    startButton.setVisibility(View.GONE);
                     if(!stoped){handler.postDelayed(this, 500);}
                 }
             };
         }
         runnable.run();
 
-        startButton = getView().findViewById(R.id.startButton);
+
         startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){

@@ -145,7 +145,7 @@ public class GameActivity extends FragmentActivity{
 
     public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe) {
         if (hostFrag != null && hostFrag.playerAdapter != null && client.running) {
-            //Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
+            Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
             if (playerItemUebergabe.size() != playerItems.size()) {
                 if (playerItemUebergabe.size() > playerItems.size()) {
                     ArrayList<PlayerItem> uebergabe = new ArrayList<>();
@@ -240,8 +240,12 @@ public class GameActivity extends FragmentActivity{
     }
 
     public void startGame(){
-
         gameManager = new GameManager(cardDeck, playerItems, server);
+
+        gameFragment = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.gameActivityLayout, gameFragment);
+        ft.commit();
     }
 
     public void submit(){

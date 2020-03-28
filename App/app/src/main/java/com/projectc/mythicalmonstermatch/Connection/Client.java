@@ -262,11 +262,7 @@ public class Client extends Thread{
     }
 
     private void handleStart(String[] tokens) {                                                     //SETZT SPIEL START FLAG UND STARTET GAME FRAGMENT
-        /*for(int i = 1; i < tokens.length; i++){
-            String uebergabe = tokens[i].replace("[^\\d]", "");
-            *//*cardList.add(Integer.parseInt(uebergabe));   *//*                                           //BEKOMMT KARTENLIST TODO EVTL VERÄNDERUNG WEIL GAME MANAGER
-            //TODO START GAME FRAGMENT
-        }*/
+        gameActivity.startGame();
         gameStarted = true;                                                                         //SETZT GAME START FLAG
     }
 
@@ -288,4 +284,5 @@ public class Client extends Thread{
         this.gameActivity = gameActivity;                                                           //CLIENT SETZT GAME ACTIVITY
     }
     public String getLogin(){return login;}
+    public String getAddress(){return address;}
 }

@@ -29,12 +29,14 @@ public class GameManager {
         currentPlayer = (int)(playerList.size() + Math.random())-1;
         if(currentPlayer < 0){currentPlayer = 0;}
     }
+/*
 
     public void startGame(){
         for(ServerListener sL : playerList){
             sL.sendMessage("start");
         }
     }
+*/
 
     public void pushResult(int result, PlayerItem player){
         playerAndResult.put(result, player);

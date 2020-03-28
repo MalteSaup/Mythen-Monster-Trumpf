@@ -101,4 +101,15 @@
         app:layout_constraintStart_toEndOf="@+id/startButton"
         app:layout_constraintTop_toTopOf="@+id/guidelineButton" />
 
+    <TextView
+        android:id="@+id/connectionIP"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAlignment="textStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBot" />
+
 </android.support.constraint.ConstraintLayout>

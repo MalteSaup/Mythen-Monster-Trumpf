@@ -19,6 +19,9 @@
     <string name="attribute3">Speed</string>
     <string name="attribute4">Gerissenheit</string>
     <string name="attribute5">Scarriness</string>
+    <string name="connectdirect">Connect Direct</string>
+    <string name="connect">Connect</string>
+    <string name="enterIP">Enter Valid IP Address to Connect</string>
     <!--<string name=""></string>!-->
 
     <string name="info_text">
