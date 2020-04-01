@@ -138,4 +138,8 @@ public class GameManager {
         ArrayList<ServerListener> serverListener = server.getServerListeners();
         //TODO NEXT TURN MSG AN ALLE
     }
+
+    public void setPlayer(ArrayList<ServerListener> sLL){
+        playerList = sLL;
+    }
 }

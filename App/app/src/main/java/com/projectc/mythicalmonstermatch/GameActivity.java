@@ -238,7 +238,7 @@ public class GameActivity extends FragmentActivity{
     }
 
     public void startGame(){
-        gameManager = new GameManager(cardDeck, playerItems, server);
+        if(code == 0){gameManager = new GameManager(cardDeck, playerItems, server);}
 
         gameFragment = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

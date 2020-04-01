@@ -119,7 +119,7 @@ public class GameFragment extends Fragment {
         winLoseScreen = gA.findViewById(R.id.win_lose_screen);
         winLoseScreen.setVisibility(View.GONE);
 
-        initAndSortIDArray();
+        if(gA.code == 0){initAndSortIDArray();}
         //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
 
 
@@ -164,6 +164,7 @@ public class GameFragment extends Fragment {
             playerID[0] = playerID[uebergabe];
             playerID[uebergabe] = id;
         }
+        gA.gameManager.setPlayer(sLL);
     }
 
     private void deactivateAnimFrags() {
