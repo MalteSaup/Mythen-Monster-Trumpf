@@ -142,4 +142,14 @@ public class GameManager {
     public void setPlayer(ArrayList<ServerListener> sLL){
         playerList = sLL;
     }
+
+    public void sendCard(){
+        for(ServerListener sL : playerList){
+            for(PlayerItem pI : players){
+                if(pI.getId() == sL.getID()){
+                    sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id%8));           //TODO HARDCODED DRAN SEIN BEARBEITEN
+                }
+            }
+        }
+    }
 }

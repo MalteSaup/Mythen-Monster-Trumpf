@@ -196,6 +196,7 @@ public class Client extends Thread{
             gameActivity.turn = true;
         }
         int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
+        gameActivity.updatePlayer(cardID);
     }
 
     private void handleHeartbeat() {

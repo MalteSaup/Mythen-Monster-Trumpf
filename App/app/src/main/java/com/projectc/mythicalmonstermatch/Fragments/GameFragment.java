@@ -119,7 +119,11 @@ public class GameFragment extends Fragment {
         winLoseScreen = gA.findViewById(R.id.win_lose_screen);
         winLoseScreen.setVisibility(View.GONE);
 
-        if(gA.code == 0){initAndSortIDArray();}
+        if(gA.code == 0){
+            initAndSortIDArray();
+            gA.gameManager.dealOutCards();
+            gA.gameManager.sendCard();
+        }
         //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
 
 
@@ -425,13 +429,23 @@ public class GameFragment extends Fragment {
         }
     }
 
-    private void updatePlayerFrag(int card){
-        playerTextViews[0].setText(gA.cardDeck[0].name);
-        playerTextViews[1].setText("" + gA.cardDeck[0].attributeMap.get("attribute1"));
-        playerTextViews[2].setText("" + gA.cardDeck[0].attributeMap.get("attribute2"));
-        playerTextViews[3].setText("" + gA.cardDeck[0].attributeMap.get("attribute3"));
-        playerTextViews[4].setText("" + gA.cardDeck[0].attributeMap.get("attribute4"));
-        playerTextViews[5].setText("" + gA.cardDeck[0].attributeMap.get("attribute5"));
+    public void updatePlayerFrag(int card, int count){
+        card = card % 8;//TODO LÖSCHNE SPÄTER
+        Log.d("KARTENNUMMER", ""+card +  " " + playerTextViews);
+        if(playerTextViews != null){
+            playerTextViews[0].setText(gA.cardDeck[card].name);
+            playerTextViews[1].setText("" + gA.cardDeck[card].attributeMap.get("attribute1"));
+            playerTextViews[2].setText("" + gA.cardDeck[card].attributeMap.get("attribute2"));
+            playerTextViews[3].setText("" + gA.cardDeck[card].attributeMap.get("attribute3"));
+            playerTextViews[4].setText("" + gA.cardDeck[card].attributeMap.get("attribute4"));
+            playerTextViews[5].setText("" + gA.cardDeck[card].attributeMap.get("attribute5"));
+            if(gA.cardDeck[card].imgID != null){imageView.setImageResource(gA.cardDeck[card].imgID);}//TODO WENN ALLE BILDER DA SIND ERROR PROTECTION BESEITIGEN
+        }
+        else{
+            Log.d("REKURSION", "REKURSION" + count);
+            updatePlayerFrag(card, count + 1); //TODO MACH ES SCHÖNER DU KNECHT DANKE BITTE
+        }
+
     }
 
     private void showBackground(boolean show){
@@ -471,7 +485,7 @@ public class GameFragment extends Fragment {
     }
 
     public void updateAll(String[][] uebergabe) {
-        updatePlayerFrag(Integer.parseInt(uebergabe[0][1]));
+        updatePlayerFrag(Integer.parseInt(uebergabe[0][1]), 0);
         //TODO GEGNER ANHAND VON ID ZU UPDATEN
     }
 

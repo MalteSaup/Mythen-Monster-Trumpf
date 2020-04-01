@@ -246,6 +246,10 @@ public class GameActivity extends FragmentActivity{
         ft.commit();
     }
 
+    public void updatePlayer(int card){
+        gameFragment.updatePlayerFrag(card, 0);
+    }
+
     public void submit(){
         //TODO START COMPARING PROCESS ON GAME LOGIC
     }
