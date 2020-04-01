@@ -98,6 +98,7 @@ public class GameFragment extends Fragment {
             case 4: return inflater.inflate(game_fragments[2], container, false);
             case 5: return inflater.inflate(game_fragments[3], container, false);
         }*/
+        Log.d("PLAYERCOUNT", "" + playerCount);
         return inflater.inflate(game_fragments[playerCount-2], container, false);//HARDCODED
     }
 
@@ -325,7 +326,12 @@ public class GameFragment extends Fragment {
         playerFrag = view.findViewById(R.id.player_fragment);
         playerDeckFrag = view.findViewById(R.id.player_deck_fragment);
 
+
         imageView = playerFrag.findViewById(R.id.imageView);
+
+        Log.d("IMAGEVIEW", "" + gA.cardDeck[0].imgID);
+
+
         imageView.setImageResource(gA.cardDeck[0].imgID);
 
         deckImageView = playerFrag.findViewById(R.id.imageView);

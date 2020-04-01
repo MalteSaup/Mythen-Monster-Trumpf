@@ -45,6 +45,9 @@ public class Server extends Thread{
         if(serverName.equalsIgnoreCase(login) && !gameStarted){
             gameStarted = true;                                                                     //SETZT GAME STARTED FLAG
         }
+        for(ServerListener sL : playerList){
+                sL.sendMessage("start");
+        }
         for(int i = 0; i < playerList.size(); i++){nextTurn.set(i, false);}
         return gameStarted;
     }

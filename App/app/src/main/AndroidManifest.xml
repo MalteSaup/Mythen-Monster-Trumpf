@@ -13,7 +13,6 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme"
        >
-        >
         <activity
             android:name=".GameActivity"
             android:windowSoftInputMode="adjustPan"

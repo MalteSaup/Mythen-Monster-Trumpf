@@ -24,6 +24,7 @@ public class CardClass{
     }
 
     public CardClass(int id, String name, int a1, int a2, int a3, int a4, int a5,  Integer img){
+        //Log.d("IMAGEVIEW", "" + img);
         this.id = id;
         this.name = name;
         this.attributeMap.put("attribute1", a1);                                    //Platzhalterattributesnamen da noch nicht ausgewählt welche genommen werden

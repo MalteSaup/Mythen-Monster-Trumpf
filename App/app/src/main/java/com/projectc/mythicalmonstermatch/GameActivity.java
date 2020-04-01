@@ -1,7 +1,5 @@
 package com.projectc.mythicalmonstermatch;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -64,7 +62,7 @@ public class GameActivity extends FragmentActivity{
         }
 
         createCardDeck();
-
+        Log.d("IMAGEVIEW", ""+cardDeck[0].imgID);
         if(code == 0){
 
             inHost = true;
@@ -116,7 +114,7 @@ public class GameActivity extends FragmentActivity{
     public void createCardDeck(){
         CardSupportClass csc = new CardSupportClass(this);
         cardDeck = csc.createDeck();
-        BitmapFactory bf = new BitmapFactory();
+        /*BitmapFactory bf = new BitmapFactory();
         Bitmap[] b = {
                 bf.decodeResource(getResources(), R.drawable.image01),
                 bf.decodeResource(getResources(), R.drawable.image02),
@@ -130,7 +128,7 @@ public class GameActivity extends FragmentActivity{
         };
         for(int i = 0; i < cardDeck.length; i++){
             cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i, b[i%9]);
-        }
+        }*/
 
     }
 

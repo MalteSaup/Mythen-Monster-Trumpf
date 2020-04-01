@@ -110,7 +110,10 @@ public class ServerListener extends Thread{
     }
 
     private void handleStart(String login) {                                                        //SPIEL WIRD GESTARTET ???
+        Log.d("SOLLSTART", "SL VORHER");
+
         if(server.startGame(login)){
+            Log.d("SOLLSTART", "SL NACHHER");
             ArrayList<ServerListener> listenerList = server.getServerListeners();
             for(ServerListener sL : listenerList) {
                 sL.sendMessage("start");

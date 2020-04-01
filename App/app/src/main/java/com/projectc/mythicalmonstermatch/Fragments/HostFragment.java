@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.GameManager;
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
-import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
 
 import static android.content.Context.WIFI_SERVICE;
@@ -102,9 +101,11 @@ public class HostFragment extends Fragment {
             public void onClick(View v){
 
                 // just for testing with one phone
-                PlayerItem enemy = new PlayerItem("enemy", 123);
+                /*PlayerItem enemy = new PlayerItem("enemy", 123);
                 gA.playerItems.add(enemy);
-                gA.startGame();
+                gA.startGame();*/
+                Log.d("SOLLSTART", "JETZT");
+                gA.client.sendMessage("start "+gA.name);
             }
         });
 
