@@ -195,8 +195,14 @@ public class Client extends Thread{
         if(tokens[1].equalsIgnoreCase("1")){
             gameActivity.turn = true;
         }
-        int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
-        gameActivity.updatePlayer(cardID);
+        final int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameActivity.updatePlayer(cardID);
+            }
+        });
+
     }
 
     private void handleHeartbeat() {
