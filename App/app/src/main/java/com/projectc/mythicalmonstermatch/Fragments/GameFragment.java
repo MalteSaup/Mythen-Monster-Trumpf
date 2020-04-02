@@ -119,14 +119,22 @@ public class GameFragment extends Fragment {
         winLoseScreen = gA.findViewById(R.id.win_lose_screen);
         winLoseScreen.setVisibility(View.GONE);
 
+
+
         if(gA.code == 0){
             initAndSortIDArray();
             gA.gameManager.dealOutCards();
             gA.gameManager.sendCard();
+
+            myPlayerItem = gA.gameManager.findPlayerById(getId());
+
             gA.gameManager.determineCurrentPlayer();
         }
         //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
 
+        if (gA.code == 1){
+            //TODO das eigene playerItem vom gameManager bekommen
+        }
 
         //Log.d("HEIGHT", " " + enemieFrags[0].getMeasuredHeight() + " " + enemieFrags[0].getHeight());
         AsyncTask asyncTask = new AsyncTask() {

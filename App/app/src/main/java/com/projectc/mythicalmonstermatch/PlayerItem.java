@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class PlayerItem {
 
     private boolean allowedToPlay; // used to determine eligible players in draw rounds
+    private boolean partOfDrawRound;
     private ArrayList<CardClass> playerDeck;
 
     private String username;
@@ -37,6 +38,10 @@ public class PlayerItem {
     public boolean getAllowedToPlay(){
         return allowedToPlay;
     }
+
+    public void setPartOfDrawRound(boolean allowed) { partOfDrawRound = allowed;}
+
+    public boolean getPartOfDrawRound(){return partOfDrawRound;}
 
     public ArrayList<CardClass> getPlayerDeck() {
         return playerDeck;
