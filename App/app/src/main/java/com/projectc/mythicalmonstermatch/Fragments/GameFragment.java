@@ -123,6 +123,7 @@ public class GameFragment extends Fragment {
             initAndSortIDArray();
             gA.gameManager.dealOutCards();
             gA.gameManager.sendCard();
+            gA.gameManager.determineCurrentPlayer();
         }
         //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
 
