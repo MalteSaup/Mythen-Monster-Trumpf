@@ -7,15 +7,16 @@ import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class GameManager {
 
     private CardClass[] allCards;
     private ArrayList<PlayerItem> players;
-    private List<Integer> tempResults;
-    private Dictionary playerAndResult;
     private Server server;
     private ArrayList<ServerListener> playerList;
 
@@ -38,14 +39,6 @@ public class GameManager {
     }
 */
 
-    public void pushResult(int result, PlayerItem player){
-        playerAndResult.put(result, player);
-        tempResults.add(result);
-        if (playerAndResult.size() == players.size()){ // all players have selected a value
-            compareResults(tempResults, playerAndResult);
-        }
-    }
-
     public void dealOutCards(){
 
         shuffle();
@@ -58,31 +51,42 @@ public class GameManager {
 
     }
 
-    public void compareResults(List<Integer> results, Dictionary playerAndIndex){
-        int currentMax = 0;
-        List<Integer> currentWinners = new ArrayList<>();
+    public void compareResults(int attributeNumber){
 
-        for (int i: results) {
-            if (results.get(i) > currentMax ){   // find the highest value and assign it's index
-                currentMax = results.get(i);
-                currentWinners.clear();
-                currentWinners.add(i);
-            }
-            else if (results.get(i) == currentMax){ // in case it's a draw
-                currentWinners.add(i);
+        int currentMax = 0;
+        List<PlayerItem> eligiblePlayers = new ArrayList<>(); // necessary to determine participants in draw rounds
+
+        for (PlayerItem player : players){
+            if (player.getPartOfDrawRound()){ // a draw round where everyone is part of it is a normal round
+                eligiblePlayers.add(player);
             }
         }
-        if (currentWinners.size() == 1){ // winner gets awarded
-            awardWinner(players.indexOf(playerAndIndex.get(currentWinners.get(0))));
+
+        List<PlayerItem> currentWinners = new ArrayList<>();
+
+        for (PlayerItem player : eligiblePlayers) {
+            if (player.getCard(0).attributeMap.get("attribute" + attributeNumber) > currentMax ){   // find the highest value and assign it's index
+                currentMax = player.getCard(0).attributeMap.get("attribute" + attributeNumber);
+                currentWinners.clear();
+                currentWinners.add(player);
+            }
+            else if (player.getCard(0).attributeMap.get("attribute" + attributeNumber) == currentMax){ // in case it's a draw
+                currentWinners.add(player);
+            }
+        }
+        if (currentWinners.size() == 1){ // there is one winner
+            awardWinner(players.indexOf(currentWinners.get((0))));
         }
         else{ // draw round begins
             for (PlayerItem player : players){
                 if (!currentWinners.contains(players.indexOf(player))){
-                    player.setAllowedToPlay(false);
+                    player.setPartOfDrawRound(false);
                 }
             }
         }
+        nextTurn();
     }
+
 
     private void callAddToPlayerDeck(PlayerItem player, CardClass card){
         player.addToPlayerDeck(card);
@@ -129,12 +133,19 @@ public class GameManager {
         for (PlayerItem player: players) {
             player.setAllowedToPlay(false);
         }
-        players.get(currentPlayer).setAllowedToPlay(true);
+        if (players.get(currentPlayer).getPartOfDrawRound()){ // if everyone is part of draw round that means it is a normal round
+            players.get(currentPlayer).setAllowedToPlay(true);
+        }
+        else{ // if it is a draw round, only a player part of it should be allowed to submit
+            currentPlayer++;
+            determineCurrentPlayer();
+        }
         currentPlayer++;
     }
 
 
     public void nextTurn() {
+        determineCurrentPlayer();
         ArrayList<ServerListener> serverListener = server.getServerListeners();
         //TODO NEXT TURN MSG AN ALLE
     }
