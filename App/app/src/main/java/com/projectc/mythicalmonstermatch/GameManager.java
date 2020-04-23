@@ -81,7 +81,9 @@ public class GameManager {
                 }
             }
 
-
+            for (PlayerItem player : players){
+                player.setPartOfDrawRound(true);
+            }
         }
         else{ // draw round begins
             for (PlayerItem player : players){
