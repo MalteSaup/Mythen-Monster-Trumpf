@@ -229,7 +229,7 @@ public class Client extends Thread{
     }
 
     private void handleHeartbeat() {
-        //sendMessage("heartbeat");                                                              //ANTWORTET AUF HEARTBEAT
+        sendMessage("heartbeat");                                                              //ANTWORTET AUF HEARTBEAT
     }
 
     private void handlePlayerRemoved(String[] tokens) {

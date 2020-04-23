@@ -171,7 +171,7 @@ public class GameManager {
             currentPlayer = uebergabe;
         }
 
-        players.get(currentPlayer).setAllowedToPlay(true);
+        if(playerList.size() != 0){players.get(currentPlayer).setAllowedToPlay(true);}  //TODO NACHM MOVE PLAYERLIST LEER VLT INVESTIGATIVE CIWANARITES
     }
 
 
