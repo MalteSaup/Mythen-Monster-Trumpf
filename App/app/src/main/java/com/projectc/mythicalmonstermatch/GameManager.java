@@ -6,11 +6,7 @@ import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class GameManager {
@@ -27,8 +23,8 @@ public class GameManager {
         this.players = players;
         this.server = server;
         this.playerList = server.getServerListeners();
-        currentPlayer = (int)(playerList.size() + Math.random())-1;
-        if(currentPlayer < 0){currentPlayer = 0;}
+        currentPlayer = (int)((playerList.size()-1) * Math.random());
+        //if(currentPlayer < 0){currentPlayer = 0;}
     }
 /*
 
@@ -74,8 +70,18 @@ public class GameManager {
                 currentWinners.add(player);
             }
         }
+        Log.d("MEEEEEEH", "WINNER " + currentWinners);
         if (currentWinners.size() == 1){ // there is one winner
-            awardWinner(players.indexOf(currentWinners.get((0))));
+            for(ServerListener sL : playerList){
+                if (sL.getID() == currentWinners.get(0).getId()){
+                    sL.sendMessage("WIN");
+                    awardWinner(players.indexOf(currentWinners.get((0))));
+                } else {
+                    sL.sendMessage("LOSE");
+                }
+            }
+
+
         }
         else{ // draw round begins
             for (PlayerItem player : players){
@@ -120,9 +126,9 @@ public class GameManager {
         return allCards;
     }
 
-    public PlayerItem findPlayerById(int id){
-        for(PlayerItem player : players) {
-            if(player.getId() == id) {
+    public PlayerItem findPlayerById(int id) {
+        for (PlayerItem player : players) {
+            if (player.getId() == id) {
                 return player;
             }
         }
@@ -133,14 +139,37 @@ public class GameManager {
         for (PlayerItem player: players) {
             player.setAllowedToPlay(false);
         }
-        if (players.get(currentPlayer).getPartOfDrawRound()){ // if everyone is part of draw round that means it is a normal round
-            players.get(currentPlayer).setAllowedToPlay(true);
+        int uebergabe = -1;
+        if(currentPlayer < players.size()){
+            if(players.get(currentPlayer).getPartOfDrawRound()){
+                players.get(currentPlayer).setAllowedToPlay(true);
+            }else{
+                boolean currentDraw = false;
+                for(int i = 0; i < players.size();i++) {
+                    if(players.get(currentPlayer).getPartOfDrawRound()){
+                        if(currentPlayer != i && !currentDraw){
+                            if(i < currentPlayer){
+                                uebergabe = i;
+                            }else{
+                                if(uebergabe != -1 && (!(uebergabe > currentPlayer) || !(uebergabe > i))){
+                                    uebergabe = i;
+                                }else if(uebergabe == -1){
+                                    uebergabe = i;
+                                }
+                            }
+                        }else{
+                            uebergabe = currentPlayer;
+                            currentDraw = true;
+                        }
+                    }
+                }
+            }
         }
-        else{ // if it is a draw round, only a player part of it should be allowed to submit
-            currentPlayer++;
-            determineCurrentPlayer();
+        if(uebergabe != -1) {
+            currentPlayer = uebergabe;
         }
-        currentPlayer++;
+
+        players.get(currentPlayer).setAllowedToPlay(true);
     }
 
 
@@ -158,7 +187,12 @@ public class GameManager {
         for(ServerListener sL : playerList){
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
-                    sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id%8));           //TODO HARDCODED DRAN SEIN BEARBEITEN
+                    if(pI.getId() == playerList.get(currentPlayer).getID()){
+                        sL.sendMessage("turn 1 " + (pI.getPlayerDeck().get(0).id%8));
+                    }else{
+                        sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id%8));
+                    }
+
                 }
             }
         }

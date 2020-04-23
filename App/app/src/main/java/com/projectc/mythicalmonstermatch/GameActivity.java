@@ -78,11 +78,15 @@ public class GameActivity extends FragmentActivity{
             server = new Server(this.name, hostFrag, this);
             server.start();
             Log.d("SERVER STATUS", ""+server.running);
-            client = null;
+            //client = null;
             client = new Client(this.name, this.name, "localhost");
             client.setGameActivity(this);
             client.start();
-
+            while(client.joined == false){
+                assert true;
+            }
+            client.sendMessage("JASDKL");
+            Log.d("WASHDKJHKJSDLHAKD", "HJKHKJH");
             ArrayList<ServerListener> sL = server.getServerListeners();
             Log.d("SL", " "+sL.size() + " " + server);
             for(ServerListener sLL : sL){

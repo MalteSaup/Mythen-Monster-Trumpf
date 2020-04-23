@@ -37,48 +37,59 @@ public class ServerListener extends Thread{
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             String line;
-            while((line = bufferedReader.readLine()) != null){                                      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
+            while ((line = bufferedReader.readLine()) != null) {                                      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
                 String tokens[] = line.split(" ");                                            //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
-                if(tokens != null && tokens.length > 0){
+                Log.d("SERVER", line +  " " + login);
+                if (tokens != null && tokens.length > 0) {
                     String cmd = tokens[0];
                     Log.d("SERVER CMD", cmd);
                     //COMMAND VERARBEITUNG
-                    if(cmd.equalsIgnoreCase("ask")){                                    //ASK ANFRAGE WIRD BEARBEITET
+                    if (cmd.equalsIgnoreCase("ask")) {                                    //ASK ANFRAGE WIRD BEARBEITET
                         handleAsk();
-                    }else if(cmd.equalsIgnoreCase("join")){                             //JOIN ANFRAGE WIRD BEARBEITET
+                    } else if (cmd.equalsIgnoreCase("join")) {                             //JOIN ANFRAGE WIRD BEARBEITET
                         String[] joinTokens = line.split(" ", 3);                       //NACHRICHT NOCHMAL AUGETEILT UM ID UND NAME ABZUTRENNEN
-                        if(!handleJoin(joinTokens)){
+                        if (!handleJoin(joinTokens)) {
                             sendMessage("denied");                                             //SENDET DENIED NACHRICHT FALLS ABGELEHNT
                             break;
                         }
-                    }else if(cmd.equalsIgnoreCase("leave")){                            //LEAVE NACHRICHT WIRD BEARBEITET
+                    } else if (cmd.equalsIgnoreCase("leave")) {                            //LEAVE NACHRICHT WIRD BEARBEITET
                         leave();
                         break;                                                                      //WHILE SCHLEIFE BEENDET
-                    }else if(cmd.equalsIgnoreCase("start")){                            //SPIEL WIRD GESTARTET
+                    } else if (cmd.equalsIgnoreCase("start")) {                            //SPIEL WIRD GESTARTET
                         handleStart(login);
-                    } else if(cmd.equalsIgnoreCase("getplayer")){                       //SPIELER ANFRAGE WIRD BEARBEITET
+                    } else if (cmd.equalsIgnoreCase("getplayer")) {                       //SPIELER ANFRAGE WIRD BEARBEITET
                         handlePlayerRequest();
-                    }else if(cmd.equalsIgnoreCase("playerremoved")){                    //SPIELER HAT LOBBY VERLASSEN WIRD BEARBEITET
+                    } else if (cmd.equalsIgnoreCase("playerremoved")) {                    //SPIELER HAT LOBBY VERLASSEN WIRD BEARBEITET
                         handlePlayerRemove();
-                    }else if(cmd.equalsIgnoreCase("playeradded")){                      //SPIELER HAT LOBBY BETRETEN WIRD BEARBEITET
+                    } else if (cmd.equalsIgnoreCase("playeradded")) {                      //SPIELER HAT LOBBY BETRETEN WIRD BEARBEITET
                         handlePlayerAdded();
-                    }else if(cmd.equalsIgnoreCase("heartbeat")){                        //HEARTBEAT NACHRICHT VOM CLIENT UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
+                    } else if (cmd.equalsIgnoreCase("heartbeat")) {                        //HEARTBEAT NACHRICHT VOM CLIENT UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
                         handleHeartbeat();
-                    }else if(cmd.equalsIgnoreCase("nextturn")){
-                        handleNextTurn(); 
+                    } else if (cmd.equalsIgnoreCase("nextturn")) {
+                        handleNextTurn();
+                    } else if (cmd.equalsIgnoreCase("move")) {
+                        handleMove(line);
                     }
 
                 }
 
             }
+                Log.d("SERVER", "ERRORORORORO ");
+                //Log.d("SERVER", "ERRORORORORO " + socket.isClosed());
             socket.close();                                                                         //SOCKET WIRD AM ENDE GESCHLOSSEN
-
         } catch (IOException e) {
             Log.d("IOEXCEPTION", "JETZT");
             handleConnectionLost();                                                                 //CONNECTION LOST WIRD BEARBEITET
             e.printStackTrace();
         } catch (Exception e){
             Log.d("IOEXCEPTION", "UNCATCHED");
+        }
+    }
+
+    private void handleMove(String line) {
+        Log.d("MEEEEEEH", "SEVER MESSENGER " + line);
+        for (ServerListener sL : server.getServerListeners()){
+            sL.sendMessage(line);
         }
     }
 
@@ -181,7 +192,8 @@ public class ServerListener extends Thread{
             bufferedWriter.flush();
             if(msg.equalsIgnoreCase("heartbeat")){
                 count++;                                                                            //INKREMENTIERT COUNT
-                if(count > 3){                                                                      //WENN COUNT GRÖßER ALS 3 IST WIRD DIE VERBINDUNG AUFGELÖST DA SCHEINBAR VERLOREN
+                //Log.d("KILL", "" + count);
+                if(count > 10){                                                                      //WENN COUNT GRÖßER ALS 3 IST WIRD DIE VERBINDUNG AUFGELÖST DA SCHEINBAR VERLOREN
                     handleConnectionLost();
                 }
             }

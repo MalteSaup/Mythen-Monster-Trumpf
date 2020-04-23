@@ -29,11 +29,10 @@ public class Client extends Thread{
     private int id = -1;
 
     private boolean gameStarted = false;                                                            //SPIEL GESTARTET FLAG
-    private boolean joined = false;                                                                 //SERVER GEJOINT FLAG
+    public boolean joined = false;                                                                 //SERVER GEJOINT FLAG
     private boolean serverRunning = true;                                                           //SERVER LÄUFT FLAG
     public boolean running = true;                                                                  //CLIENT RUNNING FLAG FÜRS CLIENT KILLEN WENN ZURÜCK ZU MAIN ACTIVITY
     private boolean leaved = false;                                                                 //LEAVED FLAG
-
     private Socket socket;                                                                          //SOCKET
 
     private ArrayList<Integer> cardList = new ArrayList<>();                                        //KARTEN DECK
@@ -66,12 +65,13 @@ public class Client extends Thread{
     }
 
     public void sendMessage(String msg) {                                                           //SENDET NACHRICHT AN SERVER
-        try {
+       try {
+            Log.d("MEEEEEEH", "CLIENT SMS "+ msg );
             bufferedWriter.write(msg + "\r\n");                                                 //NACHRICHT GESCHRIEBEN; \r\n UM ENDE DER NACHRICHT ANZUZEIGEN
             bufferedWriter.flush();                                                                 //NACHRICHT SICHER GESENDET
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+           e.printStackTrace();
+       }
     }
 
     private void sendMessageToAll(String msg){
@@ -133,6 +133,10 @@ public class Client extends Thread{
                             handleWin();
                         } else if("lose".equalsIgnoreCase(cmd)){
                             handleLose();
+                        } else if("draw".equalsIgnoreCase(cmd)) {
+                            handleDraw(tokens);
+                        } else if("move".equalsIgnoreCase(cmd)){
+                            handleMove(tokens);
                         }
                     }
                 }
@@ -163,12 +167,26 @@ public class Client extends Thread{
             }
     }
 
+    private void handleDraw(String[] tokens) {
+        //TODO
+    }
+
+    private void handleMove(String[] tokens) {
+        Log.d("MEEEEEEH", "" + tokens);
+        if(gameActivity.code == 0){
+            Log.d("MEEEEEEH", "MUUH " + tokens[1]);
+            gameActivity.gameManager.compareResults(Integer.parseInt(tokens[1]));
+        }
+    }
+
     private void handleLose() {
-        gameActivity.gameFragment.createWinLoseScreen(0);
+        Log.d("RUNDEVOLLENDET", "LOSER");
+        //gameActivity.gameFragment.createWinLoseScreen(0);
     }
 
     private void handleWin() {
-        gameActivity.gameFragment.createWinLoseScreen(1);
+        Log.d("RUNDEVOLLENDET", "IWINNER");
+        //gameActivity.gameFragment.createWinLoseScreen(1);
     }
 
     private void handlePlayerInfo(String[] tokens) {
@@ -194,19 +212,24 @@ public class Client extends Thread{
     private void handleTurnMsg(String[] tokens) {
         if(tokens[1].equalsIgnoreCase("1")){
             gameActivity.turn = true;
+        } else {
+            gameActivity.turn = false;
         }
         final int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
-        gameActivity.runOnUiThread(new Runnable() {
+        /*gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                while(gameActivity.gameFragment.getPlayerTV()[0] == null){
+                    assert true;
+                }
                 gameActivity.updatePlayer(cardID);
             }
-        });
+        });*/
 
     }
 
     private void handleHeartbeat() {
-        sendMessage("heartbeat");                                                              //ANTWORTET AUF HEARTBEAT
+        //sendMessage("heartbeat");                                                              //ANTWORTET AUF HEARTBEAT
     }
 
     private void handlePlayerRemoved(String[] tokens) {

@@ -46,12 +46,14 @@ public class GameFragment extends Fragment {
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = false;
+    private boolean background = true;
+    private boolean changed = false;
 
     private TextView[] enemieTextViews[];
     private ImageView[] enemieImageViews[];
     private TextView[] playerTextViews;
     private TextView[] playerDeckTextViews;
+    private Button submitBtn;
 
     private TextView[] enemieAnimTextViews[];
     private ImageView[] enemieAnimImageViews[];
@@ -78,6 +80,7 @@ public class GameFragment extends Fragment {
     private ImageView[][] enemieDeckIV;
     private AnimationHolder[][] enemieDeckAS;
 
+    private int green = Color.parseColor("#00FF00");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,7 +125,7 @@ public class GameFragment extends Fragment {
 
 
         if(gA.code == 0){
-            initAndSortIDArray();
+            //initAndSortIDArray();
             gA.gameManager.dealOutCards();
             gA.gameManager.sendCard();
 
@@ -135,7 +138,7 @@ public class GameFragment extends Fragment {
         if (gA.code == 1){
             //TODO das eigene playerItem vom gameManager bekommen
         }
-
+        updatePlayerFrag(3, 0);
         //Log.d("HEIGHT", " " + enemieFrags[0].getMeasuredHeight() + " " + enemieFrags[0].getHeight());
         AsyncTask asyncTask = new AsyncTask() {
                 @Override
@@ -343,17 +346,17 @@ public class GameFragment extends Fragment {
 
         imageView = playerFrag.findViewById(R.id.imageView);
 
-        Log.d("IMAGEVIEW", "" + gA.cardDeck[0].imgID);
+        Log.d("IMAGEVIEW", "" + imageView + " " + gA.cardDeck[0].imgID);
 
 
-        imageView.setImageResource(gA.cardDeck[0].imgID);
+        //imageView.setImageResource(gA.cardDeck[0].imgID);
 
         deckImageView = playerFrag.findViewById(R.id.imageView);
-        deckImageView.setImageResource(gA.cardDeck[0].imgID);
+        //deckImageView.setImageResource(gA.cardDeck[0].imgID);
 
         playerTextViews = new TextView[]{
                 playerFrag.findViewById(R.id.cardName),
-                playerFrag.findViewById(R.id.attributeWert),
+                playerFrag.findViewById(R.id.attributeWert1),
                 playerFrag.findViewById(R.id.attributeWert2),
                 playerFrag.findViewById(R.id.attributeWert3),
                 playerFrag.findViewById(R.id.attributeWert4),
@@ -362,7 +365,7 @@ public class GameFragment extends Fragment {
 
         playerDeckTextViews = new TextView[]{
                 playerDeckFrag.findViewById(R.id.cardName),
-                playerDeckFrag.findViewById(R.id.attributeWert),
+                playerDeckFrag.findViewById(R.id.attributeWert1),
                 playerDeckFrag.findViewById(R.id.attributeWert2),
                 playerDeckFrag.findViewById(R.id.attributeWert3),
                 playerDeckFrag.findViewById(R.id.attributeWert4),
@@ -377,24 +380,49 @@ public class GameFragment extends Fragment {
                 playerFrag.findViewById(R.id.row5)
         };
 
+        submitBtn = playerFrag.findViewById(R.id.submitBtn);
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0; i < tableRows.length; i++){
+                    ColorDrawable background = (ColorDrawable) tableRows[i].getBackground();
+                    Log.d("MEEEEEEH", "" + background);
+                    if(background != null) {
+                        Log.d("MEEEEEEH", "" + background.getColor() +" : " + green);
+                        Log.d("MEEEEEEH", "222222      " +Color.parseColor("#262733"));
+                        if (background.getColor() == green) {
+                            Log.d("MEEEEEEH", "MSGHAGDS");
+                            gA.client.sendMessage("move " + (i + 1));
+                        }
+                    }
+                }
+            }
+        });
+
         for (int i = 0; i < tableRows.length; i++){
             final int finalI = i;
             tableRows[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ColorDrawable background = (ColorDrawable) tableRows[finalI].getBackground();
-                    int green = Color.parseColor("#00FF00");
-                    int color = 0;
-                    if (background != null){color = background.getColor();}
-                    if(color == green){
-                        tableRows[finalI].setBackgroundColor(Color.parseColor("#262733"));
-                        colorWasChanged = false;
+                    if(gA.turn){
+                        ColorDrawable background = (ColorDrawable) tableRows[finalI].getBackground();
+                        int color = 0;
+                        if (background != null){color = background.getColor();}
+                        if(color == green){
+                            tableRows[finalI].setBackgroundColor(Color.parseColor("#262733"));
+                            colorWasChanged = false;
+                        }else{
+                            if(colorWasChanged){resetColor();}
+                            tableRows[finalI].setBackgroundColor(green);
+                            colorWasChanged = true;
+                            changed = true;
+                        }
                     }else{
-                        if(colorWasChanged){resetColor();}
-                        tableRows[finalI].setBackgroundColor(green);
-                        colorWasChanged = true;
+                        if(colorWasChanged){
+                            resetColor();
+                            colorWasChanged = false;
+                        }
                     }
-
                 }
             });
         }
@@ -440,8 +468,10 @@ public class GameFragment extends Fragment {
 
     public void updatePlayerFrag(int card, int count){
         card = card % 8;//TODO LÖSCHNE SPÄTER
-        Log.d("KARTENNUMMER", ""+card +  " " + playerTextViews);
+        Log.d("KARTENNUMMER", ""+card +  " " + playerTextViews[1]);
         if(playerTextViews != null){
+            Log.d("ALLA", "" + card);
+            Log.d("ALLA", "" + gA.cardDeck[card]);
             playerTextViews[0].setText(gA.cardDeck[card].name);
             playerTextViews[1].setText("" + gA.cardDeck[card].attributeMap.get("attribute1"));
             playerTextViews[2].setText("" + gA.cardDeck[card].attributeMap.get("attribute2"));
@@ -449,6 +479,8 @@ public class GameFragment extends Fragment {
             playerTextViews[4].setText("" + gA.cardDeck[card].attributeMap.get("attribute4"));
             playerTextViews[5].setText("" + gA.cardDeck[card].attributeMap.get("attribute5"));
             if(gA.cardDeck[card].imgID != null){imageView.setImageResource(gA.cardDeck[card].imgID);}//TODO WENN ALLE BILDER DA SIND ERROR PROTECTION BESEITIGEN
+            if(gA.turn){submitBtn.setVisibility(View.VISIBLE);}
+            else{submitBtn.setVisibility(View.GONE);}
         }
         else{
             Log.d("REKURSION", "REKURSION" + count);
@@ -459,7 +491,11 @@ public class GameFragment extends Fragment {
 
     private void showBackground(boolean show){
         if(show){
-            for(View enemyFrag : enemieFrags){enemyFrag.findViewById(R.id.background).setVisibility(View.VISIBLE);}
+            Log.d("ALLA", ""+enemieFrags);
+            for(View enemyFrag : enemieFrags){
+                enemyFrag.findViewById(R.id.background).setVisibility(View.VISIBLE);
+                Log.d("ALLA", "AJA " + enemyFrag);
+            }
             if(playerCount > 3){for(View enemyFrag : enemieAnimationFrags){enemyFrag.findViewById(R.id.background).setVisibility(View.VISIBLE);}
             }
         } else{
@@ -554,6 +590,10 @@ public class GameFragment extends Fragment {
             }
         });
         if(count != -1){enemieDeckAS[count] = new AnimationHolder[]{animationHolder};}
+    }
+
+    public View[] getPlayerTV(){
+        return playerTextViews;
     }
 
 }

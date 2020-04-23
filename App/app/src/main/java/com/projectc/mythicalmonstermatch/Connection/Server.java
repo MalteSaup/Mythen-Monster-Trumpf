@@ -42,13 +42,19 @@ public class Server extends Thread{
     }
 
     public boolean startGame(String login){                                                         //STARTET SPIEL TODO EVTL IST HIER IWAS FALSCH WARUM MIT LOGIN??
+        Log.d("SOLLSTART", "" + playerList);
         if(serverName.equalsIgnoreCase(login) && !gameStarted){
             gameStarted = true;                                                                     //SETZT GAME STARTED FLAG
         }
         for(ServerListener sL : playerList){
                 sL.sendMessage("start");
         }
-        for(int i = 0; i < playerList.size(); i++){nextTurn.set(i, false);}
+        Log.d("SERVER", "SERVER KURZ VORM ABSCHLUSS");
+        for(int i = 0; i < playerList.size(); i++){
+            Log.d("SERVER", "" + i);
+            nextTurn.add(false);
+        }
+        Log.d("SERVER", "RETURN " + gameStarted);
         return gameStarted;
     }
 
