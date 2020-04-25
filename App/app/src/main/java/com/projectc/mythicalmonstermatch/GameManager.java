@@ -53,7 +53,7 @@ public class GameManager {
         List<PlayerItem> eligiblePlayers = new ArrayList<>(); // necessary to determine participants in draw rounds
 
         for (PlayerItem player : players){
-            if (player.getPartOfDrawRound()){ // a draw round where everyone is part of it is a normal round
+            if (player.getPartOfDrawRound()){ // a draw round where everyone is part of it, is a normal round
                 eligiblePlayers.add(player);
             }
         }
@@ -177,7 +177,7 @@ public class GameManager {
 
     public void nextTurn() {
         determineCurrentPlayer();
-        ArrayList<ServerListener> serverListener = server.getServerListeners();
+        playerList = server.getServerListeners();
         //TODO NEXT TURN MSG AN ALLE
     }
 
