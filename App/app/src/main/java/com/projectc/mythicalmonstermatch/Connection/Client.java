@@ -172,9 +172,7 @@ public class Client extends Thread{
     }
 
     private void handleMove(String[] tokens) {
-        Log.d("MEEEEEEH", "" + tokens);
         if(gameActivity.code == 0){
-            Log.d("MEEEEEEH", "MUUH " + tokens[1]);
             gameActivity.gameManager.compareResults(Integer.parseInt(tokens[1]));
         }
     }
@@ -216,7 +214,8 @@ public class Client extends Thread{
             gameActivity.turn = false;
         }
         final int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
-        /*gameActivity.runOnUiThread(new Runnable() {
+        Log.d("GAMEFRAGSTART", "ISST ES DAVOR");
+        gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 while(gameActivity.gameFragment.getPlayerTV()[0] == null){
@@ -224,7 +223,7 @@ public class Client extends Thread{
                 }
                 gameActivity.updatePlayer(cardID);
             }
-        });*/
+        });
 
     }
 

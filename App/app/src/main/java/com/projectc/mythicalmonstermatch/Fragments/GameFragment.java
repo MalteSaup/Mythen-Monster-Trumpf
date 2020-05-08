@@ -84,6 +84,7 @@ public class GameFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("GAMEFRAGSTART", "ALLA");
         super.onCreate(savedInstanceState);
 
     }
@@ -91,6 +92,9 @@ public class GameFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.d("GAMEFRAGSTART", "START12");
+
         //ACTIVITY HOLEN UND SPIELERZAHL AUSLESEN
         gA = (GameActivity) getActivity();
         playerCount = gA.playerItems.size();
@@ -116,7 +120,7 @@ public class GameFragment extends Fragment {
 
         initializePlayerFrag();
         initializeEnemieFrags();
-
+        Log.d("GAMEFRAGSTART", "START");
         showBackground(background);
 
         winLoseScreen = gA.findViewById(R.id.win_lose_screen);
@@ -127,7 +131,7 @@ public class GameFragment extends Fragment {
         if(gA.code == 0){
             //initAndSortIDArray();
             gA.gameManager.dealOutCards();
-            gA.gameManager.sendCard();
+
 
             myPlayerItem = gA.gameManager.findPlayerById(getId());
 

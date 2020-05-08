@@ -1,5 +1,7 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class PlayerItem {
@@ -15,7 +17,7 @@ public class PlayerItem {
     public PlayerItem(String username, int id){
         this.username = username;
         this.id = id;
-        playerDeck = new ArrayList<CardClass>();
+        playerDeck = new ArrayList<>();
     }
 
     public String getUsername() {
@@ -28,6 +30,7 @@ public class PlayerItem {
     }
 
     public CardClass getCard(int index){
+        Log.d("INDEX TEMP CARD", "" + playerDeck.size() + " " + index);
         return playerDeck.get(index);
     }
 

@@ -45,32 +45,35 @@ public class GameManager {
             Log.d("cardDealing", p.getUsername() + " " + p.getPlayerDeck().size());
         }
 
+        sendCard(1090);
+
     }
 
     public void compareResults(int attributeNumber){
-
+        Log.d("ATTRIBUTENUMBER", "" + attributeNumber);
         int currentMax = 0;
         List<PlayerItem> eligiblePlayers = new ArrayList<>(); // necessary to determine participants in draw rounds
 
-        for (PlayerItem player : players){
+        /*for (PlayerItem player : players){
             if (player.getPartOfDrawRound()){ // a draw round where everyone is part of it, is a normal round
                 eligiblePlayers.add(player);
             }
-        }
+        }*/
 
         List<PlayerItem> currentWinners = new ArrayList<>();
 
-        for (PlayerItem player : eligiblePlayers) {
+        for (PlayerItem player : players) {
+            Log.d("CURRENTMAX", "NOT CM BUT PLAYER" + player.getUsername());
             if (player.getCard(0).attributeMap.get("attribute" + attributeNumber) > currentMax ){   // find the highest value and assign it's index
                 currentMax = player.getCard(0).attributeMap.get("attribute" + attributeNumber);
                 currentWinners.clear();
                 currentWinners.add(player);
+                Log.d("CURRENTMAX", ""+currentMax + " " + player.getCard(0).name + " " + player.getUsername());
             }
             else if (player.getCard(0).attributeMap.get("attribute" + attributeNumber) == currentMax){ // in case it's a draw
                 currentWinners.add(player);
             }
         }
-        Log.d("MEEEEEEH", "WINNER " + currentWinners);
         if (currentWinners.size() == 1){ // there is one winner
             for(ServerListener sL : playerList){
                 if (sL.getID() == currentWinners.get(0).getId()){
@@ -112,9 +115,10 @@ public class GameManager {
 
     private void awardWinner(int index){
         ArrayList<PlayerItem> temp;
-        temp = players;
+        temp = (ArrayList<PlayerItem>) players.clone();
         temp.remove(index);
         for (int i = 0; i < temp.size(); i++){
+            Log.d("INDEX TEMP PLAYER", "" + temp.get(i) + " " + i);
             callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
             players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
         }
@@ -185,14 +189,15 @@ public class GameManager {
         playerList = sLL;
     }
 
-    public void sendCard(){
+    public void sendCard(int i){
+        Log.d("GAMEFRAGSTART", "CALLED"+i);
         for(ServerListener sL : playerList){
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
                     if(pI.getId() == playerList.get(currentPlayer).getID()){
-                        sL.sendMessage("turn 1 " + (pI.getPlayerDeck().get(0).id%8));
+                        sL.sendMessage("turn 1 " + (pI.getPlayerDeck().get(0).id));
                     }else{
-                        sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id%8));
+                        sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id));
                     }
 
                 }
