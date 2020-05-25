@@ -45,7 +45,7 @@ public class GameManager {
             Log.d("cardDealing", p.getUsername() + " " + p.getPlayerDeck().size());
         }
 
-        sendCard(1090);
+        sendCard();
 
     }
 
@@ -120,8 +120,13 @@ public class GameManager {
         for (int i = 0; i < temp.size(); i++){
             Log.d("INDEX TEMP PLAYER", "" + temp.get(i) + " " + i);
             callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
-            players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
+            //players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
+            players.get(i).playerDeck.remove(0);
         }
+        CardClass card = players.get(index).getCard(0);
+        players.get(index).playerDeck.remove(0);
+        callAddToPlayerDeck(players.get(index), card);
+        nextTurn();
     }
 
     public ArrayList<PlayerItem> getPlayers(){
@@ -181,6 +186,7 @@ public class GameManager {
 
     public void nextTurn() {
         determineCurrentPlayer();
+        sendCard();
         playerList = server.getServerListeners();
         //TODO NEXT TURN MSG AN ALLE
     }
@@ -189,8 +195,7 @@ public class GameManager {
         playerList = sLL;
     }
 
-    public void sendCard(int i){
-        Log.d("GAMEFRAGSTART", "CALLED"+i);
+    public void sendCard(){
         for(ServerListener sL : playerList){
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){

@@ -470,8 +470,14 @@ public class GameFragment extends Fragment {
         }
     }
 
-    public void updatePlayerFrag(int card, int count){
-        card = card % 8;//TODO LÖSCHNE SPÄTER
+    public void updatePlayerFrag(int id, int count){
+        int card = 0;
+        for(int i = 0; i < gA.cardDeck.length; i++){
+            if(id == gA.cardDeck[i].id){
+                card = i;
+                break;
+            }
+        }
         Log.d("KARTENNUMMER", ""+card +  " " + playerTextViews[1]);
         if(playerTextViews != null){
             Log.d("ALLA", "" + card);
