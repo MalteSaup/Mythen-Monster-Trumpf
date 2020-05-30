@@ -2,6 +2,7 @@ package com.projectc.mythicalmonstermatch.Fragments;
 
 
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.projectc.mythicalmonstermatch.Connection.Client;
+import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.GameManager;
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
@@ -94,8 +97,6 @@ public class HostFragment extends Fragment {
             };
         }
         runnable.run();
-
-
         startButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -105,7 +106,7 @@ public class HostFragment extends Fragment {
                 gA.playerItems.add(enemy);
                 gA.startGame();*/
                 Log.d("SOLLSTART", "JETZT");
-                gA.client.sendMessage("start "+gA.name);
+                handleMessageSend("start "+gA.name, gA.client);
             }
         });
 
@@ -125,6 +126,29 @@ public class HostFragment extends Fragment {
         stoped = true;
         super.onDestroy();
     }
+
+    private void handleMessageSend(final String msg, final ServerListener sL){
+        AsyncTask asyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                sL.sendMessage(msg);
+                return null;
+            }
+        };
+        asyncTask.execute();
+    }
+
+    private void handleMessageSend(final String msg, final Client sL){
+        AsyncTask asyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                sL.sendMessage(msg);
+                return null;
+            }
+        };
+        asyncTask.execute();
+    }
+
 
 }
 

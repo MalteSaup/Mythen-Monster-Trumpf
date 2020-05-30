@@ -1,5 +1,6 @@
 package com.projectc.mythicalmonstermatch;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.projectc.mythicalmonstermatch.Connection.Server;
@@ -49,6 +50,17 @@ public class GameManager {
 
     }
 
+    private void handleMessageSend(final String msg, final ServerListener sL){
+        AsyncTask asyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                sL.sendMessage(msg);
+                return null;
+            }
+        };
+        asyncTask.execute();
+    }
+
     public void compareResults(int attributeNumber){
         Log.d("ATTRIBUTENUMBER", "" + attributeNumber);
         int currentMax = 0;
@@ -77,10 +89,12 @@ public class GameManager {
         if (currentWinners.size() == 1){ // there is one winner
             for(ServerListener sL : playerList){
                 if (sL.getID() == currentWinners.get(0).getId()){
-                    sL.sendMessage("WIN");
+                    handleMessageSend("WIN", sL);
+                    //sL.sendMessage("WIN");
                     awardWinner(players.indexOf(currentWinners.get((0))));
                 } else {
-                    sL.sendMessage("LOSE");
+                    //sL.sendMessage("LOSE");
+                    handleMessageSend("LOSE", sL);
                 }
             }
 
@@ -200,9 +214,9 @@ public class GameManager {
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
                     if(pI.getId() == playerList.get(currentPlayer).getID()){
-                        sL.sendMessage("turn 1 " + (pI.getPlayerDeck().get(0).id));
+                        handleMessageSend("turn 1 " + (pI.getPlayerDeck().get(0).id), sL);
                     }else{
-                        sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id));
+                        handleMessageSend("turn 0 " + (pI.getPlayerDeck().get(0).id), sL);
                     }
 
                 }
