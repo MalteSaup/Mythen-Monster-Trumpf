@@ -17,7 +17,16 @@ DENIED                                                                          
 CLOSING                                                                             |SERVER WIRD VOM HOST BEENDET
 TURN <STATUS 0 = NICHT DRAN 1 = DRAN> <KARTEN ID>
 COMPARED <STATUS 0 = LOSE 1 = WIN 2 = DRAW> <SPIELER ID WINNER/DRAW GEGNER>
-PLAYERINFO; <PLAYER ID:CARD ID>; usw
+PLAYERINFO ;<PLAYER ID:CARD ID>; usw
 WIN
 LOSE
 MOVE ATTRIBUTE
+
+
+
+TODO RECONNECT, SERVER GESCHLOSSEN DURCH HOST NACHRICHT UND SCHLIEßEN AUF NUTZER SEITE EINBINDEN
+TODO CONNECTION LOSE PROBLEM WEITERHIN NICHT GECATCHED
+TODO UPDATE ENEMY FRAG MIT ÜBERMITTELTEN DATEN
+
+REGEL: Nachrichten über die AsyncSupportClass senden weil scheinbar neue Sicherheitsregeln Nettwerking auf Main Thread verbietet
+Evtl Gucken das man dadurch die UI Zerschißt weil in Async Funktionen keine Views bearbeitet werden ab höheren Android

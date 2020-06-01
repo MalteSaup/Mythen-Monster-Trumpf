@@ -2,6 +2,7 @@ package com.projectc.mythicalmonstermatch;
 
 import android.util.Log;
 
+import com.projectc.mythicalmonstermatch.Connection.AsyncSupportClass;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 
@@ -18,6 +19,8 @@ public class GameManager {
 
     private int currentPlayer;
 
+    private AsyncSupportClass supportClass;
+
     public GameManager(CardClass[] allCards, ArrayList<PlayerItem> players, Server server){
         this.allCards = allCards;
         this.players = players;
@@ -25,6 +28,7 @@ public class GameManager {
         this.playerList = server.getServerListeners();
         currentPlayer = (int)((playerList.size()-1) * Math.random());
         //if(currentPlayer < 0){currentPlayer = 0;}
+        this.supportClass = new AsyncSupportClass();
     }
 /*
 
@@ -77,10 +81,10 @@ public class GameManager {
         if (currentWinners.size() == 1){ // there is one winner
             for(ServerListener sL : playerList){
                 if (sL.getID() == currentWinners.get(0).getId()){
-                    sL.sendMessage("WIN");
+                    supportClass.sendMessage(sL, "WIN");
                     awardWinner(players.indexOf(currentWinners.get((0))));
                 } else {
-                    sL.sendMessage("LOSE");
+                    supportClass.sendMessage(sL, "LOSE");
                 }
             }
 
@@ -200,9 +204,9 @@ public class GameManager {
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
                     if(pI.getId() == playerList.get(currentPlayer).getID()){
-                        sL.sendMessage("turn 1 " + (pI.getPlayerDeck().get(0).id));
+                        supportClass.sendMessage(sL, "turn 1 " + (pI.getPlayerDeck().get(0).id));
                     }else{
-                        sL.sendMessage("turn 0 " + (pI.getPlayerDeck().get(0).id));
+                        supportClass.sendMessage(sL, "turn 0 " + (pI.getPlayerDeck().get(0).id));
                     }
 
                 }

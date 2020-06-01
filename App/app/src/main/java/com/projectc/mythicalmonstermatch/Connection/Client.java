@@ -172,7 +172,7 @@ public class Client extends Thread{
     }
 
     private void handleMove(String[] tokens) {
-        if(gameActivity.code == 0){
+        if(gameActivity.code == 0){ //CODE == 0 => HOST HAT DEN GAME MANAGER
             gameActivity.gameManager.compareResults(Integer.parseInt(tokens[1]));
         }
     }

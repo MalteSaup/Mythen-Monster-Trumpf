@@ -89,7 +89,8 @@ public class ServerListener extends Thread{
     private void handleMove(String line) {
         Log.d("MEEEEEEH", "SEVER MESSENGER " + line);
         for (ServerListener sL : server.getServerListeners()){
-            sL.sendMessage(line);
+            //sL.sendMessage(line);
+            //TODO ERROR VERMEIDUNG WÜRDE ENDLOSSCHLEIFE VERUSACHEN DER IWANN SERVER LAHM LEGT
         }
     }
 

@@ -105,7 +105,7 @@ public class HostFragment extends Fragment {
                 gA.playerItems.add(enemy);
                 gA.startGame();*/
                 Log.d("SOLLSTART", "JETZT");
-                gA.client.sendMessage("start "+gA.name);
+                gA.supportClass.sendMessage(gA.client,"start "+gA.name);
             }
         });
 

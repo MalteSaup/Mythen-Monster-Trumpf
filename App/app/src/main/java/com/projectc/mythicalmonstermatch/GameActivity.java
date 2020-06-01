@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.projectc.mythicalmonstermatch.Connection.AsyncSupportClass;
 import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
@@ -34,6 +35,8 @@ public class GameActivity extends FragmentActivity{
     public int playerCount = -1;
     public int id = -1;
 
+    public AsyncSupportClass supportClass;
+
     public GameManager gameManager;
 
     public GameFragment gameFragment = null;
@@ -50,6 +53,8 @@ public class GameActivity extends FragmentActivity{
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "APP::WAKELOCK");
         wakeLock.acquire();
         Log.d("WAKELOCK", wakeLock.toString());
+
+        supportClass = new AsyncSupportClass();
 
         setContentView(R.layout.game_activity);
 
@@ -85,8 +90,6 @@ public class GameActivity extends FragmentActivity{
             while(client.joined == false){
                 assert true;
             }
-            client.sendMessage("JASDKL");
-            Log.d("WASHDKJHKJSDLHAKD", "HJKHKJH");
             ArrayList<ServerListener> sL = server.getServerListeners();
             Log.d("SL", " "+sL.size() + " " + server);
             for(ServerListener sLL : sL){

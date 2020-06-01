@@ -152,10 +152,16 @@ public class GameFragment extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                createEnemieAnimations();
-                if(playerCount > 3){
-                    deactivateAnimFrags();
-                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createEnemieAnimations();
+                        if(playerCount > 3){
+                            deactivateAnimFrags();
+                        }
+                    }
+                });
                 return null;
             }
         };
@@ -390,15 +396,12 @@ public class GameFragment extends Fragment {
             public void onClick(View v) {
                 for(int i = 0; i < tableRows.length; i++){
                     ColorDrawable background = (ColorDrawable) tableRows[i].getBackground();
-                    Log.d("MEEEEEEH", "" + background);
                     if(background != null) {
-                        Log.d("MEEEEEEH", "" + background.getColor() +" : " + green);
-                        Log.d("MEEEEEEH", "222222      " +Color.parseColor("#262733"));
                         if (background.getColor() == green) {
-                            Log.d("MEEEEEEH", "MSGHAGDS");
-                            gA.client.sendMessage("move " + (i + 1));
+                            gA.supportClass.sendMessage(gA.client, "move " + (i + 1));
                         }
                     }
+                    tableRows[i].setBackgroundColor(Color.parseColor("#262733"));
                 }
             }
         });
