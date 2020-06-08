@@ -26,7 +26,7 @@ public class GameManager {
         this.players = players;
         this.server = server;
         this.playerList = server.getServerListeners();
-        currentPlayer = (int)((playerList.size()-1) * Math.random());
+        currentPlayer = (int)((playerList.size()) * Math.random());
         //if(currentPlayer < 0){currentPlayer = 0;}
         this.supportClass = new AsyncSupportClass();
     }
@@ -45,6 +45,7 @@ public class GameManager {
         for (int i = 0; i < allCards.length; i++){
             callAddToPlayerDeck(players.get(i % players.size()), allCards[i]); // player1 cards0 becomes allCards0, player2 cards0 becomes allCards1 etc.
         }
+        allCards = new CardClass[] {};
         for (PlayerItem p : players){
             Log.d("cardDealing", p.getUsername() + " " + p.getPlayerDeck().size());
         }
@@ -58,11 +59,11 @@ public class GameManager {
         int currentMax = 0;
         List<PlayerItem> eligiblePlayers = new ArrayList<>(); // necessary to determine participants in draw rounds
 
-        /*for (PlayerItem player : players){
+        for (PlayerItem player : players){
             if (player.getPartOfDrawRound()){ // a draw round where everyone is part of it, is a normal round
                 eligiblePlayers.add(player);
             }
-        }*/
+        }
 
         List<PlayerItem> currentWinners = new ArrayList<>();
 
@@ -91,14 +92,23 @@ public class GameManager {
             for (PlayerItem player : players){
                 player.setPartOfDrawRound(true);
             }
+            currentPlayer = players.indexOf(currentWinners.get(0));
         }
         else{ // draw round begins
             for (PlayerItem player : players){
                 if (!currentWinners.contains(players.indexOf(player))){
                     player.setPartOfDrawRound(false);
                 }
+
+                callAddToPlayerDeck(player, player.getCard(0)); // the card that caused the draw gets
+                player.playerDeck.remove(0);                    // sent to the back of the deck
+
             }
         }
+        Log.d("ciwo", players.get(0).playerDeck.size() + ", " + players.get(1).playerDeck.size());
+        Log.d("ciwo2", players.get(0).playerDeck.get(0).name + ", " + players.get(1).playerDeck.get(0).name);
+        Log.d("ciwo2", players.get(0).playerDeck.get(players.get(0).playerDeck.size()-1).name + ", " + players.get(1).playerDeck.get(players.get(0).playerDeck.size()-1).name);
+
         nextTurn();
     }
 
@@ -118,18 +128,23 @@ public class GameManager {
     }
 
     private void awardWinner(int index){
+
         ArrayList<PlayerItem> temp;
         temp = (ArrayList<PlayerItem>) players.clone();
         temp.remove(index);
+        Log.d("ciwo3", "" + temp.size() + ", " + temp.get(0).getUsername() + ", " + index);
         for (int i = 0; i < temp.size(); i++){
             Log.d("INDEX TEMP PLAYER", "" + temp.get(i) + " " + i);
             callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
+            Log.d("ciwo4", "" + temp.get(i).getCard(0).name);
+            Log.d("ciwo4", "" + players.get(index).playerDeck.size());
             //players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
             players.get(i).playerDeck.remove(0);
+            Log.d("ciwo4", "" + players.get(index).playerDeck.size());
+
         }
-        CardClass card = players.get(index).getCard(0);
-        players.get(index).playerDeck.remove(0);
-        callAddToPlayerDeck(players.get(index), card);
+        callAddToPlayerDeck(players.get(index), players.get(index).getCard(0)); // the card that won the round gets
+        players.get(index).playerDeck.remove(0);                                // sent to the back of the deck
         nextTurn();
     }
 

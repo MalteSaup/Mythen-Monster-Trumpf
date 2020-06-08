@@ -69,6 +69,9 @@ public class ServerListener extends Thread{
                         handleNextTurn();
                     } else if (cmd.equalsIgnoreCase("move")) {
                         handleMove(line);
+                    }else if (cmd.equalsIgnoreCase("msg2all")) {
+                        tokens = line.split(" ", 2);
+                        sendMessageToAll(tokens[1]);
                     }
 
                 }
@@ -89,8 +92,16 @@ public class ServerListener extends Thread{
     private void handleMove(String line) {
         Log.d("MEEEEEEH", "SEVER MESSENGER " + line);
         for (ServerListener sL : server.getServerListeners()){
-            //sL.sendMessage(line);
-            //TODO ERROR VERMEIDUNG WÜRDE ENDLOSSCHLEIFE VERUSACHEN DER IWANN SERVER LAHM LEGT
+            sL.sendMessage(line);
+
+        }
+    }
+
+    public void sendMessageToAll(String msg){
+        for(ServerListener sL : server.getServerListeners()){
+            if(sL != this){
+                sL.sendMessage(msg);
+            }
         }
     }
 
