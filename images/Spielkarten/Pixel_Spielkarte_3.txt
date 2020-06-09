@@ -1,0 +1,18 @@
+4k 16:9 == 3840x2160 px
+
+Karte:	Höhe:	90% == 3456
+	Breite:	86% == 1858
+
+	Rand (l):	9% = 167
+	Content:	82% = 1524
+	Rand (r):	9% = 167
+
+	
+	Rand (o):	4% = 138
+	Name:		11% = 380
+	Freiraum:	3% = 104
+	Bild:		60% = 2073
+	Freiraum:	3% = 104
+	Attribute:	12% = 415
+	Rand (u):	7% = 242
+
