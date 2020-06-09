@@ -80,11 +80,15 @@ public class GameManager {
             }
         }
         if (currentWinners.size() == 1){ // there is one winner
+
             for(ServerListener sL : playerList){
+
                 if (sL.getID() == currentWinners.get(0).getId()){
+
                     supportClass.sendMessage(sL, "WIN");
                     awardWinner(players.indexOf(currentWinners.get((0))));
                 } else {
+
                     supportClass.sendMessage(sL, "LOSE");
                 }
             }
@@ -106,9 +110,6 @@ public class GameManager {
             }
         }
         Log.d("ciwo", players.get(0).playerDeck.size() + ", " + players.get(1).playerDeck.size());
-        Log.d("ciwo2", players.get(0).playerDeck.get(0).name + ", " + players.get(1).playerDeck.get(0).name);
-        Log.d("ciwo2", players.get(0).playerDeck.get(players.get(0).playerDeck.size()-1).name + ", " + players.get(1).playerDeck.get(players.get(0).playerDeck.size()-1).name);
-
         nextTurn();
     }
 
@@ -128,19 +129,18 @@ public class GameManager {
     }
 
     private void awardWinner(int index){
-
+        Log.d("ciwo", "" + players.get(index).getUsername());
         ArrayList<PlayerItem> temp;
         temp = (ArrayList<PlayerItem>) players.clone();
-        temp.remove(index);
-        Log.d("ciwo3", "" + temp.size() + ", " + temp.get(0).getUsername() + ", " + index);
+
         for (int i = 0; i < temp.size(); i++){
             Log.d("INDEX TEMP PLAYER", "" + temp.get(i) + " " + i);
-            callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
-            Log.d("ciwo4", "" + temp.get(i).getCard(0).name);
-            Log.d("ciwo4", "" + players.get(index).playerDeck.size());
-            //players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
-            players.get(i).playerDeck.remove(0);
-            Log.d("ciwo4", "" + players.get(index).playerDeck.size());
+            if (i != index){
+                callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
+                //players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
+                players.get(i).playerDeck.remove(0);
+            }
+
 
         }
         callAddToPlayerDeck(players.get(index), players.get(index).getCard(0)); // the card that won the round gets
