@@ -13,6 +13,7 @@ import java.util.Random;
 public class GameManager {
 
     private CardClass[] allCards;
+    private PlayerItem pool; // cards that are kept in the "middle" during a draw round
     private ArrayList<PlayerItem> players;
     private Server server;
     private ArrayList<ServerListener> playerList;
@@ -27,7 +28,8 @@ public class GameManager {
         this.server = server;
         this.playerList = server.getServerListeners();
         currentPlayer = (int)((playerList.size()) * Math.random());
-        //if(currentPlayer < 0){currentPlayer = 0;}
+        pool = new PlayerItem("pool", -1);
+        pool.playerDeck = new ArrayList<>();
         this.supportClass = new AsyncSupportClass();
     }
 /*
@@ -67,7 +69,7 @@ public class GameManager {
 
         List<PlayerItem> currentWinners = new ArrayList<>();
 
-        for (PlayerItem player : players) {
+        for (PlayerItem player : eligiblePlayers) {
             Log.d("CURRENTMAX", "NOT CM BUT PLAYER" + player.getUsername());
             if (player.getCard(0).attributeMap.get("attribute" + attributeNumber) > currentMax ){   // find the highest value and assign it's index
                 currentMax = player.getCard(0).attributeMap.get("attribute" + attributeNumber);
@@ -99,15 +101,25 @@ public class GameManager {
             currentPlayer = players.indexOf(currentWinners.get(0));
         }
         else{ // draw round begins
+            List<PlayerItem> drawWinners = new ArrayList<>();
+
             for (PlayerItem player : players){
-                if (!currentWinners.contains(players.indexOf(player))){
+                if (currentWinners.contains(player)){
+                    drawWinners.add(player);
+                }
+                else{
                     player.setPartOfDrawRound(false);
                 }
 
-                callAddToPlayerDeck(player, player.getCard(0)); // the card that caused the draw gets
-                player.playerDeck.remove(0);                    // sent to the back of the deck
+                for(ServerListener sL : playerList){
+                    supportClass.sendMessage(sL, "DRAW");
+                }
 
+                callAddToPlayerDeck(pool, player.getCard(0));
+                player.playerDeck.remove(0);
             }
+            Log.d("alooah", "" +drawWinners.size());
+            currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random())));
         }
         Log.d("ciwo", players.get(0).playerDeck.size() + ", " + players.get(1).playerDeck.size());
         nextTurn();
@@ -137,11 +149,14 @@ public class GameManager {
             Log.d("INDEX TEMP PLAYER", "" + temp.get(i) + " " + i);
             if (i != index){
                 callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
-                //players.remove(players.get(temp.indexOf(temp.get(i)))); // removes the card from a players deck, after it was rewarded to the winner
                 players.get(i).playerDeck.remove(0);
             }
-
-
+        }
+        if (pool.playerDeck.size() > 0){ // if someone wins after a draw round they win all the cards in the pool
+            for (CardClass c : pool.playerDeck){
+                callAddToPlayerDeck(players.get(index), c);
+            }
+            pool.playerDeck.clear();
         }
         callAddToPlayerDeck(players.get(index), players.get(index).getCard(0)); // the card that won the round gets
         players.get(index).playerDeck.remove(0);                                // sent to the back of the deck

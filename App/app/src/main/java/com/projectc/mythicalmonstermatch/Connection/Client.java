@@ -169,6 +169,13 @@ public class Client extends Thread{
 
     private void handleDraw(String[] tokens) {
         //TODO
+
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(gameActivity,"It's a draw!",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void handleMove(String[] tokens) {
@@ -179,11 +186,23 @@ public class Client extends Thread{
 
     private void handleLose() {
         Log.d("RUNDEVOLLENDET", "LOSER");
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(gameActivity,"You lost...",Toast.LENGTH_SHORT).show();
+            }
+        });
         //gameActivity.gameFragment.createWinLoseScreen(0);
     }
 
     private void handleWin() {
         Log.d("RUNDEVOLLENDET", "IWINNER");
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(gameActivity,"You won!",Toast.LENGTH_SHORT).show();
+            }
+        });
         //gameActivity.gameFragment.createWinLoseScreen(1);
     }
 
