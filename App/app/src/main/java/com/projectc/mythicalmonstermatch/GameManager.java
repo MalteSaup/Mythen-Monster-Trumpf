@@ -121,7 +121,6 @@ public class GameManager {
             Log.d("alooah", "" +drawWinners.size());
             currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random())));
         }
-        Log.d("ciwo", players.get(0).playerDeck.size() + ", " + players.get(1).playerDeck.size());
         nextTurn();
     }
 
@@ -222,6 +221,17 @@ public class GameManager {
         determineCurrentPlayer();
         sendCard();
         playerList = server.getServerListeners();
+
+        if (players.size() == 1){ // one person being left means they are the winner
+            for(ServerListener sL : playerList){
+                for(PlayerItem pI : players){
+                    if(pI.getId() == sL.getID()){
+                        supportClass.sendMessage(sL, "win");
+                    }
+                }
+            }
+        }
+
         //TODO NEXT TURN MSG AN ALLE
     }
 
@@ -233,7 +243,12 @@ public class GameManager {
         for(ServerListener sL : playerList){
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
-                    if(pI.getId() == playerList.get(currentPlayer).getID()){
+                    if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
+                        supportClass.sendMessage(sL, "lose");
+                        players.remove(pI);
+                        break;
+                    }
+                    else if(pI.getId() == playerList.get(currentPlayer).getID()){
                         supportClass.sendMessage(sL, "turn 1 " + (pI.getPlayerDeck().get(0).id));
                     }else{
                         supportClass.sendMessage(sL, "turn 0 " + (pI.getPlayerDeck().get(0).id));
