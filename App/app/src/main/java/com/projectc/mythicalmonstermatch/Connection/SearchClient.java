@@ -32,6 +32,7 @@ public class SearchClient extends Thread{
     private BufferedWriter bufferedWriter;
 
     private boolean notEnded = true;                                                                //NOT ENDED FLAG
+    private boolean directConnect = false;
 
     public SearchClient(FindFragment findFragment, Context context, String address){
         this.findFragment = findFragment;
@@ -39,11 +40,19 @@ public class SearchClient extends Thread{
         this.address = address;
     }
 
+    public SearchClient(FindFragment findFragment, Context context, String address, boolean directConnect){
+        this.findFragment = findFragment;
+        this.context = context;
+        this.address = address;
+        this.directConnect = directConnect;
+    }
+
     @Override
     public void run(){                                                                              //STARTET SUCH FUNKTION
         try {
             connect();
         } catch (InterruptedException e) {
+            if(directConnect){findFragment.directConnectNow();}
             e.printStackTrace();
         }
     }
@@ -82,6 +91,9 @@ public class SearchClient extends Thread{
                 }
             }
         } catch (ConnectException e){
+            if(directConnect){
+                findFragment.directConnectFailed();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,7 +103,8 @@ public class SearchClient extends Thread{
         int playerCount = Integer.parseInt(tokens[2]);                                              //ANZAHL GEJOINTER SPIELER
         String serverName = tokens[3];                                                              //SERVER NAME
         int startState = Integer.parseInt(tokens[1]);                                               //OB SERVER SCHON GESTARTET IST
-        findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address, startState));  //FÜGT SERVER DER SERVERLISTE HINZU
+        if(!directConnect){findFragment.uebergabeArray.add(new ServerItem(serverName, playerCount, address, startState));}  //FÜGT SERVER DER SERVERLISTE HINZU
+        else{findFragment.directConnectItem = new ServerItem(serverName, playerCount, address, startState);}
         throw iE;                                                                                   //SCHMEIßT EXCEPTION WENN FERTIG
     }
 }

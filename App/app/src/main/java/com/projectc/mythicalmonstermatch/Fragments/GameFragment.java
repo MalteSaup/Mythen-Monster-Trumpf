@@ -1,5 +1,6 @@
 package com.projectc.mythicalmonstermatch.Fragments;
 
+import android.animation.Animator;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,9 +18,12 @@ import android.widget.TextView;
 
 import com.projectc.mythicalmonstermatch.AnimationHolder;
 import com.projectc.mythicalmonstermatch.CardAnimator;
-import com.projectc.mythicalmonstermatch.MainActivity;
+import com.projectc.mythicalmonstermatch.Connection.ServerListener;
+import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
+
+import java.util.ArrayList;
 
 public class GameFragment extends Fragment {
 
@@ -27,26 +31,36 @@ public class GameFragment extends Fragment {
     private PlayerItem myPlayerItem;
 
     private ImageView imageView;
+    private ImageView deckImageView;
 
     private View playerFrag;
+    private View playerDeckFrag;
     private View[] enemieFrags;
     private View[] enemieAnimationFrags;
+    private View[] enemieDeck;
     private View view;
     private TableRow[] tableRows;
 
-    //private GameActivity gA;
-    private MainActivity gA;
+    private GameActivity gA;
+    //private MainActivity gA;
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = false;
+    private boolean background = true;
+    private boolean changed = false;
 
     private TextView[] enemieTextViews[];
     private ImageView[] enemieImageViews[];
     private TextView[] playerTextViews;
+    private TextView[] playerDeckTextViews;
+    private Button submitBtn;
 
     private TextView[] enemieAnimTextViews[];
     private ImageView[] enemieAnimImageViews[];
+
+    private ImageView winLoseScreen;
+
+    private int[] playerID;
 
     private int[] game_fragments = new int[]{
             R.layout.fragment_game_2,
@@ -54,17 +68,23 @@ public class GameFragment extends Fragment {
             R.layout.fragment_game_4,
             R.layout.fragment_game_5
     };
-    private int playerCount = 3; //HARDCODED
+    private int playerCount; //HARDCODED
 
     private CardAnimator cardAnimator;
 
     private AnimationHolder playerAnimation;
+    private AnimationHolder playerDeckAnimation;
     private AnimationHolder[] enemieAnimations[];
     private AnimationHolder[] enemieAnimAnimations;
+    private TextView[][] enemieDeckTV;
+    private ImageView[][] enemieDeckIV;
+    private AnimationHolder[][] enemieDeckAS;
 
+    private int green = Color.parseColor("#00FF00");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("GAMEFRAGSTART", "ALLA");
         super.onCreate(savedInstanceState);
 
     }
@@ -72,8 +92,12 @@ public class GameFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.d("GAMEFRAGSTART", "START12");
+
         //ACTIVITY HOLEN UND SPIELERZAHL AUSLESEN
-        //gA = (GameActivity) getActivity();
+        gA = (GameActivity) getActivity();
+        playerCount = gA.playerItems.size();
         //playerCount = gA.server.playerCount();
         /*switch (playerCount){
             case 2: return inflater.inflate(game_fragments[0], container, false);
@@ -81,34 +105,44 @@ public class GameFragment extends Fragment {
             case 4: return inflater.inflate(game_fragments[2], container, false);
             case 5: return inflater.inflate(game_fragments[3], container, false);
         }*/
-        return inflater.inflate(R.layout.fragment_game_3, container, false);//HARDCODED
+        Log.d("PLAYERCOUNT", "" + playerCount);
+        return inflater.inflate(game_fragments[playerCount-2], container, false);//HARDCODED
     }
 
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
-        //gA = (GameActivity) getActivity();
-        gA = (MainActivity) getActivity();
+        gA = (GameActivity) getActivity();
+        //gA = (MainActivity) getActivity();
+        gA.gameFragment = this;
         view = getView();
 
         cardAnimator = new CardAnimator(gA);
 
         initializePlayerFrag();
         initializeEnemieFrags();
-
-        updatePlayerFrag(1);
-        updateEnemieFrag(0, 4, "Scarriness");      //HARDCODED
-        updateEnemieFrag(1, 3, "Scarriness");
-        /*updateEnemieFrag(2, 5, "Scarriness");
-        updateEnemieFrag(3, 6, "Scarriness");*/
-
+        Log.d("GAMEFRAGSTART", "START");
         showBackground(background);
 
+        winLoseScreen = gA.findViewById(R.id.win_lose_screen);
+        winLoseScreen.setVisibility(View.GONE);
 
 
 
+        if(gA.code == 0){
+            //initAndSortIDArray();
+            gA.gameManager.dealOutCards();
+
+
+            myPlayerItem = gA.gameManager.findPlayerById(getId());
+
+            gA.gameManager.determineCurrentPlayer();
+        }
         //TODO ENEMIE FRAG BACKGROUND IMAGE TO BACKSITE OF CARD
 
-
+        if (gA.code == 1){
+            //TODO das eigene playerItem vom gameManager bekommen
+        }
+        updatePlayerFrag(3, 0);
         //Log.d("HEIGHT", " " + enemieFrags[0].getMeasuredHeight() + " " + enemieFrags[0].getHeight());
         AsyncTask asyncTask = new AsyncTask() {
                 @Override
@@ -118,15 +152,45 @@ public class GameFragment extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                createEnemieAnimations();
-                if(playerCount > 3){
-                    deactivateAnimFrags();
-                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createEnemieAnimations();
+                        if(playerCount > 3){
+                            deactivateAnimFrags();
+                        }
+                    }
+                });
                 return null;
             }
         };
         asyncTask.execute();
         super.onActivityCreated(saveInstandesState);
+    }
+
+    public void initAndSortIDArray(){
+        ArrayList<ServerListener> sLL = gA.server.getServerListeners();
+        playerID = new int[sLL.size()];
+        for(int i = 0; i < sLL.size(); i++){
+            playerID[i] = sLL.get(i).getID();
+        }
+        int uebergabe = 0;
+        for(int i = 0; i < playerID.length; i++){
+            if(playerID[i] == gA.id){
+                if(i == 0){
+                    break;
+                }
+                uebergabe = i;
+                break;
+            }
+        }
+        if(uebergabe != 0){
+            int id = playerID[0];
+            playerID[0] = playerID[uebergabe];
+            playerID[uebergabe] = id;
+        }
+        gA.gameManager.setPlayer(sLL);
     }
 
     private void deactivateAnimFrags() {
@@ -140,16 +204,24 @@ public class GameFragment extends Fragment {
 
         Resources res = getResources();
         String enemyString = "enemy_fragment";
+        String enemyDeckString = "enemy_deck_fragment";
 
         enemieFrags = new View[playerCount-1];
         enemieTextViews = new TextView[playerCount-1][];
         enemieImageViews = new ImageView[playerCount-1][];
         enemieAnimations = new AnimationHolder[playerCount-1][];
 
+        enemieDeck = new View[playerCount-1];
+        enemieDeckTV = new TextView[playerCount-1][];
+        enemieDeckIV = new ImageView[playerCount-1][];
+        enemieDeckAS = new AnimationHolder[playerCount-1][];
+
+
         enemieAnimationDirection = new boolean[playerCount-1];
 
         for(int i = 0; i < playerCount-1; i++){
             String uebergabe = enemyString + (i+1);
+            String uebergabe2 = enemyDeckString + (i+1);
             int id = res.getIdentifier(uebergabe, "id", gA.getPackageName());
             enemieFrags[i] = view.findViewById(id);
             Log.d("SCHONWIEDER", uebergabe + " " + id + " " + enemieFrags[i]);
@@ -162,6 +234,21 @@ public class GameFragment extends Fragment {
                     enemieFrags[i].findViewById(R.id.background),
                     enemieFrags[i].findViewById(R.id.imageView)
             };
+            id = res.getIdentifier(uebergabe2, "id", gA.getPackageName());
+            enemieDeck[i] = view.findViewById(id);
+            Log.d("SCHONWIEDER", uebergabe + " " + id + " " + enemieFrags[i]);
+            enemieDeckTV[i] = new TextView[]{
+                    enemieDeck[i].findViewById(R.id.cardName),
+                    enemieDeck[i].findViewById(R.id.attribut),
+                    enemieDeck[i].findViewById(R.id.attributeWert)
+            };
+            enemieDeckIV[i] = new ImageView[]{
+                    enemieDeck[i].findViewById(R.id.background),
+                    enemieDeck[i].findViewById(R.id.imageView)
+            };
+            enemieDeck[i].setAlpha(0.0f);
+
+
         }
         if(playerCount > 3){
             enemieAnimationFrags = new View[playerCount-1];
@@ -216,6 +303,8 @@ public class GameFragment extends Fragment {
                     cardFlipAnimation
             };
 
+            createDeckAnimation(enemieDeck[i], i, enemieFrags[i], cardFlipAnimation);
+
             final int finalI = i;
             enemieFrags[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -262,17 +351,35 @@ public class GameFragment extends Fragment {
 
     public void initializePlayerFrag(){
         playerFrag = view.findViewById(R.id.player_fragment);
+        playerDeckFrag = view.findViewById(R.id.player_deck_fragment);
+
 
         imageView = playerFrag.findViewById(R.id.imageView);
-        imageView.setImageResource(gA.cardDeck[0].imgID);
+
+        Log.d("IMAGEVIEW", "" + imageView + " " + gA.cardDeck[0].imgID);
+
+
+        //imageView.setImageResource(gA.cardDeck[0].imgID);
+
+        deckImageView = playerFrag.findViewById(R.id.imageView);
+        //deckImageView.setImageResource(gA.cardDeck[0].imgID);
 
         playerTextViews = new TextView[]{
                 playerFrag.findViewById(R.id.cardName),
-                playerFrag.findViewById(R.id.attributeWert),
+                playerFrag.findViewById(R.id.attributeWert1),
                 playerFrag.findViewById(R.id.attributeWert2),
                 playerFrag.findViewById(R.id.attributeWert3),
                 playerFrag.findViewById(R.id.attributeWert4),
                 playerFrag.findViewById(R.id.attributeWert5),
+        };
+
+        playerDeckTextViews = new TextView[]{
+                playerDeckFrag.findViewById(R.id.cardName),
+                playerDeckFrag.findViewById(R.id.attributeWert1),
+                playerDeckFrag.findViewById(R.id.attributeWert2),
+                playerDeckFrag.findViewById(R.id.attributeWert3),
+                playerDeckFrag.findViewById(R.id.attributeWert4),
+                playerDeckFrag.findViewById(R.id.attributeWert5),
         };
 
         tableRows = new TableRow[]{
@@ -283,24 +390,46 @@ public class GameFragment extends Fragment {
                 playerFrag.findViewById(R.id.row5)
         };
 
+        submitBtn = playerFrag.findViewById(R.id.submitBtn);
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0; i < tableRows.length; i++){
+                    ColorDrawable background = (ColorDrawable) tableRows[i].getBackground();
+                    if(background != null) {
+                        if (background.getColor() == green) {
+                            gA.supportClass.sendMessage(gA.client, "move " + (i + 1));
+                        }
+                    }
+                    tableRows[i].setBackgroundColor(Color.parseColor("#262733"));
+                }
+            }
+        });
+
         for (int i = 0; i < tableRows.length; i++){
             final int finalI = i;
             tableRows[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ColorDrawable background = (ColorDrawable) tableRows[finalI].getBackground();
-                    int green = Color.parseColor("#00FF00");
-                    int color = 0;
-                    if (background != null){color = background.getColor();}
-                    if(color == green){
-                        tableRows[finalI].setBackgroundColor(Color.parseColor("#262733"));
-                        colorWasChanged = false;
+                    if(gA.turn){
+                        ColorDrawable background = (ColorDrawable) tableRows[finalI].getBackground();
+                        int color = 0;
+                        if (background != null){color = background.getColor();}
+                        if(color == green){
+                            tableRows[finalI].setBackgroundColor(Color.parseColor("#262733"));
+                            colorWasChanged = false;
+                        }else{
+                            if(colorWasChanged){resetColor();}
+                            tableRows[finalI].setBackgroundColor(green);
+                            colorWasChanged = true;
+                            changed = true;
+                        }
                     }else{
-                        if(colorWasChanged){resetColor();}
-                        tableRows[finalI].setBackgroundColor(green);
-                        colorWasChanged = true;
+                        if(colorWasChanged){
+                            resetColor();
+                            colorWasChanged = false;
+                        }
                     }
-
                 }
             });
         }
@@ -344,18 +473,42 @@ public class GameFragment extends Fragment {
         }
     }
 
-    private void updatePlayerFrag(int card){
-        playerTextViews[0].setText(gA.cardDeck[0].name);
-        playerTextViews[1].setText("" + gA.cardDeck[0].attributeMap.get("attribute1"));
-        playerTextViews[2].setText("" + gA.cardDeck[0].attributeMap.get("attribute2"));
-        playerTextViews[3].setText("" + gA.cardDeck[0].attributeMap.get("attribute3"));
-        playerTextViews[4].setText("" + gA.cardDeck[0].attributeMap.get("attribute4"));
-        playerTextViews[5].setText("" + gA.cardDeck[0].attributeMap.get("attribute5"));
+    public void updatePlayerFrag(int id, int count){
+        int card = 0;
+        for(int i = 0; i < gA.cardDeck.length; i++){
+            if(id == gA.cardDeck[i].id){
+                card = i;
+                break;
+            }
+        }
+        Log.d("KARTENNUMMER", ""+card +  " " + playerTextViews[1]);
+        if(playerTextViews != null){
+            Log.d("ALLA", "" + card);
+            Log.d("ALLA", "" + gA.cardDeck[card]);
+            playerTextViews[0].setText(gA.cardDeck[card].name);
+            playerTextViews[1].setText("" + gA.cardDeck[card].attributeMap.get("attribute1"));
+            playerTextViews[2].setText("" + gA.cardDeck[card].attributeMap.get("attribute2"));
+            playerTextViews[3].setText("" + gA.cardDeck[card].attributeMap.get("attribute3"));
+            playerTextViews[4].setText("" + gA.cardDeck[card].attributeMap.get("attribute4"));
+            playerTextViews[5].setText("" + gA.cardDeck[card].attributeMap.get("attribute5"));
+            if(gA.cardDeck[card].imgID != null){imageView.setImageResource(gA.cardDeck[card].imgID);}//TODO WENN ALLE BILDER DA SIND ERROR PROTECTION BESEITIGEN
+            if(gA.turn){submitBtn.setVisibility(View.VISIBLE);}
+            else{submitBtn.setVisibility(View.GONE);}
+        }
+        else{
+            Log.d("REKURSION", "REKURSION" + count);
+            updatePlayerFrag(card, count + 1); //TODO MACH ES SCHÖNER DU KNECHT DANKE BITTE
+        }
+
     }
 
     private void showBackground(boolean show){
         if(show){
-            for(View enemyFrag : enemieFrags){enemyFrag.findViewById(R.id.background).setVisibility(View.VISIBLE);}
+            Log.d("ALLA", ""+enemieFrags);
+            for(View enemyFrag : enemieFrags){
+                enemyFrag.findViewById(R.id.background).setVisibility(View.VISIBLE);
+                Log.d("ALLA", "AJA " + enemyFrag);
+            }
             if(playerCount > 3){for(View enemyFrag : enemieAnimationFrags){enemyFrag.findViewById(R.id.background).setVisibility(View.VISIBLE);}
             }
         } else{
@@ -387,6 +540,73 @@ public class GameFragment extends Fragment {
                 enemieAnimationDirection[i] = !enemieAnimationDirection[i];
             }
         }
+    }
+
+    public void updateAll(String[][] uebergabe) {
+        updatePlayerFrag(Integer.parseInt(uebergabe[0][1]), 0);
+        //TODO GEGNER ANHAND VON ID ZU UPDATEN
+    }
+
+    public void createWinLoseScreen(int flag){
+        if(flag == 0){                                                                              //LOSE STATE
+            //winLoseScreen.setImageResource();
+        }else if(flag == 1){                                                                        //WIN STATE
+            //
+        }
+    }
+
+    public View getPlayerFrag(){
+        return playerFrag;
+    }
+
+    public View[] getEnemyFrags(){
+        return enemieFrags;
+    }
+
+    public void startDeckAnimation(){
+        for(int i = 0; i < enemieFrags.length; i++){
+            enemieDeck[i].bringToFront();
+            enemieDeck[i].setAlpha(1.0f);
+            enemieDeckAS[i][0].start();
+        }
+    }
+
+    public void createDeckAnimation(final View view, int count, final View originCard, final AnimationHolder cardFlip){
+        final AnimationHolder animationHolder = cardAnimator.createDeckAnimation(view, count+1);
+        animationHolder.getObjectAnimators()[0].addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if(animationHolder.gotPlayed){
+                    animationHolder.gotPlayed = false;
+                }else{
+                    view.setAlpha(0);
+                    originCard.bringToFront();
+                    animationHolder.getObjectAnimators()[0].reverse();
+                    animationHolder.gotPlayed = true;
+                    cardFlip.start();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        if(count != -1){enemieDeckAS[count] = new AnimationHolder[]{animationHolder};}
+    }
+
+    public View[] getPlayerTV(){
+        return playerTextViews;
     }
 
 }

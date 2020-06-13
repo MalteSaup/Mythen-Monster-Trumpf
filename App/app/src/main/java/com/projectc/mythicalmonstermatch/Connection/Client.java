@@ -29,11 +29,10 @@ public class Client extends Thread{
     private int id = -1;
 
     private boolean gameStarted = false;                                                            //SPIEL GESTARTET FLAG
-    private boolean joined = false;                                                                 //SERVER GEJOINT FLAG
+    public boolean joined = false;                                                                 //SERVER GEJOINT FLAG
     private boolean serverRunning = true;                                                           //SERVER LÄUFT FLAG
     public boolean running = true;                                                                  //CLIENT RUNNING FLAG FÜRS CLIENT KILLEN WENN ZURÜCK ZU MAIN ACTIVITY
     private boolean leaved = false;                                                                 //LEAVED FLAG
-
     private Socket socket;                                                                          //SOCKET
 
     private ArrayList<Integer> cardList = new ArrayList<>();                                        //KARTEN DECK
@@ -66,12 +65,13 @@ public class Client extends Thread{
     }
 
     public void sendMessage(String msg) {                                                           //SENDET NACHRICHT AN SERVER
-        try {
+       try {
+            Log.d("MEEEEEEH", "CLIENT SMS "+ msg );
             bufferedWriter.write(msg + "\r\n");                                                 //NACHRICHT GESCHRIEBEN; \r\n UM ENDE DER NACHRICHT ANZUZEIGEN
             bufferedWriter.flush();                                                                 //NACHRICHT SICHER GESENDET
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+           e.printStackTrace();
+       }
     }
 
     private void sendMessageToAll(String msg){
@@ -123,6 +123,20 @@ public class Client extends Thread{
                             handlePlayerRemoved(tokens);
                         } else if("heartbeat".equalsIgnoreCase(cmd)){                               //HEARTBEAT NACHRICHT VOM SERVER UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
                             handleHeartbeat();
+                        } else if("turn".equalsIgnoreCase(cmd)){
+                            handleTurnMsg(tokens);
+                        } else if("compared".equalsIgnoreCase(cmd)){
+                            handleCompare(tokens);
+                        } else if("playerinf".equalsIgnoreCase(cmd)){
+                            handlePlayerInfo(line.split("[;]"));
+                        } else if("win".equalsIgnoreCase(cmd)){
+                            handleWin();
+                        } else if("lose".equalsIgnoreCase(cmd)){
+                            handleLose();
+                        } else if("draw".equalsIgnoreCase(cmd)) {
+                            handleDraw(tokens);
+                        } else if("move".equalsIgnoreCase(cmd)){
+                            handleMove(tokens);
                         }
                     }
                 }
@@ -151,6 +165,85 @@ public class Client extends Thread{
                 }
                 e.printStackTrace();
             }
+    }
+
+    private void handleDraw(String[] tokens) {
+        //TODO
+
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(gameActivity,"It's a draw!",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void handleMove(String[] tokens) {
+        if(gameActivity.code == 0){ //CODE == 0 => HOST HAT DEN GAME MANAGER
+            gameActivity.gameManager.compareResults(Integer.parseInt(tokens[1]));
+        }
+    }
+
+    private void handleLose() {
+        Log.d("RUNDEVOLLENDET", "LOSER");
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(gameActivity,"You lost...",Toast.LENGTH_SHORT).show();
+            }
+        });
+        //gameActivity.gameFragment.createWinLoseScreen(0);
+    }
+
+    private void handleWin() {
+        Log.d("RUNDEVOLLENDET", "IWINNER");
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(gameActivity,"You won!",Toast.LENGTH_SHORT).show();
+            }
+        });
+        //gameActivity.gameFragment.createWinLoseScreen(1);
+    }
+
+    private void handlePlayerInfo(String[] tokens) {
+        String[] uebergabe[] = new String[tokens.length][];
+        for(int i = 1; i < tokens.length; i++){
+            String[] split = tokens[i].split("[:]", 2);
+            uebergabe[i-1] = split;
+        }
+        gameActivity.gameFragment.updateAll(uebergabe);
+    }
+
+    private void handleCompare(String[] tokens) {
+        if(tokens[1].equalsIgnoreCase("0")){
+            //LOSE ANZEIGEN
+        } else if(tokens[1].equalsIgnoreCase("1")){
+            gameActivity.gameFragment.getPlayerFrag();
+        } else if(tokens[1].equalsIgnoreCase("2")){
+            //DRAW LAUNCHEN
+        }
+        int winnerID = Integer.parseInt(tokens[2]);                 //TODO AN GAME FRAGMENT WEITERREICHEN UND ATTRIBUTE AN DEN VERSCHIEDENEN KARTEN EINFÄRBEN
+    }
+
+    private void handleTurnMsg(String[] tokens) {
+        if(tokens[1].equalsIgnoreCase("1")){
+            gameActivity.turn = true;
+        } else {
+            gameActivity.turn = false;
+        }
+        final int cardID = Integer.parseInt(tokens[2]);                                                   //TODO AN GAME FRAGMENT WEITER REICHEN UND IWO ZWISCHEN SPEICHERN
+        Log.d("GAMEFRAGSTART", "ISST ES DAVOR");
+        gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameActivity.gameFragment.getPlayerTV()[0] == null){
+                    assert true;
+                }
+                gameActivity.updatePlayer(cardID);
+            }
+        });
+
     }
 
     private void handleHeartbeat() {
@@ -217,11 +310,7 @@ public class Client extends Thread{
     }
 
     private void handleStart(String[] tokens) {                                                     //SETZT SPIEL START FLAG UND STARTET GAME FRAGMENT
-        for(int i = 1; i < tokens.length; i++){
-            String uebergabe = tokens[i].replace("[^\\d]", "");
-            cardList.add(Integer.parseInt(uebergabe));                                              //BEKOMMT KARTENLIST TODO EVTL VERÄNDERUNG WEIL GAME MANAGER
-            //TODO START GAME FRAGMENT
-        }
+        gameActivity.startGame();
         gameStarted = true;                                                                         //SETZT GAME START FLAG
     }
 
@@ -243,4 +332,5 @@ public class Client extends Thread{
         this.gameActivity = gameActivity;                                                           //CLIENT SETZT GAME ACTIVITY
     }
     public String getLogin(){return login;}
+    public String getAddress(){return address;}
 }

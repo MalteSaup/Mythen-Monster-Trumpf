@@ -44,9 +44,9 @@ public class MainFragment extends Fragment {
                 MenuFragment menuFrag = (MenuFragment) Fragment.instantiate(getActivity(), MenuFragment.class.getName(), null);
 
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                //ft.replace(R.id.mainActivityLayout, menuFrag);
-                GameFragment gF = (GameFragment) Fragment.instantiate(getActivity(), GameFragment.class.getName(), null);
-                ft.replace(R.id.mainActivityLayout, gF);
+                ft.replace(R.id.mainActivityLayout, menuFrag);
+                //GameFragment gF = (GameFragment) Fragment.instantiate(getActivity(), GameFragment.class.getName(), null);
+                //ft.replace(R.id.mainActivityLayout, gF);
                 ft.commit();
                 isInMenu = true;
             }

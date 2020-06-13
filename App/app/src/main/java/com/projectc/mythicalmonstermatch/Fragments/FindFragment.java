@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.projectc.mythicalmonstermatch.Connection.SearchClient;
 import com.projectc.mythicalmonstermatch.GameActivity;
@@ -40,6 +43,14 @@ public class FindFragment extends Fragment {
     private boolean stoped = false;
     private boolean searching = true;
 
+    private Button connectDirect;
+
+    private EditText addressInput;
+    private Button cancel;
+    private Button submit;
+    private ConstraintLayout container;
+    public ServerItem directConnectItem;
+
     private GameActivity gA;
 
     @Override
@@ -63,6 +74,55 @@ public class FindFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
         final View view = getView();
+        final FindFragment fF = this;
+
+        connectDirect = view.findViewById(R.id.directConnectButton);
+        connectDirect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.setVisibility(View.VISIBLE);
+            }
+        });
+
+        container = view.findViewById(R.id.container);
+        addressInput = view.findViewById(R.id.addressInput);
+        cancel = view.findViewById(R.id.cancelButton);
+        submit = view.findViewById(R.id.connectButton);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                container.setVisibility(View.GONE);
+            }
+        });
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String address = addressInput.getText().toString();
+                String regex = "[\\d].+$";
+                if(address.matches(regex) && address.split("\\.").length == 4){
+                    Log.d("IPRIGHT", "RIGHT");
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SearchClient searchClient = new SearchClient(fF, getContext(), address, true);
+                            searchClient.run();
+                        }
+                    });
+                    t.start();
+
+                } else{
+                    CharSequence text = "Enter Valid IP";
+                    Toast toast = Toast.makeText(gA, text, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
+
+        container.setVisibility(View.GONE);
+
+
 
         gA = (GameActivity)getActivity();
 
@@ -104,7 +164,6 @@ public class FindFragment extends Fragment {
             final String addressSeed = addressUebergabe[0] + "." + addressUebergabe[1] + ".";
             final int start3Stelle = Integer.parseInt(addressUebergabe[2]);
 
-            final FindFragment fF = this;
 
 
 
@@ -214,5 +273,15 @@ public class FindFragment extends Fragment {
         FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.gameActivityLayout, hostFrag);
         ft.commit();
+    }
+
+    public void directConnectFailed() {
+        CharSequence text = "Connection Not Possible";
+        Toast toast = Toast.makeText(gA, text, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    public void directConnectNow() {
+        join(directConnectItem);
     }
 }

@@ -1,7 +1,5 @@
 package com.projectc.mythicalmonstermatch;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -11,10 +9,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.projectc.mythicalmonstermatch.Connection.AsyncSupportClass;
 import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
+import com.projectc.mythicalmonstermatch.Fragments.GameFragment;
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
 
 import java.util.ArrayList;
@@ -28,13 +28,18 @@ public class GameActivity extends FragmentActivity{
     public Client client;
     public HostFragment hostFrag;
     public boolean inHost = false;
+    public boolean turn = false;    //TODO AN GAME FRAGMENT WEITER REICHEN EVTL DORT
     public String servername;
     public String address;
 
     public int playerCount = -1;
     public int id = -1;
 
+    public AsyncSupportClass supportClass;
+
     public GameManager gameManager;
+
+    public GameFragment gameFragment = null;
 
     private PowerManager.WakeLock wakeLock;
 
@@ -49,6 +54,8 @@ public class GameActivity extends FragmentActivity{
         wakeLock.acquire();
         Log.d("WAKELOCK", wakeLock.toString());
 
+        supportClass = new AsyncSupportClass();
+
         setContentView(R.layout.game_activity);
 
         Bundle bundle = getIntent().getExtras();
@@ -60,7 +67,7 @@ public class GameActivity extends FragmentActivity{
         }
 
         createCardDeck();
-
+        Log.d("IMAGEVIEW", ""+cardDeck[0].imgID);
         if(code == 0){
 
             inHost = true;
@@ -73,14 +80,16 @@ public class GameActivity extends FragmentActivity{
             ft.replace(R.id.gameActivityLayout, hostFrag);
             ft.commit();
 
-            server = new Server(this.name, hostFrag);
+            server = new Server(this.name, hostFrag, this);
             server.start();
             Log.d("SERVER STATUS", ""+server.running);
-            client = null;
+            //client = null;
             client = new Client(this.name, this.name, "localhost");
             client.setGameActivity(this);
             client.start();
-
+            while(client.joined == false){
+                assert true;
+            }
             ArrayList<ServerListener> sL = server.getServerListeners();
             Log.d("SL", " "+sL.size() + " " + server);
             for(ServerListener sLL : sL){
@@ -112,7 +121,7 @@ public class GameActivity extends FragmentActivity{
     public void createCardDeck(){
         CardSupportClass csc = new CardSupportClass(this);
         cardDeck = csc.createDeck();
-        BitmapFactory bf = new BitmapFactory();
+        /*BitmapFactory bf = new BitmapFactory();
         Bitmap[] b = {
                 bf.decodeResource(getResources(), R.drawable.image01),
                 bf.decodeResource(getResources(), R.drawable.image02),
@@ -126,7 +135,7 @@ public class GameActivity extends FragmentActivity{
         };
         for(int i = 0; i < cardDeck.length; i++){
             cardDeck[i] = new CardClass(i, ("card" + i), i, i, i, i, i, b[i%9]);
-        }
+        }*/
 
     }
 
@@ -141,7 +150,7 @@ public class GameActivity extends FragmentActivity{
 
     public void updateHostFragment(ArrayList<PlayerItem> playerItemUebergabe) {
         if (hostFrag != null && hostFrag.playerAdapter != null && client.running) {
-            //Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
+            Log.d("JETZT NULL", " " + playerItemUebergabe.size() + " " + playerItems.size());
             if (playerItemUebergabe.size() != playerItems.size()) {
                 if (playerItemUebergabe.size() > playerItems.size()) {
                     ArrayList<PlayerItem> uebergabe = new ArrayList<>();
@@ -236,7 +245,16 @@ public class GameActivity extends FragmentActivity{
     }
 
     public void startGame(){
-        gameManager = new GameManager(cardDeck, playerItems);
+        if(code == 0){gameManager = new GameManager(cardDeck, playerItems, server);}
+
+        gameFragment = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.gameActivityLayout, gameFragment);
+        ft.commit();
+    }
+
+    public void updatePlayer(int card){
+        gameFragment.updatePlayerFrag(card, 0);
     }
 
     public void submit(){
@@ -263,7 +281,6 @@ public class GameActivity extends FragmentActivity{
         Log.d("WAKELOCK", "GA PAUSIERT");
         super.onPause();
     }
-
 }
 
 //TODO newWakeLock(int, String); => WakeLock.acquire() (zum starten) und wenn Activity close Wake.Lock.release() (beendet WakeLock, besser für Akku, aber notwendig um Netzwerkverbindung aufrecht zu halten)

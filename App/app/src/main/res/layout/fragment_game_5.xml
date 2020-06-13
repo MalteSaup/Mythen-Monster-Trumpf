@@ -58,6 +58,16 @@
         app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
+    <fragment
+        android:id="@+id/player_deck_fragment"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.CardFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineBot3"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight3"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
+
     <android.support.constraint.Guideline
         android:id="@+id/guideline10"
         android:layout_width="wrap_content"
@@ -127,6 +137,16 @@
         app:layout_constraintTop_toTopOf="@+id/guideline12" />
 
     <fragment
+        android:id="@+id/enemy_deck_fragment1"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
+
+    <fragment
         android:id="@+id/enemy_fragment1"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
         android:layout_width="0dp"
@@ -134,6 +154,16 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline10"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
+
+    <fragment
+        android:id="@+id/enemy_deck_fragment2"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight3"
+        app:layout_constraintStart_toStartOf="@+id/guideline14"
         app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
@@ -147,6 +177,16 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineTop3" />
 
     <fragment
+        android:id="@+id/enemy_deck_fragment3"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guideline12" />
+
+    <fragment
         android:id="@+id/enemy_fragment3"
         android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
         android:layout_width="0dp"
@@ -154,6 +194,16 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="@+id/guidelineLeft3"
+        app:layout_constraintTop_toTopOf="@+id/guideline12" />
+
+    <fragment
+        android:id="@+id/enemy_deck_fragment4"
+        android:name="com.projectc.mythicalmonstermatch.Fragments.EnemyCardFragmentSmall"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight3"
+        app:layout_constraintStart_toStartOf="@+id/guideline14"
         app:layout_constraintTop_toTopOf="@+id/guideline12" />
 
     <fragment
@@ -165,5 +215,15 @@
         app:layout_constraintEnd_toStartOf="@+id/guidelineRight3"
         app:layout_constraintStart_toStartOf="@+id/guideline14"
         app:layout_constraintTop_toTopOf="@+id/guideline12" />
+
+    <ImageView
+        android:id="@+id/win_lose_screen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </android.support.constraint.ConstraintLayout>
