@@ -65,13 +65,13 @@ public class Client extends Thread{
     }
 
     public void sendMessage(String msg) {                                                           //SENDET NACHRICHT AN SERVER
-       try {
+        try {
             Log.d("MEEEEEEH", "CLIENT SMS "+ msg );
             bufferedWriter.write(msg + "\r\n");                                                 //NACHRICHT GESCHRIEBEN; \r\n UM ENDE DER NACHRICHT ANZUZEIGEN
             bufferedWriter.flush();                                                                 //NACHRICHT SICHER GESENDET
         } catch (IOException e) {
-           e.printStackTrace();
-       }
+            e.printStackTrace();
+        }
     }
 
     private void sendMessageToAll(String msg){
@@ -81,90 +81,94 @@ public class Client extends Thread{
 
     public void connect(String address) {                                                           //VERBINDUNGSAUFBAU FUNKTION
         Log.d("JETZT ADDRESS", address);
-            try {
-                socket = new Socket(address, 8080);                                            //VERBINDUNG MIT SERVER AUF ÜBERGEBENDER IP ADDRESSE
-                inputStream = socket.getInputStream();                                              //IN UND OUTPUT STREMA WERDEN VOM SOCKET AUSGELESEN FÜR NACHRICHTVERKEHR
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                outputStream = socket.getOutputStream();
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+        try {
+            socket = new Socket(address, 8080);                                            //VERBINDUNG MIT SERVER AUF ÜBERGEBENDER IP ADDRESSE
+            inputStream = socket.getInputStream();                                              //IN UND OUTPUT STREMA WERDEN VOM SOCKET AUSGELESEN FÜR NACHRICHTVERKEHR
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            outputStream = socket.getOutputStream();
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
 
 
 
-                String line;
+            String line;
 
-                sendMessage("join " + id + " " + login);                                       //NACHRICHT AN SERVER DAS MAN JOINEN WILL
-                joined = true;                                                                      //JOIN FLAG WIRD TRUE GESETZT
+            sendMessage("join " + id + " " + login);                                       //NACHRICHT AN SERVER DAS MAN JOINEN WILL
+            joined = true;                                                                      //JOIN FLAG WIRD TRUE GESETZT
 
-                while((line = bufferedReader.readLine()) != null && serverRunning && running){      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
-                    String[] tokens = line.split(" ");                                        //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
-                    if(tokens != null && tokens.length > 0) {
-                        String cmd = tokens[0];
-                        Log.d("CLIENT", cmd);
-                        //COMMAND VERARBEITUNG
-                        if("denied".equalsIgnoreCase(cmd)){                                         //JOIN WIRD ABGELEHNT
-                            handleDenie();
-                        } else if("accept".equalsIgnoreCase(cmd)){                                  //JOIN WIRD AKZEPTIERT
-                            handleAccept(tokens[1]);
-                        } else if("start".equalsIgnoreCase(cmd)){                                   //SPIEL WIRD GESTARTET
-                            handleStart(tokens);
-                        } else if("closing".equalsIgnoreCase(cmd)){                                 //SERVER WIRD GESCHLOSSEN
-                            handleClosing();
-                            break;
-                        } else if("playeranswer".equalsIgnoreCase(cmd)){                            //ANTWORT NACH JOIN WELCHE SPIELER AUF SERVER SIND
-                            Log.d("JETZT LOS", line);
-                            tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
-                            handlePlayerAnswer(tokens);
-                        } else if("playeradded".equalsIgnoreCase(cmd)){                             //NACHRICHT VOM SERVER WENN ANDERER SPIELER GEJOINT IST
-                            Log.d("JETZT LOS", line);
-                            tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
-                            handlePlayerAdded(tokens);
-                        } else if("playerremoved".equalsIgnoreCase(cmd)){                           //NACHRICHT VOM SERVER WENN ANDERER SPIELER GELEAVED IST
-                            tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
-                            handlePlayerRemoved(tokens);
-                        } else if("heartbeat".equalsIgnoreCase(cmd)){                               //HEARTBEAT NACHRICHT VOM SERVER UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
-                            handleHeartbeat();
-                        } else if("turn".equalsIgnoreCase(cmd)){
-                            handleTurnMsg(tokens);
-                        } else if("compared".equalsIgnoreCase(cmd)){
-                            handleCompare(tokens);
-                        } else if("playerinf".equalsIgnoreCase(cmd)){
-                            handlePlayerInfo(line.split("[;]"));
-                        } else if("win".equalsIgnoreCase(cmd)){
-                            handleWin();
-                        } else if("lose".equalsIgnoreCase(cmd)){
-                            handleLose();
-                        } else if("draw".equalsIgnoreCase(cmd)) {
-                            handleDraw(tokens);
-                        } else if("move".equalsIgnoreCase(cmd)){
-                            handleMove(tokens);
-                        }
+            while((line = bufferedReader.readLine()) != null && serverRunning && running){      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
+                String[] tokens = line.split(" ");                                        //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
+                if(tokens != null && tokens.length > 0) {
+                    String cmd = tokens[0];
+                    Log.d("CLIENT", cmd);
+                    //COMMAND VERARBEITUNG
+                    if("denied".equalsIgnoreCase(cmd)){                                         //JOIN WIRD ABGELEHNT
+                        handleDenie();
+                    } else if("accept".equalsIgnoreCase(cmd)){                                  //JOIN WIRD AKZEPTIERT
+                        handleAccept(tokens[1]);
+                    } else if("start".equalsIgnoreCase(cmd)){                                   //SPIEL WIRD GESTARTET
+                        handleStart(tokens);
+                    } else if("closing".equalsIgnoreCase(cmd)){                                 //SERVER WIRD GESCHLOSSEN
+                        handleClosing();
+                        break;
+                    } else if("playeranswer".equalsIgnoreCase(cmd)){                            //ANTWORT NACH JOIN WELCHE SPIELER AUF SERVER SIND
+                        Log.d("JETZT LOS", line);
+                        tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
+                        handlePlayerAnswer(tokens);
+                    } else if("playeradded".equalsIgnoreCase(cmd)){                             //NACHRICHT VOM SERVER WENN ANDERER SPIELER GEJOINT IST
+                        Log.d("JETZT LOS", line);
+                        tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
+                        handlePlayerAdded(tokens);
+                    } else if("playerremoved".equalsIgnoreCase(cmd)){                           //NACHRICHT VOM SERVER WENN ANDERER SPIELER GELEAVED IST
+                        tokens = line.split("[;]");                                       //NACHRICHT WIRD ANDERS AUFGETEILT UM NAMEN ZU LESEN
+                        handlePlayerRemoved(tokens);
+                    } else if("heartbeat".equalsIgnoreCase(cmd)){                               //HEARTBEAT NACHRICHT VOM SERVER UM FESTZUSTELLEN FALLS EIN CLIENT DIE VERBINDUNG VERLOREN HAT
+                        handleHeartbeat();
+                    } else if("turn".equalsIgnoreCase(cmd)){
+                        handleTurnMsg(tokens);
+                    } else if("compared".equalsIgnoreCase(cmd)){
+                        handleCompare(tokens);
+                    } else if("playerinf".equalsIgnoreCase(cmd)){
+                        handlePlayerInfo(line.split("[;]"));
+                    } else if("win".equalsIgnoreCase(cmd)){
+                        handleWin();
+                    } else if("lose".equalsIgnoreCase(cmd)){
+                        handleLose();
+                    } else if("draw".equalsIgnoreCase(cmd)) {
+                        handleDraw(tokens);
+                    } else if("move".equalsIgnoreCase(cmd)){
+                        handleMove(tokens);
+                    } else if("totalWin".equalsIgnoreCase(cmd)){
+                        handleTotalWin(Integer.parseInt(tokens[1]));
+                    } else if("totalLose".equalsIgnoreCase(cmd)){
+                        handleTotalLose(Integer.parseInt(tokens[1]));
                     }
                 }
-                Log.d("CLIENT", "ZUENDDE");
-
-            } catch (ConnectException e){
-                Log.d("ERROR", "CONNECTION FAILED");
-                if(joined && !leaved){                                                              //VERBINDUNG NACH JOIN VERLOREN
-                    Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
-                    toast.show();
-                    gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
-                } else if(!joined && !leaved){                                                      //VERBINDUNG NICHT MÖGLICH
-                    Toast toast = Toast.makeText(gameActivity, connectionNotPossibleToast, Toast.LENGTH_SHORT);
-                    toast.show();
-                    gameActivity.inHost = false;
-                    gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
-                }
-
-            } catch (IOException e) {
-                Log.d("ERROR", "SERVER CLOSED");                                          //VERBINDUNG ZUM SERVER VERLOREN (EVTL SERVER ABSTURZ)
-                if(gameActivity.code == 1){                                                         //NUR WENN CLIENT
-                    Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
-                    toast.show();
-                    gameActivity.inHost = false;                                                    //SETZT INHOST FLAG AUF FALSE
-                    gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
-                }
-                e.printStackTrace();
             }
+            Log.d("CLIENT", "ZUENDDE");
+
+        } catch (ConnectException e){
+            Log.d("ERROR", "CONNECTION FAILED");
+            if(joined && !leaved){                                                              //VERBINDUNG NACH JOIN VERLOREN
+                Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
+                toast.show();
+                gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
+            } else if(!joined && !leaved){                                                      //VERBINDUNG NICHT MÖGLICH
+                Toast toast = Toast.makeText(gameActivity, connectionNotPossibleToast, Toast.LENGTH_SHORT);
+                toast.show();
+                gameActivity.inHost = false;
+                gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
+            }
+
+        } catch (IOException e) {
+            Log.d("ERROR", "SERVER CLOSED");                                          //VERBINDUNG ZUM SERVER VERLOREN (EVTL SERVER ABSTURZ)
+            if(gameActivity.code == 1){                                                         //NUR WENN CLIENT
+                Toast toast = Toast.makeText(gameActivity, connectionLostToast, Toast.LENGTH_SHORT);
+                toast.show();
+                gameActivity.inHost = false;                                                    //SETZT INHOST FLAG AUF FALSE
+                gameActivity.startFindFrag();                                                   //STARTET FIND FRAGMENT
+            }
+            e.printStackTrace();
+        }
     }
 
     private void handleDraw(String[] tokens) {
@@ -204,6 +208,14 @@ public class Client extends Thread{
             }
         });
         //gameActivity.gameFragment.createWinLoseScreen(1);
+    }
+
+    private void handleTotalWin(int turnCount){
+        gameActivity.createEndScreen(1, turnCount);
+    }
+
+    private void handleTotalLose(int turnCount){
+        gameActivity.createEndScreen(0, turnCount);
     }
 
     private void handlePlayerInfo(String[] tokens) {

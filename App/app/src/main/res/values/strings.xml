@@ -22,6 +22,8 @@
     <string name="connectdirect">Connect Direct</string>
     <string name="connect">Connect</string>
     <string name="enterIP">Enter Valid IP Address to Connect</string>
+    <string name="playAgain">Play Again</string>
+    <string name="exit">Exit</string>
     <!--<string name=""></string>!-->
 
     <string name="info_text">

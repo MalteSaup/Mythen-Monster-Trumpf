@@ -19,6 +19,7 @@ public class GameManager {
     private ArrayList<ServerListener> playerList;
 
     private int currentPlayer;
+    private int turnCount = 0; // a turn means one comparison
 
     private AsyncSupportClass supportClass;
 
@@ -218,6 +219,7 @@ public class GameManager {
 
 
     public void nextTurn() {
+        turnCount += 1;
         determineCurrentPlayer();
         sendCard();
         playerList = server.getServerListeners();
@@ -226,7 +228,7 @@ public class GameManager {
             for(ServerListener sL : playerList){
                 for(PlayerItem pI : players){
                     if(pI.getId() == sL.getID()){
-                        supportClass.sendMessage(sL, "win");
+                        supportClass.sendMessage(sL, "totalWin " + turnCount);
                     }
                 }
             }
@@ -244,7 +246,7 @@ public class GameManager {
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
                     if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
-                        supportClass.sendMessage(sL, "lose");
+                        supportClass.sendMessage(sL, "totalLose " + getTurnCount());
                         players.remove(pI);
                         break;
                     }
@@ -257,5 +259,9 @@ public class GameManager {
                 }
             }
         }
+    }
+
+    public int getTurnCount(){
+        return turnCount;
     }
 }
