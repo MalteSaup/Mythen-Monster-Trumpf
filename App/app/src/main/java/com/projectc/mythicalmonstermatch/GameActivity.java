@@ -13,6 +13,7 @@ import com.projectc.mythicalmonstermatch.Connection.AsyncSupportClass;
 import com.projectc.mythicalmonstermatch.Connection.Client;
 import com.projectc.mythicalmonstermatch.Connection.Server;
 import com.projectc.mythicalmonstermatch.Connection.ServerListener;
+import com.projectc.mythicalmonstermatch.Fragments.EndScreenFragment;
 import com.projectc.mythicalmonstermatch.Fragments.FindFragment;
 import com.projectc.mythicalmonstermatch.Fragments.GameFragment;
 import com.projectc.mythicalmonstermatch.Fragments.HostFragment;
@@ -280,6 +281,17 @@ public class GameActivity extends FragmentActivity{
     public void onPause(){
         Log.d("WAKELOCK", "GA PAUSIERT");
         super.onPause();
+    }
+
+    public void createEndScreen(int result, int turnCount){
+        Bundle values = new Bundle();
+        values.putInt("result", result);
+        values.putInt("turnCount", turnCount);
+
+        EndScreenFragment endScreenFrag = (EndScreenFragment) Fragment.instantiate(this, EndScreenFragment.class.getName(), values);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.gameActivityLayout, endScreenFrag);
+        ft.commit();
     }
 }
 
