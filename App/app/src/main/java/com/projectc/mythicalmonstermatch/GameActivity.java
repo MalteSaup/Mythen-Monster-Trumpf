@@ -28,6 +28,7 @@ public class GameActivity extends FragmentActivity{
     public Server server;
     public Client client;
     public HostFragment hostFrag;
+    public EndScreenFragment endScreenFrag;
     public boolean inHost = false;
     public boolean turn = false;    //TODO AN GAME FRAGMENT WEITER REICHEN EVTL DORT
     public String servername;
@@ -254,6 +255,7 @@ public class GameActivity extends FragmentActivity{
         ft.commit();
     }
 
+
     public void updatePlayer(int card){
         gameFragment.updatePlayerFrag(card, 0);
     }
@@ -288,7 +290,7 @@ public class GameActivity extends FragmentActivity{
         values.putInt("result", result);
         values.putInt("turnCount", turnCount);
 
-        EndScreenFragment endScreenFrag = (EndScreenFragment) Fragment.instantiate(this, EndScreenFragment.class.getName(), values);
+        endScreenFrag = (EndScreenFragment) Fragment.instantiate(this, EndScreenFragment.class.getName(), values);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.gameActivityLayout, endScreenFrag);
         ft.commit();
