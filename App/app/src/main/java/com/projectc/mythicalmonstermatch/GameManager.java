@@ -160,7 +160,6 @@ public class GameManager {
         }
         callAddToPlayerDeck(players.get(index), players.get(index).getCard(0)); // the card that won the round gets
         players.get(index).playerDeck.remove(0);                                // sent to the back of the deck
-        nextTurn();
     }
 
     public ArrayList<PlayerItem> getPlayers(){
@@ -219,7 +218,7 @@ public class GameManager {
 
 
     public void nextTurn() {
-        turnCount += 1;
+
         determineCurrentPlayer();
         sendCard();
         playerList = server.getServerListeners();
@@ -232,6 +231,10 @@ public class GameManager {
                     }
                 }
             }
+        }
+        else{
+            Log.d("tcount", "" + turnCount);
+            turnCount += 1;
         }
 
         //TODO NEXT TURN MSG AN ALLE

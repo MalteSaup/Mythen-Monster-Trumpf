@@ -6,6 +6,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.GameManager;
+import com.projectc.mythicalmonstermatch.MainActivity;
 import com.projectc.mythicalmonstermatch.PlayerAdapter;
 import com.projectc.mythicalmonstermatch.R;
 
@@ -30,6 +32,7 @@ public class EndScreenFragment extends Fragment {
 
     private TextView resultText;
     private TextView turnCountText;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class EndScreenFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle saveInstandesState) {
+        final GameActivity gA = (GameActivity) getActivity();
         View view = getView();
         playAgainButton = getView().findViewById(R.id.playAgainButton);
         resultText = getView().findViewById(R.id.resultText);
@@ -54,10 +58,18 @@ public class EndScreenFragment extends Fragment {
             @Override
             public void onClick(View v){
                 //TODO: Check whether you are host or not and depending on that host another game or try connecting to the same ip used before
+            if (gA.inHost){
+                FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.gameActivityLayout, gA.hostFrag);
+                ft.commit();
+            }
+            else{
+                gA.startFindFrag();
+            }
              }
         });
 
-        if (getArguments().getInt("result") == 1){
+        if (getArguments().getInt("result") == 1){ //1 means you win, 0 means you lose
             resultText.setText("You won all the cards, so you are the winner!");
             resultText.setTextColor(Color.GREEN);
         }
