@@ -46,6 +46,8 @@ public class GameManager {
 
         shuffle();
         for (int i = 0; i < allCards.length; i++){
+            Log.d("deckcontent", players.get(0).playerDeck.size() + " | " + players.get(1).playerDeck.size() + " | " + allCards.length);
+
             callAddToPlayerDeck(players.get(i % players.size()), allCards[i]); // player1 cards0 becomes allCards0, player2 cards0 becomes allCards1 etc.
         }
         allCards = new CardClass[] {};
@@ -219,6 +221,7 @@ public class GameManager {
 
     public void nextTurn() {
 
+
         determineCurrentPlayer();
         sendCard();
         playerList = server.getServerListeners();
@@ -231,6 +234,7 @@ public class GameManager {
                     }
                 }
             }
+            resetAll();
         }
         else{
             Log.d("tcount", "" + turnCount);
@@ -266,5 +270,16 @@ public class GameManager {
 
     public int getTurnCount(){
         return turnCount;
+    }
+
+    public void resetAll(){
+        allCards = new CardClass[0];
+        pool = null;
+        players.clear();
+
+        currentPlayer = -1;
+        turnCount = -1;
+        supportClass = null;
+
     }
 }

@@ -54,20 +54,23 @@ public class EndScreenFragment extends Fragment {
         resultText = getView().findViewById(R.id.resultText);
         turnCountText = getView().findViewById(R.id.turnCountText);
 
-        playAgainButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //TODO: Check whether you are host or not and depending on that host another game or try connecting to the same ip used before
-            if (gA.inHost){
-                FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.gameActivityLayout, gA.hostFrag);
-                ft.commit();
-            }
-            else{
-                gA.startFindFrag();
-            }
-             }
-        });
+        if (gA.code == 0){
+
+            playAgainButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    gA.gameManager = new GameManager(gA.cardDeck, gA.playerItems, gA.server);
+                    FragmentTransaction ft = gA.getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.gameActivityLayout, gA.hostFrag);
+                    ft.commit();
+                }
+            });;
+        }
+        else{
+            playAgainButton.setAlpha(0.5f);
+            playAgainButton.setClickable(false);
+        }
+
 
         if (getArguments().getInt("result") == 1){ //1 means you win, 0 means you lose
             resultText.setText("You won all the cards, so you are the winner!");
