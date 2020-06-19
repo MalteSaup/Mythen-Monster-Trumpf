@@ -2,17 +2,22 @@ package com.projectc.mythicalmonstermatch.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.projectc.mythicalmonstermatch.CardClass;
 import com.projectc.mythicalmonstermatch.MainActivity;
 import com.projectc.mythicalmonstermatch.R;
+
+import org.w3c.dom.Text;
 
 
 public class ShowCardFragment extends Fragment {
@@ -146,14 +151,15 @@ public class ShowCardFragment extends Fragment {
         int count = (9 * (pageCount - 1)) + uebergabe;                                              //FINDET RAUS WELCHE KARTE ANGEKLICKT WURDE
         ImageView iV = cardView.findViewById(R.id.imageView);
         cardView.findViewById(R.id.submitBtn).setVisibility(View.GONE);                             //MACHT SUBMIT BUTTON UNSICHTBAR (WIRD NUR FÜRS SPIEL BENÖTIGT)
-        TextView[] textViews = {                                                                    //SETZT KARTEN NAME UND ATTRIBUTE, HOLT DAFÜR DIE ENTSPRECHENDEN TV's
-                cardView.findViewById(R.id.cardName),
-                cardView.findViewById(R.id.attributeWert),
-                cardView.findViewById(R.id.attributeWert2),
-                cardView.findViewById(R.id.attributeWert3),
-                cardView.findViewById(R.id.attributeWert4),
-                cardView.findViewById(R.id.attributeWert5),
-        };
+
+        TableLayout attributeHolder = cardView.findViewById(R.id.attributeHolder);
+
+        TextView[] textViews = new TextView[6];
+        textViews[0] = cardView.findViewById(R.id.cardName);
+        for (int i = 0; i<attributeHolder.getChildCount(); i++){
+            TableRow row = (TableRow) attributeHolder.getChildAt(i);
+            textViews[i+1] = (TextView) row.getChildAt(1);
+        }
 
         textViews[0].setText(ccDeck[count].name);                                                   //SETZT WERTE IN ENTSPRECHENDE TV's
         textViews[1].setText("" + ccDeck[count].attributeMap.get("attribute1"));

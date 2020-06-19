@@ -15,10 +15,10 @@
     <string name="haken">✓</string>
     <string name="close">X</string>
     <string name="attribute1">Masse</string>
-    <string name="attribute2">Killability</string>
-    <string name="attribute3">Speed</string>
+    <string name="attribute2">Verteidigung</string>
+    <string name="attribute3">Geschwindigkeit</string>
     <string name="attribute4">Gerissenheit</string>
-    <string name="attribute5">Scarriness</string>
+    <string name="attribute5">Gruselfaktor</string>
     <string name="connectdirect">Connect Direct</string>
     <string name="connect">Connect</string>
     <string name="enterIP">Enter Valid IP Address to Connect</string>

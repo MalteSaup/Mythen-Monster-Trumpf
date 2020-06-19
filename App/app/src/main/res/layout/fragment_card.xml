@@ -33,11 +33,12 @@
     <Button
         android:id="@+id/submitBtn"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/buttonv1"
         android:text="@string/haken"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -102,6 +103,7 @@
         app:layout_constraintGuide_percent="0.09" />
 
     <TableLayout
+        android:id="@+id/attributeHolder"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:stretchColumns="1"
@@ -118,8 +120,8 @@
 
             <TextView
                 android:id="@+id/attribut1"
-                android:layout_width="116dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/attribute1"
                 android:textAlignment="textStart"
@@ -127,7 +129,7 @@
 
             <TextView
                 android:id="@+id/attributeWert1"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAlignment="textEnd"
@@ -142,8 +144,8 @@
 
             <TextView
                 android:id="@+id/attribute2"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/attribute2"
                 android:textAlignment="textStart"
@@ -151,7 +153,7 @@
 
             <TextView
                 android:id="@+id/attributeWert2"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAlignment="textEnd"
@@ -166,8 +168,8 @@
 
             <TextView
                 android:id="@+id/attribute3"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/attribute3"
                 android:textAlignment="textStart"
@@ -175,7 +177,7 @@
 
             <TextView
                 android:id="@+id/attributeWert3"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAlignment="textEnd"
@@ -190,8 +192,8 @@
 
             <TextView
                 android:id="@+id/attribute4"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/attribute4"
                 android:textAlignment="textStart"
@@ -199,7 +201,7 @@
 
             <TextView
                 android:id="@+id/attributeWert4"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAlignment="textEnd"
@@ -214,8 +216,8 @@
 
             <TextView
                 android:id="@+id/attribute5"
-                android:layout_width="93dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/attribute5"
                 android:textAlignment="textStart"
@@ -223,7 +225,7 @@
 
             <TextView
                 android:id="@+id/attributeWert5"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAlignment="textEnd"
