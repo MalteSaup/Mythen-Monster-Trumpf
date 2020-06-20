@@ -122,7 +122,10 @@ public class GameManager {
                 player.playerDeck.remove(0);
             }
             Log.d("alooah", "" +drawWinners.size());
-            currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random())));
+
+            if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
+                currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random()))); //if not, a randomly determined player of the elligible players should be allowed
+            }
         }
         nextTurn();
     }
