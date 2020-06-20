@@ -118,11 +118,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ImageView
+                android:id="@+id/attribute1icon"
+                android:layout_width="37dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/iconmasse" />
+
             <TextView
-                android:id="@+id/attribut1"
+                android:id="@+id/attribute1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="@string/attribute1"
                 android:textAlignment="textStart"
                 android:textSize="18sp" />
@@ -130,8 +137,10 @@
             <TextView
                 android:id="@+id/attributeWert1"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
                 android:gravity="center"
+                android:text="0"
                 android:textAlignment="textEnd"
                 android:textSize="18sp" />
         </TableRow>
@@ -142,11 +151,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ImageView
+                android:id="@+id/attribute2icon"
+                android:layout_width="37dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/iconverteidigung" />
+
             <TextView
                 android:id="@+id/attribute2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="@string/attribute2"
                 android:textAlignment="textStart"
                 android:textSize="18sp" />
@@ -154,8 +170,9 @@
             <TextView
                 android:id="@+id/attributeWert2"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:text="0"
                 android:textAlignment="textEnd"
                 android:textSize="18sp" />
         </TableRow>
@@ -166,11 +183,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ImageView
+                android:id="@+id/attribute3icon"
+                android:layout_width="37dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icongeschwindigkeit" />
+
             <TextView
                 android:id="@+id/attribute3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="@string/attribute3"
                 android:textAlignment="textStart"
                 android:textSize="18sp" />
@@ -178,8 +202,9 @@
             <TextView
                 android:id="@+id/attributeWert3"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:text="0"
                 android:textAlignment="textEnd"
                 android:textSize="18sp" />
         </TableRow>
@@ -190,11 +215,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ImageView
+                android:id="@+id/attribute4icon"
+                android:layout_width="37dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icongerissenheit" />
+
             <TextView
                 android:id="@+id/attribute4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="@string/attribute4"
                 android:textAlignment="textStart"
                 android:textSize="18sp" />
@@ -202,8 +234,9 @@
             <TextView
                 android:id="@+id/attributeWert4"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:text="0"
                 android:textAlignment="textEnd"
                 android:textSize="18sp" />
         </TableRow>
@@ -214,11 +247,18 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ImageView
+                android:id="@+id/attribute5icon"
+                android:layout_width="37dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icongrusel" />
+
             <TextView
                 android:id="@+id/attribute5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="@string/attribute5"
                 android:textAlignment="textStart"
                 android:textSize="18sp" />
@@ -226,8 +266,9 @@
             <TextView
                 android:id="@+id/attributeWert5"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:text="0"
                 android:textAlignment="textEnd"
                 android:textSize="18sp" />
         </TableRow>

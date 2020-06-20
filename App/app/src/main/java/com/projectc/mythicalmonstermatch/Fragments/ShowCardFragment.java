@@ -158,7 +158,7 @@ public class ShowCardFragment extends Fragment {
         textViews[0] = cardView.findViewById(R.id.cardName);
         for (int i = 0; i<attributeHolder.getChildCount(); i++){
             TableRow row = (TableRow) attributeHolder.getChildAt(i);
-            textViews[i+1] = (TextView) row.getChildAt(1);
+            textViews[i+1] = (TextView) row.getChildAt(row.getChildCount()-1);
         }
 
         textViews[0].setText(ccDeck[count].name);                                                   //SETZT WERTE IN ENTSPRECHENDE TV's
