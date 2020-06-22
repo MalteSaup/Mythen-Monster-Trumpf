@@ -13,6 +13,7 @@ import java.util.Random;
 public class GameManager {
 
     private CardClass[] allCards;
+    private int playersRemaining;
     private PlayerItem pool; // cards that are kept in the "middle" during a draw round
     private ArrayList<PlayerItem> players;
     private Server server;
@@ -32,6 +33,7 @@ public class GameManager {
         pool = new PlayerItem("pool", -1);
         pool.playerDeck = new ArrayList<>();
         this.supportClass = new AsyncSupportClass();
+        playersRemaining = players.size();
     }
 /*
 
@@ -45,8 +47,8 @@ public class GameManager {
     public void dealOutCards(){
 
         shuffle();
+        shufflePlayers();
         for (int i = 0; i < allCards.length; i++){
-            Log.d("deckcontent", players.get(0).playerDeck.size() + " | " + players.get(1).playerDeck.size() + " | " + allCards.length);
 
             callAddToPlayerDeck(players.get(i % players.size()), allCards[i]); // player1 cards0 becomes allCards0, player2 cards0 becomes allCards1 etc.
         }
@@ -54,6 +56,8 @@ public class GameManager {
         for (PlayerItem p : players){
             Log.d("cardDealing", p.getUsername() + " " + p.getPlayerDeck().size());
         }
+
+        unshufflePlayers();
 
         sendCard();
 
@@ -122,7 +126,10 @@ public class GameManager {
                 player.playerDeck.remove(0);
             }
             Log.d("alooah", "" +drawWinners.size());
-            currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random())));
+
+            if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
+                currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random()))); //if not, a randomly determined player of the elligible players should be allowed
+            }
         }
         nextTurn();
     }
@@ -139,6 +146,29 @@ public class GameManager {
             CardClass temp = allCards[randomIndexToSwap];
             allCards[randomIndexToSwap] = allCards[i];
             allCards[i] = temp;
+        }
+    }
+
+    private void shufflePlayers(){
+        Random rand = new Random();
+        for (int i = 0; i < players.size(); i++) {
+            int randomIndexToSwap = rand.nextInt(players.size());
+            PlayerItem temp = players.get(randomIndexToSwap);
+            players.set(randomIndexToSwap, players.get(i));
+            players.set(i,temp);
+        }
+    }
+
+    private void unshufflePlayers(){
+        for (ServerListener sL : playerList){
+            for (PlayerItem pI : players){
+                if (sL.getID() == pI.getId()){
+                    int oldPosition = players.indexOf(pI);
+                    PlayerItem temp = players.get(playerList.indexOf(sL));
+                    players.set(playerList.indexOf(sL), pI);
+                    players.set(oldPosition, temp);
+                }
+            }
         }
     }
 
@@ -220,16 +250,15 @@ public class GameManager {
 
 
     public void nextTurn() {
-
-
+        
         determineCurrentPlayer();
         sendCard();
         playerList = server.getServerListeners();
 
-        if (players.size() == 1){ // one person being left means they are the winner
+        if (playersRemaining == 1){ // one person being left means they are the winner
             for(ServerListener sL : playerList){
                 for(PlayerItem pI : players){
-                    if(pI.getId() == sL.getID()){
+                    if((pI.getId() == sL.getID()) && !(pI.getHasLost())){
                         supportClass.sendMessage(sL, "totalWin " + turnCount);
                     }
                 }
@@ -237,6 +266,13 @@ public class GameManager {
             resetAll();
         }
         else{
+            while(players.get(currentPlayer).getHasLost()){ // in the unlikely event that a player loses his last card by having the highest value in a draw currentPlayer
+                currentPlayer += 1;                         // has to be set to a player who is still in the game, while this method is not very random it should work
+                if (currentPlayer >= players.size()){
+                    currentPlayer = 0;
+                }
+            }
+
             Log.d("tcount", "" + turnCount);
             turnCount += 1;
         }
@@ -254,7 +290,8 @@ public class GameManager {
                 if(pI.getId() == sL.getID()){
                     if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
                         supportClass.sendMessage(sL, "totalLose " + getTurnCount());
-                        players.remove(pI);
+                        players.get(players.indexOf(pI)).setHasLost(true);
+                        playersRemaining -=1 ;
                         break;
                     }
                     else if(pI.getId() == playerList.get(currentPlayer).getID()){

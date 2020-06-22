@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class PlayerItem {
 
     private boolean allowedToPlay; // used to determine eligible players in draw rounds
+    private boolean hasLost;
     private boolean partOfDrawRound = true;
     public ArrayList<CardClass> playerDeck;
 
@@ -57,4 +58,7 @@ public class PlayerItem {
     public int getSelectedStat() {
         return selectedState;
     }
+
+    public boolean getHasLost(){ return hasLost; }
+    public void setHasLost(boolean lost){hasLost = lost;}
 }
