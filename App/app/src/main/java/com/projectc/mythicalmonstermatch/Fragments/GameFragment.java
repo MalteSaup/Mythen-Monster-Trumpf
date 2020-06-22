@@ -46,7 +46,7 @@ public class GameFragment extends Fragment {
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = true;
+    private boolean background = false;
     private boolean changed = false;
 
     private TextView[] enemieTextViews[];
@@ -284,8 +284,7 @@ public class GameFragment extends Fragment {
                     onClickAnimation = cardAnimator.createSingleEnemyCardAnimation(enemieFrags[i]);
                     break;
                 case 3:
-                    /*onClickAnimation = cardAnimator.createTwoEnemyCardAnimation(enemieFrags[i], i+2);*/
-                    onClickAnimation = cardAnimator.createCardFlip(enemieFrags[i]);
+                    onClickAnimation = cardAnimator.createTwoEnemyCardAnimation(enemieFrags[i], i);
                     break;
                 case 4:
                     onClickAnimation = cardAnimator.createThreeEnemyCardAnimation(enemieFrags[i], i, false);
@@ -347,6 +346,21 @@ public class GameFragment extends Fragment {
                 });
             }
         }
+    }
+
+    public void flipAllCards(boolean direction){        //TRUE => Aufdecken, FALSE => Verdecken
+        for(int i = 0; i < playerCount - 1; i++){
+            if(direction){
+                enemieAnimations[i][1].start();
+            } else {
+                enemieAnimations[i][1].reverse();
+            }
+            background = !direction;
+        }
+    }
+
+    public void roundEnd(){
+
     }
 
     public void initializePlayerFrag(){
@@ -456,9 +470,10 @@ public class GameFragment extends Fragment {
 
     private void updateEnemieFrag(int number, int card, String attribute){
         Log.d("NUMBER", "" + number);
+        String displayText = "" + gA.cardDeck[card].attributeMap.get(attribute);
         enemieTextViews[number][0].setText(gA.cardDeck[card].name);
         enemieTextViews[number][1].setText(attribute);
-        enemieTextViews[number][2].setText("" + gA.cardDeck[card].attributeMap.get("attribute2"));
+        enemieTextViews[number][2].setText(displayText);
 
         enemieImageViews[number][0].setImageResource(R.drawable.background);
         enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
@@ -466,7 +481,7 @@ public class GameFragment extends Fragment {
         if(playerCount > 3){
             enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
             enemieAnimTextViews[number][1].setText(attribute);
-            enemieAnimTextViews[number][2].setText("" + gA.cardDeck[card].attributeMap.get("attribute2"));
+            enemieAnimTextViews[number][2].setText(displayText);
 
             enemieAnimImageViews[number][0].setImageResource(R.drawable.background);
             enemieAnimImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
@@ -481,7 +496,6 @@ public class GameFragment extends Fragment {
                 break;
             }
         }
-        Log.d("KARTENNUMMER", ""+card +  " " + playerTextViews[1]);
         if(playerTextViews != null){
             Log.d("ALLA", "" + card);
             Log.d("ALLA", "" + gA.cardDeck[card]);
@@ -491,9 +505,8 @@ public class GameFragment extends Fragment {
             playerTextViews[3].setText("" + gA.cardDeck[card].attributeMap.get("attribute3"));
             playerTextViews[4].setText("" + gA.cardDeck[card].attributeMap.get("attribute4"));
             playerTextViews[5].setText("" + gA.cardDeck[card].attributeMap.get("attribute5"));
-            if(gA.cardDeck[card].imgID != null){imageView.setImageResource(gA.cardDeck[card].imgID);}//TODO WENN ALLE BILDER DA SIND ERROR PROTECTION BESEITIGEN
-            if(gA.turn){submitBtn.setVisibility(View.VISIBLE);}
-            else{submitBtn.setVisibility(View.GONE);}
+            imageView.setImageResource(gA.cardDeck[card].imgID);
+            submitBtn.setVisibility(gA.turn ? View.VISIBLE : View.GONE);
         }
         else{
             Log.d("REKURSION", "REKURSION" + count);

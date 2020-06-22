@@ -26,3 +26,4 @@ public class AsyncSupportClass {
         asyncTask.execute();
     }
 }
+

@@ -257,6 +257,8 @@ public class GameActivity extends FragmentActivity{
 
 
     public void updatePlayer(int card){
+        //gameFragment.roundEnd();
+        //TODO GET ENEMIE CARD IDS
         gameFragment.updatePlayerFrag(card, 0);
     }
 
