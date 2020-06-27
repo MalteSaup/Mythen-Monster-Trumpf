@@ -98,6 +98,7 @@ public class GameManager {
                     awardWinner(players.indexOf(currentWinners.get((0))));
                 } else {
 
+                    if (!players.get(playerList.indexOf(sL)).getHasLost() && players.get(playerList.indexOf(sL)).getPartOfDrawRound())
                     supportClass.sendMessage(sL, "LOSE");
                 }
             }
@@ -119,11 +120,13 @@ public class GameManager {
                 }
 
                 for(ServerListener sL : playerList){
-                    supportClass.sendMessage(sL, "DRAW");
+                    if (!players.get(playerList.indexOf(sL)).getHasLost())
+                        supportClass.sendMessage(sL, "DRAW");
                 }
+                if (!player.getHasLost()){
+                    callAddToPlayerDeck(pool, player.getCard(0));
+                    player.playerDeck.remove(0);}
 
-                callAddToPlayerDeck(pool, player.getCard(0));
-                player.playerDeck.remove(0);
             }
             Log.d("alooah", "" +drawWinners.size());
 
@@ -179,7 +182,7 @@ public class GameManager {
 
         for (int i = 0; i < temp.size(); i++){
             Log.d("INDEX TEMP PLAYER", "" + temp.get(i) + " " + i);
-            if (i != index){
+            if (i != index && players.get(i).getPartOfDrawRound()){
                 callAddToPlayerDeck(players.get(index), temp.get(i).getCard(0)); // index 0 is always the current card
                 players.get(i).playerDeck.remove(0);
             }
@@ -255,6 +258,10 @@ public class GameManager {
         sendCard();
         playerList = server.getServerListeners();
 
+        Log.d("deckcontent", players.size() + "");
+        Log.d("deckcontent", players.get(0).getUsername() + " | " + players.get(1).getUsername() + " | " + players.get(2).getUsername());
+        Log.d("deckcontent", players.get(0).playerDeck.size() + " | " + players.get(1).playerDeck.size() + " | " + players.get(2).playerDeck.size());
+
         if (playersRemaining == 1){ // one person being left means they are the winner
             for(ServerListener sL : playerList){
                 for(PlayerItem pI : players){
@@ -263,6 +270,7 @@ public class GameManager {
                     }
                 }
             }
+            Log.d("Ende", "" + playersRemaining);
             resetAll();
         }
         else{
@@ -289,9 +297,14 @@ public class GameManager {
             for(PlayerItem pI : players){
                 if(pI.getId() == sL.getID()){
                     if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
-                        supportClass.sendMessage(sL, "totalLose " + getTurnCount());
-                        players.get(players.indexOf(pI)).setHasLost(true);
-                        playersRemaining -=1 ;
+                        if (!pI.getHasLost()){
+                            supportClass.sendMessage(sL, "totalLose " + getTurnCount());
+                            players.get(players.indexOf(pI)).setHasLost(true);
+                            Log.d("inspektion", playersRemaining + "");
+                            playersRemaining -=1 ;
+                            Log.d("inspektion", playersRemaining + "");
+                        }
+                        players.get(players.indexOf(pI)).setPartOfDrawRound(false);
                         break;
                     }
                     else if(pI.getId() == playerList.get(currentPlayer).getID()){
