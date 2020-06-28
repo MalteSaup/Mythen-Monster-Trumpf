@@ -25,14 +25,7 @@ public class CardAnimator {
         height = size.y;
         width = size.x;
     }
-    public CardAnimator(MainActivity gA){
-        Display display = gA.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        height = size.y;
-        width = size.x;
-    }
-
+ 
     public AnimationHolder createPlayerCardAnimation(View view){
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, "translationY", -(height/2));
         objectAnimator.setDuration(500);
