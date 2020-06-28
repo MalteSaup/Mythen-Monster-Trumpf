@@ -475,7 +475,7 @@ public class GameFragment extends Fragment {
         enemieTextViews[number][1].setText(attribute);
         enemieTextViews[number][2].setText(displayText);
 
-        enemieImageViews[number][0].setImageResource(R.drawable.background);
+        enemieImageViews[number][0].setImageResource(R.drawable.background1);
         enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
 
         if(playerCount > 3){
@@ -483,7 +483,7 @@ public class GameFragment extends Fragment {
             enemieAnimTextViews[number][1].setText(attribute);
             enemieAnimTextViews[number][2].setText(displayText);
 
-            enemieAnimImageViews[number][0].setImageResource(R.drawable.background);
+            enemieAnimImageViews[number][0].setImageResource(R.drawable.background2);
             enemieAnimImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
         }
     }
