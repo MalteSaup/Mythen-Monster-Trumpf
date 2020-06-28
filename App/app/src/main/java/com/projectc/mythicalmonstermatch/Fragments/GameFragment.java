@@ -46,7 +46,7 @@ public class GameFragment extends Fragment {
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = false;
+    private boolean background = true;
     private boolean changed = false;
 
     private TextView[] enemieTextViews[];
