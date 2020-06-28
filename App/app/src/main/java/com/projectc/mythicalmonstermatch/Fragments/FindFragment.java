@@ -42,6 +42,7 @@ public class FindFragment extends Fragment {
 
     private boolean stoped = false;
     private boolean searching = true;
+    private boolean joining = false;
 
     private Button connectDirect;
 
@@ -99,23 +100,27 @@ public class FindFragment extends Fragment {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String address = addressInput.getText().toString();
-                String regex = "[\\d].+$";
-                if(address.matches(regex) && address.split("\\.").length == 4){
-                    Log.d("IPRIGHT", "RIGHT");
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            SearchClient searchClient = new SearchClient(fF, getContext(), address, true);
-                            searchClient.run();
-                        }
-                    });
-                    t.start();
+                if(!joining){
 
-                } else{
-                    CharSequence text = "Enter Valid IP";
-                    Toast toast = Toast.makeText(gA, text, Toast.LENGTH_SHORT);
-                    toast.show();
+                    final String address = addressInput.getText().toString();
+                    String regex = "[\\d].+$";
+                    if(address.matches(regex) && address.split("\\.").length == 4){
+                        joining = true;
+                        Log.d("IPRIGHT", "RIGHT");
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                SearchClient searchClient = new SearchClient(fF, getContext(), address, true);
+                                searchClient.run();
+                            }
+                        });
+                        t.start();
+
+                    } else{
+                        CharSequence text = "Enter Valid IP";
+                        Toast toast = Toast.makeText(gA, text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 }
             }
         });
@@ -139,8 +144,9 @@ public class FindFragment extends Fragment {
                 ServerItem joinItem = serverList.get(position);
                 searching = false;
                 gA.inHost = true; 
-                join(joinItem);
-                Log.d("JETZT ITEM", serverList.get(position).getServername());
+                if(!joining){
+                    join(joinItem);
+                }
             }
         });
 
@@ -190,6 +196,7 @@ public class FindFragment extends Fragment {
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            joining = false;
                             restart();
                         }
                     });
@@ -276,6 +283,7 @@ public class FindFragment extends Fragment {
     }
 
     public void directConnectFailed() {
+        joining = false;
         CharSequence text = "Connection Not Possible";
         Toast toast = Toast.makeText(gA, text, Toast.LENGTH_SHORT);
         toast.show();
