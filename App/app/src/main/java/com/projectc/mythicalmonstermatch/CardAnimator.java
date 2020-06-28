@@ -25,6 +25,13 @@ public class CardAnimator {
         height = size.y;
         width = size.x;
     }
+    public CardAnimator(MainActivity gA){
+        Display display = gA.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        height = size.y;
+        width = size.x;
+    }
 
     public AnimationHolder createPlayerCardAnimation(View view){
         ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, "translationY", -(height/2));
@@ -68,11 +75,13 @@ public class CardAnimator {
         float newX = (float) (width*0.86);
         float newY = (float) (height*0.9);
 
-        ObjectAnimator change_y_position = ObjectAnimator.ofFloat(view, "translationY", (newY - y)/2);
+        float xShift = (width / 2 - width * 0.07f) - (x/2);
+
+        ObjectAnimator change_x_position = ObjectAnimator.ofFloat(view, "translationX", xShift);
         ValueAnimator change_x = ValueAnimator.ofFloat(x, newX);
         ValueAnimator change_y = ValueAnimator.ofFloat(y, newY);
 
-        change_y_position.setDuration(500);
+        change_x_position.setDuration(500);
         change_x.setDuration(500);
         change_y.setDuration(500);
 
@@ -94,7 +103,7 @@ public class CardAnimator {
             }
         });
 
-        return new AnimationHolder(new ObjectAnimator[]{change_y_position}, new ValueAnimator[]{change_x, change_y});
+        return new AnimationHolder(new ObjectAnimator[]{change_x_position}, new ValueAnimator[]{change_x, change_y});
     }
 
     public AnimationHolder createTwoEnemyCardAnimation(final View view, int direction){            //1 = Links, 2 = Rechts
