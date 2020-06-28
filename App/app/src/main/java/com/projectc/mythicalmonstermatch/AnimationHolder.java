@@ -12,9 +12,7 @@ public class AnimationHolder {
     ValueAnimator[] valueAnimators = null;
     int animationFlag = -1;
     public boolean gotPlayed = false;
-    public AnimationHolder() {
-
-    }
+    public AnimationHolder() {}
 
     public AnimationHolder(ObjectAnimator change_y_position){
         //oA1 = change_y_position;
@@ -37,7 +35,6 @@ public class AnimationHolder {
     public void start(){
         switch (animationFlag){
             case 1:
-                //oA1.start();
                 objectAnimators[0].start();
                 break;
             /*case 2:
