@@ -47,7 +47,7 @@ public class GameFragment extends Fragment {
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = true;
+    private boolean background = false;
     private boolean changed = false;
 
     private TextView[] enemieTextViews[];
@@ -335,7 +335,7 @@ public class GameFragment extends Fragment {
                         if (!enemieAnimationDirection[finalI]) {
                             checkIfAnimationsAreActive();
                             enemieFrags[finalI].bringToFront();
-                            enemieAnimations[finalI][0].start();
+                            enemieAnimations[finalI][1].start();
                             if(playerCount > 3){
                                 Log.d("ENEMYANIM", "THEORIE" + enemieAnimationFrags[finalI]);
                                 enemieAnimationFrags[finalI].bringToFront();
