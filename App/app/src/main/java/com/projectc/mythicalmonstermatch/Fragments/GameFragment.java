@@ -31,6 +31,7 @@ public class GameFragment extends Fragment {
     private PlayerItem myPlayerItem;
 
     private ImageView imageView;
+    private ImageView playerBackground;
     private ImageView deckImageView;
 
     private View playerFrag;
@@ -369,6 +370,9 @@ public class GameFragment extends Fragment {
 
 
         imageView = playerFrag.findViewById(R.id.imageView);
+        playerBackground = playerFrag.findViewById(R.id.background);
+
+        playerBackground.setVisibility(View.GONE);
 
         Log.d("IMAGEVIEW", "" + imageView + " " + gA.cardDeck[0].imgID);
 
@@ -395,6 +399,8 @@ public class GameFragment extends Fragment {
                 playerDeckFrag.findViewById(R.id.attributeWert4),
                 playerDeckFrag.findViewById(R.id.attributeWert5),
         };
+
+        playerDeckFrag.findViewById(R.id.submitBtn).setVisibility(View.GONE);
 
         tableRows = new TableRow[]{
                 playerFrag.findViewById(R.id.row1),
