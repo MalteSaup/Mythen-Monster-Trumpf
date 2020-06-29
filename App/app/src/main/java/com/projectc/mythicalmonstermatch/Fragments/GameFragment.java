@@ -143,7 +143,7 @@ public class GameFragment extends Fragment {
         if (gA.code == 1){
             //TODO das eigene playerItem vom gameManager bekommen
         }
-        updatePlayerFrag(3, 0);
+
         //Log.d("HEIGHT", " " + enemieFrags[0].getMeasuredHeight() + " " + enemieFrags[0].getHeight());
         AsyncTask asyncTask = new AsyncTask() {
                 @Override
@@ -163,10 +163,32 @@ public class GameFragment extends Fragment {
                         }
                     }
                 });
+
                 return null;
             }
         };
         asyncTask.execute();
+        AsyncTask animAsyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        playerFrag.bringToFront();
+                        playerAnimation.start();
+                        playerCardAnimationPlayed = !playerCardAnimationPlayed;
+                    }
+                });
+                return null;
+            }
+        };
+        animAsyncTask.execute();
         super.onActivityCreated(saveInstandesState);
     }
 

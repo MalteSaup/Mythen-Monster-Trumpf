@@ -60,6 +60,7 @@ public class GameManager {
         unshufflePlayers();
 
         sendCard();
+        //TODO play the bring player to front animation
 
     }
 
@@ -73,6 +74,8 @@ public class GameManager {
                 eligiblePlayers.add(player);
             }
         }
+
+        //TODO play card flip animation for everyone, so that every player can see all the open cards
 
         List<PlayerItem> currentWinners = new ArrayList<>();
 
