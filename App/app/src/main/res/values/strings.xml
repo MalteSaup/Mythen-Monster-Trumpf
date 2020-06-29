@@ -27,15 +27,7 @@
     <!--<string name=""></string>!-->
 
     <string name="info_text">
-        Hier steht die Beschreibung des Spiels &#10;
-        Einfach in der strings.xml Datei ändern &#10;
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy &#10;
-        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. &#10;
-        At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, &#10;
-        no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, &#10;
-        consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, &#10;
-        sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, &#10;
-        no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Mythical Monster Match ist ein Trumpf Spiel, bei dem sich legendäre Monster gegenüberstehen. Die Person, die am Zug ist, wählt aus in welchem Bereich sich die Monster stellen. Die Bereiche, in denen die Monster gegeneinander antreten können, sind Verteidigung, Geschwindigkeit, Masse, Gerissenheit und Gruselfaktor.\n\nDas Monster mit den meisten Punkten gewinnt die Runde und entscheidet, wer als nächstes am Zug ist. Der Gewinner erhält alle Monster-Karten, die in einer Runde gegeneinander angetreten sind.\n\nTeilen sich mehrere Spieler den ersten Platz, treten diese so lange mit neuen Monster-Karten gegeneinander an und spielen die Runde weiter bis es einen Gewinner gibt, der alle Karten aus dieser großen Runde bekommt.\n\nWer keine Karten mehr hat, verliert das Spiel und sobald ein Spieler alle Monster gesammelt hat, gewinnt er/sie das gesamte Spiel.
     </string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -258,9 +258,11 @@ public class GameManager {
         sendCard();
         playerList = server.getServerListeners();
 
+        /*
         Log.d("deckcontent", players.size() + "");
         Log.d("deckcontent", players.get(0).getUsername() + " | " + players.get(1).getUsername() + " | " + players.get(2).getUsername());
         Log.d("deckcontent", players.get(0).playerDeck.size() + " | " + players.get(1).playerDeck.size() + " | " + players.get(2).playerDeck.size());
+        */
 
         if (playersRemaining == 1){ // one person being left means they are the winner
             for(ServerListener sL : playerList){
