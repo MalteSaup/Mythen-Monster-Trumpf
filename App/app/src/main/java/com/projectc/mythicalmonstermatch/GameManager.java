@@ -98,11 +98,14 @@ public class GameManager {
                 if (sL.getID() == currentWinners.get(0).getId()){
 
                     supportClass.sendMessage(sL, "WIN");
+                    supportClass.sendMessage(sL,"compared 1 " + currentWinners.get(0).getId()+ " " + players.get(playerList.indexOf(sL)).playerDeck.get(0));
+
                     awardWinner(players.indexOf(currentWinners.get((0))));
                 } else {
 
                     if (!players.get(playerList.indexOf(sL)).getHasLost() && players.get(playerList.indexOf(sL)).getPartOfDrawRound())
                     supportClass.sendMessage(sL, "LOSE");
+                    supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + players.get(playerList.indexOf(sL)).playerDeck.get(0));
                 }
             }
 
@@ -122,10 +125,6 @@ public class GameManager {
                     player.setPartOfDrawRound(false);
                 }
 
-                for(ServerListener sL : playerList){
-                    if (!players.get(playerList.indexOf(sL)).getHasLost())
-                        supportClass.sendMessage(sL, "DRAW");
-                }
                 if (!player.getHasLost()){
                     callAddToPlayerDeck(pool, player.getCard(0));
                     player.playerDeck.remove(0);}
@@ -135,6 +134,12 @@ public class GameManager {
 
             if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
                 currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random()))); //if not, a randomly determined player of the elligible players should be allowed
+            }
+
+            for(ServerListener sL : playerList){
+                if (!players.get(playerList.indexOf(sL)).getHasLost())
+                    supportClass.sendMessage(sL, "DRAW");
+                supportClass.sendMessage(sL,"compared 2 " + currentWinners.get(0).getId()+ " " + players.get(playerList.indexOf(sL)).playerDeck.get(0));
             }
         }
         nextTurn();

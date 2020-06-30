@@ -190,6 +190,7 @@ public class Client extends Thread{
 
     private void handleLose() {
         Log.d("RUNDEVOLLENDET", "LOSER");
+
         gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -201,6 +202,7 @@ public class Client extends Thread{
 
     private void handleWin() {
         Log.d("RUNDEVOLLENDET", "IWINNER");
+
         gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -228,6 +230,9 @@ public class Client extends Thread{
     }
 
     private void handleCompare(String[] tokens) {
+        gameActivity.gameFragment.roundEnd();
+
+
         if(tokens[1].equalsIgnoreCase("0")){
             //LOSE ANZEIGEN
         } else if(tokens[1].equalsIgnoreCase("1")){
@@ -252,7 +257,7 @@ public class Client extends Thread{
                 while(gameActivity.gameFragment.getPlayerTV()[0] == null){
                     assert true;
                 }
-                gameActivity.updatePlayer(cardID);
+                gameActivity.gameFragment.setOwnCard(cardID);
             }
         });
 

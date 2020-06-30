@@ -47,8 +47,9 @@ public class GameFragment extends Fragment {
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = false;
+    private boolean background = true;
     private boolean changed = false;
+    private boolean isPlaying = false;
 
     private TextView[] enemieTextViews[];
     private ImageView[] enemieImageViews[];
@@ -70,6 +71,10 @@ public class GameFragment extends Fragment {
             R.layout.fragment_game_5
     };
     private int playerCount; //HARDCODED
+
+
+
+    private int ownCard;
 
     private CardAnimator cardAnimator;
 
@@ -168,6 +173,7 @@ public class GameFragment extends Fragment {
             }
         };
         asyncTask.execute();
+
         AsyncTask animAsyncTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
@@ -180,9 +186,8 @@ public class GameFragment extends Fragment {
                 gA.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        playerFrag.bringToFront();
-                        playerAnimation.start();
-                        playerCardAnimationPlayed = !playerCardAnimationPlayed;
+                        showCard();
+                        gA.updatePlayer(ownCard);
                     }
                 });
                 return null;
@@ -383,8 +388,90 @@ public class GameFragment extends Fragment {
     }
 
     public void roundEnd(){
+        isPlaying = true;
 
+        AsyncTask bringCardToBack = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showCard();
+                    }
+                });
+                return null;
+            }
+        };
+        bringCardToBack.execute();
+
+        AsyncTask flipCardsOpen = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flipAllCards(false);
+                    }
+                });
+                return null;
+            }
+        };
+        flipCardsOpen.execute();
+
+        AsyncTask flipCardsShut = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flipAllCards(true);
+                    }
+                });
+                return null;
+            }
+        };
+        flipCardsShut.execute();
+
+        AsyncTask bringCardToFront = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(700);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        gA.updatePlayer(ownCard);
+                        showCard();
+                    }
+                });
+                isPlaying = false;
+                return null;
+            }
+        };
+        bringCardToFront.execute();
     }
+
+
 
     public void initializePlayerFrag(){
         playerFrag = view.findViewById(R.id.player_fragment);
@@ -481,19 +568,16 @@ public class GameFragment extends Fragment {
 
 
         playerAnimation = cardAnimator.createPlayerCardAnimation(playerFrag);
+        /*                                                              is this really neccessary?
         playerFrag.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                playerFrag.bringToFront();
-                if(!playerCardAnimationPlayed){
-                    checkIfAnimationsAreActive();
-                    playerAnimation.start();
-                }else {
-                    playerAnimation.reverse();
+
+                if(!isPlaying){
+                    showCard();
                 }
-                playerCardAnimationPlayed = !playerCardAnimationPlayed;
             }
-        });
+        }); */
     }
 
     private void updateEnemieFrag(int number, int card, String attribute){
@@ -650,6 +734,23 @@ public class GameFragment extends Fragment {
         return playerTextViews;
     }
 
+    public void showCard(){
+        playerFrag.bringToFront();
+        if(!playerCardAnimationPlayed){
+            checkIfAnimationsAreActive();
+            playerAnimation.start();
+        }else {
+            playerAnimation.reverse();
+        }
+        playerCardAnimationPlayed = !playerCardAnimationPlayed;
+    }
+    public int getOwnCard() {
+        return ownCard;
+    }
+
+    public void setOwnCard(int ownCard) {
+        this.ownCard = ownCard;
+    }
 }
 
 //TODO wenn richtig eingebunden in richtiger activity den return button bei erfolgter animation dazu verwenden diese wieder reversen zu lassen und nicht animation zu schlißen, momentan aber noch nicht möglich da zum testen die game activity nicht so gut geeignet ist das der server das spiel nicht starten lässt bisher
