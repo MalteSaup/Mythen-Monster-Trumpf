@@ -135,7 +135,7 @@ public class GameFragment extends Fragment {
         initializePlayerFrag();
         initializeEnemieFrags();
         Log.d("GAMEFRAGSTART", "START");
-        showBackground(background);
+       // showBackground(background);
 
         winLoseScreen = gA.findViewById(R.id.win_lose_screen);
         winLoseScreen.setVisibility(View.GONE);
@@ -236,7 +236,6 @@ public class GameFragment extends Fragment {
     }
 
     private void initializeEnemieFrags(){
-
 
         Resources res = getResources();
         String enemyString = "enemy_fragment";
@@ -387,9 +386,9 @@ public class GameFragment extends Fragment {
     public void flipAllCards(boolean direction){        //TRUE => Aufdecken, FALSE => Verdecken
         for(int i = 0; i < playerCount - 1; i++){
             if(direction){
-                enemieAnimations[i][1].start();
-            } else {
                 enemieAnimations[i][1].reverse();
+            } else {
+                enemieAnimations[i][1].start();
             }
             background = !direction;
         }
@@ -443,7 +442,7 @@ public class GameFragment extends Fragment {
                 gA.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        flipAllCards(false);
+                        flipAllCards(true);
                     }
                 });
                 return null;
@@ -462,7 +461,7 @@ public class GameFragment extends Fragment {
                 gA.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        flipAllCards(true);
+                        flipAllCards(false);
                     }
                 });
                 return null;
@@ -634,8 +633,9 @@ public class GameFragment extends Fragment {
         enemieTextViews[number][2].setText(displayText);
 
         enemieImageViews[number][0].setImageResource(R.drawable.background1);
-        enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
         Log.d("tokens4", ""+card);
+        enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+        Log.d("tokens5", ""+card);
         if(playerCount > 3){
             enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
             enemieAnimTextViews[number][1].setText(attribute);
@@ -673,7 +673,7 @@ public class GameFragment extends Fragment {
 
     }
 
-    private void showBackground(boolean show){
+    public void showBackground(boolean show){
         if(show){
             Log.d("ALLA", ""+enemieFrags);
             for(View enemyFrag : enemieFrags){
