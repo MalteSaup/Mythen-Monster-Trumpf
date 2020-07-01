@@ -91,23 +91,31 @@ public class GameManager {
                 currentWinners.add(player);
             }
         }
+
+
         if (currentWinners.size() == 1){ // there is one winner
 
             for(ServerListener sL : playerList){
+                String enemyCardIDs = buildEnemyCardIDs(sL);
 
                 if (sL.getID() == currentWinners.get(0).getId()){
 
+                    Log.d("gezwirbel", enemyCardIDs + "win");
                     supportClass.sendMessage(sL, "WIN");
-                    supportClass.sendMessage(sL,"compared 1 " + currentWinners.get(0).getId()+ " " + players.get(playerList.indexOf(sL)).playerDeck.get(0));
+                    supportClass.sendMessage(sL,"compared 1 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
 
-                    awardWinner(players.indexOf(currentWinners.get((0))));
                 } else {
 
-                    if (!players.get(playerList.indexOf(sL)).getHasLost() && players.get(playerList.indexOf(sL)).getPartOfDrawRound())
-                    supportClass.sendMessage(sL, "LOSE");
-                    supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + players.get(playerList.indexOf(sL)).playerDeck.get(0));
+                    if (!players.get(playerList.indexOf(sL)).getHasLost() && players.get(playerList.indexOf(sL)).getPartOfDrawRound()){
+
+                        Log.d("gezwirbel", enemyCardIDs + "lose");
+                        Log.d("tokens", ""+(players.get(playerList.indexOf(sL)).playerDeck.get(players.get(playerList.indexOf(sL)).playerDeck.size()-1).id));
+                        supportClass.sendMessage(sL, "LOSE");
+                        supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
+                    }
                 }
             }
+            awardWinner(players.indexOf(currentWinners.get((0))));
 
             for (PlayerItem player : players){
                 player.setPartOfDrawRound(true);
@@ -115,6 +123,15 @@ public class GameManager {
             currentPlayer = players.indexOf(currentWinners.get(0));
         }
         else{ // draw round begins
+
+            for(ServerListener sL : playerList){
+                if (!players.get(playerList.indexOf(sL)).getHasLost()) {
+
+                    String enemyCardIDs = buildEnemyCardIDs(sL);
+                    supportClass.sendMessage(sL, "DRAW");
+                    supportClass.sendMessage(sL, "compared 2 " + currentWinners.get(0).getId() + " " + attributeNumber + enemyCardIDs);
+                }
+            }
             List<PlayerItem> drawWinners = new ArrayList<>();
 
             for (PlayerItem player : players){
@@ -130,17 +147,12 @@ public class GameManager {
                     player.playerDeck.remove(0);}
 
             }
-            Log.d("alooah", "" +drawWinners.size());
 
             if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
                 currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random()))); //if not, a randomly determined player of the elligible players should be allowed
             }
 
-            for(ServerListener sL : playerList){
-                if (!players.get(playerList.indexOf(sL)).getHasLost())
-                    supportClass.sendMessage(sL, "DRAW");
-                supportClass.sendMessage(sL,"compared 2 " + currentWinners.get(0).getId()+ " " + players.get(playerList.indexOf(sL)).playerDeck.get(0));
-            }
+
         }
         nextTurn();
     }
@@ -341,5 +353,22 @@ public class GameManager {
         turnCount = -1;
         supportClass = null;
 
+    }
+
+    public String buildEnemyCardIDs(ServerListener sL){
+        int[] cardIDs = new int[players.size()];
+        for (int i = 0; i < cardIDs.length; i++){
+            if (playerList.get(i).getID() != sL.getID()){
+                cardIDs[i] = players.get(i).getCard(0).id;
+            }
+            Log.d("arrayprüfung", cardIDs[i] + "");
+        }
+        String enemyCardIDs = "";
+        for (int i = 0; i < cardIDs.length; i++){
+            if (playerList.get(i).getID() != sL.getID()){
+                enemyCardIDs += " " + cardIDs[i];
+            }
+        }
+        return enemyCardIDs;
     }
 }

@@ -76,6 +76,13 @@ public class GameFragment extends Fragment {
 
     private int ownCard;
 
+
+
+    private int[] enemyCardsToDisplay;
+
+
+    private int attributeToCheck;
+
     private CardAnimator cardAnimator;
 
     private AnimationHolder playerAnimation;
@@ -104,6 +111,7 @@ public class GameFragment extends Fragment {
         //ACTIVITY HOLEN UND SPIELERZAHL AUSLESEN
         gA = (GameActivity) getActivity();
         playerCount = gA.playerItems.size();
+        enemyCardsToDisplay = new int[playerCount];
         //playerCount = gA.server.playerCount();
         /*switch (playerCount){
             case 2: return inflater.inflate(game_fragments[0], container, false);
@@ -388,7 +396,20 @@ public class GameFragment extends Fragment {
     }
 
     public void roundEnd(){
+        for (int i : enemyCardsToDisplay){
+            Log.d("tokens1", "" + i);
+        }
         isPlaying = true;
+        gA.runOnUiThread(new Runnable() {
+            public void run(){
+                for (int i = 0; i < playerCount-1; i++){
+                    Log.d("tokens2",""+enemyCardsToDisplay[i]);
+                    updateEnemieFrag(i, enemyCardsToDisplay[i], attributeToCheck);
+                }
+            }
+        });
+
+
 
         AsyncTask bringCardToBack = new AsyncTask() {
             @Override
@@ -580,16 +601,41 @@ public class GameFragment extends Fragment {
         }); */
     }
 
-    private void updateEnemieFrag(int number, int card, String attribute){
-        Log.d("NUMBER", "" + number);
-        String displayText = "" + gA.cardDeck[card].attributeMap.get(attribute);
+    private void updateEnemieFrag(int number, int card, int attribute){
+        String attributeName;
+        TextView textHolder;
+        switch(attribute){
+            case (1):
+                textHolder = playerFrag.findViewById(R.id.attribute1);
+                attributeName = textHolder.getText().toString();
+                break;
+            case(2):
+                textHolder = playerFrag.findViewById(R.id.attribute2);
+                attributeName = textHolder.getText().toString();
+                break;
+            case(3):
+                textHolder = playerFrag.findViewById(R.id.attribute3);
+                attributeName = textHolder.getText().toString();
+                break;
+            case(4):
+                textHolder = playerFrag.findViewById(R.id.attribute4);
+                attributeName = textHolder.getText().toString();
+                break;
+            case(5):
+                textHolder = playerFrag.findViewById(R.id.attribute5);
+                attributeName = textHolder.getText().toString();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + attribute);
+        }
+        String displayText = "" + gA.cardDeck[card].attributeMap.get("attribute"+attribute);
         enemieTextViews[number][0].setText(gA.cardDeck[card].name);
-        enemieTextViews[number][1].setText(attribute);
+        enemieTextViews[number][1].setText(attributeName);
         enemieTextViews[number][2].setText(displayText);
 
         enemieImageViews[number][0].setImageResource(R.drawable.background1);
         enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
-
+        Log.d("tokens4", ""+card);
         if(playerCount > 3){
             enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
             enemieAnimTextViews[number][1].setText(attribute);
@@ -750,6 +796,12 @@ public class GameFragment extends Fragment {
 
     public void setOwnCard(int ownCard) {
         this.ownCard = ownCard;
+    }
+    public void setEnemyCardsToDisplay(int[] enemyCardsToDisplay) {
+        this.enemyCardsToDisplay = enemyCardsToDisplay;
+    }
+    public void setAttributeToCheck(int attributeToCheck) {
+        this.attributeToCheck = attributeToCheck;
     }
 }
 

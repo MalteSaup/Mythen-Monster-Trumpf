@@ -94,7 +94,6 @@ public class Client extends Thread{
 
             sendMessage("join " + id + " " + login);                                       //NACHRICHT AN SERVER DAS MAN JOINEN WILL
             joined = true;                                                                      //JOIN FLAG WIRD TRUE GESETZT
-
             while((line = bufferedReader.readLine()) != null && serverRunning && running){      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
                 String[] tokens = line.split(" ");                                        //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
                 if(tokens != null && tokens.length > 0) {
@@ -143,6 +142,7 @@ public class Client extends Thread{
                         handleTotalLose(Integer.parseInt(tokens[1]));
                     }
                 }
+                Log.d("tokens",line);
             }
             Log.d("CLIENT", "ZUENDDE");
 
@@ -229,7 +229,14 @@ public class Client extends Thread{
         gameActivity.gameFragment.updateAll(uebergabe);
     }
 
-    private void handleCompare(String[] tokens) {
+    private void handleCompare(String[] tokens) { //tokens[0] = "compared", tokens[1] = win/loss/draw, tokens[2] = winnerID, tokens[3] = attribute, tokens[4-max] = cardID of enemy cards
+        gameActivity.gameFragment.setAttributeToCheck(Integer.parseInt(tokens[3]));
+        int[] enemyCardsToDisplay = new int[tokens.length - 4];
+        for (int i = 4; i < tokens.length; i++){
+            enemyCardsToDisplay[i-4] = Integer.parseInt(tokens[i]);
+            Log.d("gezwirbel", enemyCardsToDisplay[i-4] + "");
+        }
+        gameActivity.gameFragment.setEnemyCardsToDisplay(enemyCardsToDisplay);
         gameActivity.gameFragment.roundEnd();
 
 
