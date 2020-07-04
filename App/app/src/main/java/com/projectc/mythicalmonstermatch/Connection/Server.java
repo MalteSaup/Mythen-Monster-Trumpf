@@ -47,7 +47,7 @@ public class Server extends Thread{
             gameStarted = true;                                                                     //SETZT GAME STARTED FLAG
         }
         for(ServerListener sL : playerList){
-                sL.sendMessage("start");
+                //sL.sendMessage("start");
         }
         Log.d("SERVER", "SERVER KURZ VORM ABSCHLUSS");
         for(int i = 0; i < playerList.size(); i++){

@@ -69,6 +69,7 @@ public class GameActivity extends FragmentActivity{
         }
 
         createCardDeck();
+
         Log.d("IMAGEVIEW", ""+cardDeck[0].imgID);
         if(code == 0){
 
@@ -247,7 +248,7 @@ public class GameActivity extends FragmentActivity{
     }
 
     public void startGame(){
-        if(code == 0){gameManager = new GameManager(cardDeck, playerItems, server);}
+        if(code == 0){gameManager = new GameManager(cardDeck.clone(), playerItems, server);}
 
         gameFragment = (GameFragment) Fragment.instantiate(this, GameFragment.class.getName(), null);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

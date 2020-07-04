@@ -59,7 +59,7 @@ public class HostFragment extends Fragment {
         playerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         playerAdapter = new PlayerAdapter(gA, gA.playerItems);
         playerRecyclerView.setAdapter(playerAdapter);
-        Log.d("WAS", " "+ view.findViewById(R.id.ueberschrift));
+        //Log.d("WAS", " "+ view.findViewById(R.id.ueberschrift));
 
         handler = new Handler();
 

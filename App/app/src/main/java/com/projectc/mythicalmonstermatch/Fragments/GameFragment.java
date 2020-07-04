@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -47,8 +48,9 @@ public class GameFragment extends Fragment {
     private boolean playerCardAnimationPlayed = false;
     private boolean[] enemieAnimationDirection;
     private boolean colorWasChanged = false;
-    private boolean background = false;
+    private boolean background = true;
     private boolean changed = false;
+    private boolean isPlaying = false;
 
     private TextView[] enemieTextViews[];
     private ImageView[] enemieImageViews[];
@@ -70,6 +72,18 @@ public class GameFragment extends Fragment {
             R.layout.fragment_game_5
     };
     private int playerCount; //HARDCODED
+
+
+
+    private int ownCard;
+    private int turnCount;
+    private int winOrLoss; // 1 = win, 0 = loss
+    private boolean hasWonOrLost; // if this is true the endscreen will be created after the compare animation
+
+    private int[] enemyCardsToDisplay;
+
+
+    private int attributeToCheck;
 
     private CardAnimator cardAnimator;
 
@@ -99,6 +113,7 @@ public class GameFragment extends Fragment {
         //ACTIVITY HOLEN UND SPIELERZAHL AUSLESEN
         gA = (GameActivity) getActivity();
         playerCount = gA.playerItems.size();
+        enemyCardsToDisplay = new int[playerCount];
         //playerCount = gA.server.playerCount();
         /*switch (playerCount){
             case 2: return inflater.inflate(game_fragments[0], container, false);
@@ -122,7 +137,7 @@ public class GameFragment extends Fragment {
         initializePlayerFrag();
         initializeEnemieFrags();
         Log.d("GAMEFRAGSTART", "START");
-        showBackground(background);
+       // showBackground(background);
 
         winLoseScreen = gA.findViewById(R.id.win_lose_screen);
         winLoseScreen.setVisibility(View.GONE);
@@ -168,6 +183,7 @@ public class GameFragment extends Fragment {
             }
         };
         asyncTask.execute();
+
         AsyncTask animAsyncTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
@@ -180,9 +196,8 @@ public class GameFragment extends Fragment {
                 gA.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        playerFrag.bringToFront();
-                        playerAnimation.start();
-                        playerCardAnimationPlayed = !playerCardAnimationPlayed;
+                        showCard();
+                        gA.updatePlayer(ownCard);
                     }
                 });
                 return null;
@@ -224,7 +239,6 @@ public class GameFragment extends Fragment {
 
     private void initializeEnemieFrags(){
 
-
         Resources res = getResources();
         String enemyString = "enemy_fragment";
         String enemyDeckString = "enemy_deck_fragment";
@@ -255,7 +269,8 @@ public class GameFragment extends Fragment {
             };
             enemieImageViews[i] = new ImageView[]{
                     enemieFrags[i].findViewById(R.id.background),
-                    enemieFrags[i].findViewById(R.id.imageView)
+                    enemieFrags[i].findViewById(R.id.imageView),
+                    enemieFrags[i].findViewById(R.id.attributeIcon)
             };
             id = res.getIdentifier(uebergabe2, "id", gA.getPackageName());
             enemieDeck[i] = view.findViewById(id);
@@ -267,7 +282,8 @@ public class GameFragment extends Fragment {
             };
             enemieDeckIV[i] = new ImageView[]{
                     enemieDeck[i].findViewById(R.id.background),
-                    enemieDeck[i].findViewById(R.id.imageView)
+                    enemieDeck[i].findViewById(R.id.imageView),
+                    enemieDeck[i].findViewById(R.id.attributeIcon)
             };
             enemieDeck[i].setAlpha(0.0f);
 
@@ -373,18 +389,115 @@ public class GameFragment extends Fragment {
 
     public void flipAllCards(boolean direction){        //TRUE => Aufdecken, FALSE => Verdecken
         for(int i = 0; i < playerCount - 1; i++){
-            if(direction){
-                enemieAnimations[i][1].start();
-            } else {
-                enemieAnimations[i][1].reverse();
+            if(enemyCardsToDisplay[i] != -1){
+                if(direction){
+                    enemieAnimations[i][1].reverse();
+                } else {
+                    enemieAnimations[i][1].start();
+                }
+                background = !direction;
             }
-            background = !direction;
         }
     }
 
     public void roundEnd(){
+        isPlaying = true;
+        gA.runOnUiThread(new Runnable() {
+            public void run(){
+                for (int i = 0; i < playerCount-1; i++){
+                    Log.d("tokens2",""+enemyCardsToDisplay[i]);
+                    updateEnemieFrag(i, enemyCardsToDisplay[i], attributeToCheck);
+                }
+            }
+        });
 
+
+
+        AsyncTask bringCardToBack = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showCard();
+                    }
+                });
+                return null;
+            }
+        };
+        bringCardToBack.execute();
+
+        AsyncTask flipCardsOpen = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flipAllCards(true);
+                    }
+                });
+                return null;
+            }
+        };
+        flipCardsOpen.execute();
+
+        AsyncTask flipCardsShut = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flipAllCards(false);
+                    }
+                });
+                if(hasWonOrLost){
+                    gA.createEndScreen(winOrLoss, turnCount);
+                }
+                return null;
+            }
+        };
+        flipCardsShut.execute();
+
+        AsyncTask bringCardToFront = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(700);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        gA.updatePlayer(ownCard);
+                        showCard();
+                    }
+                });
+                isPlaying = false;
+                return null;
+            }
+        };
+        bringCardToFront.execute();
     }
+
+
 
     public void initializePlayerFrag(){
         playerFrag = view.findViewById(R.id.player_fragment);
@@ -481,38 +594,71 @@ public class GameFragment extends Fragment {
 
 
         playerAnimation = cardAnimator.createPlayerCardAnimation(playerFrag);
+        /*                                                              is this really neccessary?
         playerFrag.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                playerFrag.bringToFront();
-                if(!playerCardAnimationPlayed){
-                    checkIfAnimationsAreActive();
-                    playerAnimation.start();
-                }else {
-                    playerAnimation.reverse();
+
+                if(!isPlaying){
+                    showCard();
                 }
-                playerCardAnimationPlayed = !playerCardAnimationPlayed;
             }
-        });
+        }); */
     }
 
-    private void updateEnemieFrag(int number, int card, String attribute){
-        Log.d("NUMBER", "" + number);
-        String displayText = "" + gA.cardDeck[card].attributeMap.get(attribute);
-        enemieTextViews[number][0].setText(gA.cardDeck[card].name);
-        enemieTextViews[number][1].setText(attribute);
-        enemieTextViews[number][2].setText(displayText);
+    private void updateEnemieFrag(int number, int card, int attribute){
+        if (card != -1){
+            String attributeName;
+            TextView textHolder;
+            int iconImage;
+            switch(attribute){
+                case (1):
+                    textHolder = playerFrag.findViewById(R.id.attribute1);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.iconmasse;
+                    break;
+                case(2):
+                    textHolder = playerFrag.findViewById(R.id.attribute2);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.iconverteidigung;
+                    break;
+                case(3):
+                    textHolder = playerFrag.findViewById(R.id.attribute3);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.icongeschwindigkeit;
+                    break;
+                case(4):
+                    textHolder = playerFrag.findViewById(R.id.attribute4);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.icongerissenheit;
+                    break;
+                case(5):
+                    textHolder = playerFrag.findViewById(R.id.attribute5);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.icongrusel;
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + attribute);
+            }
+            String displayText = "" + gA.cardDeck[card].attributeMap.get("attribute"+attribute);
+            enemieTextViews[number][0].setText(gA.cardDeck[card].name);
+            enemieTextViews[number][1].setText(attributeName);
+            enemieTextViews[number][2].setText(displayText);
 
-        enemieImageViews[number][0].setImageResource(R.drawable.background1);
-        enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+            enemieImageViews[number][0].setImageResource(R.drawable.background1);
+            Log.d("tokens4", ""+card);
+            enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+            Log.d("tokens5", ""+card);
+            enemieImageViews[number][2].setImageResource(iconImage);
+            if(playerCount > 3){
+                enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
+                enemieAnimTextViews[number][1].setText(attribute);
+                enemieAnimTextViews[number][2].setText(displayText);
 
-        if(playerCount > 3){
-            enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
-            enemieAnimTextViews[number][1].setText(attribute);
-            enemieAnimTextViews[number][2].setText(displayText);
+                enemieAnimImageViews[number][0].setImageResource(R.drawable.background2);
+                enemieAnimImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
 
-            enemieAnimImageViews[number][0].setImageResource(R.drawable.background2);
-            enemieAnimImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+            }
         }
     }
 
@@ -543,7 +689,7 @@ public class GameFragment extends Fragment {
 
     }
 
-    private void showBackground(boolean show){
+    public void showBackground(boolean show){
         if(show){
             Log.d("ALLA", ""+enemieFrags);
             for(View enemyFrag : enemieFrags){
@@ -649,6 +795,41 @@ public class GameFragment extends Fragment {
     public View[] getPlayerTV(){
         return playerTextViews;
     }
+
+    public void showCard(){
+        playerFrag.bringToFront();
+        if(!playerCardAnimationPlayed){
+            checkIfAnimationsAreActive();
+            playerAnimation.start();
+        }else {
+            playerAnimation.reverse();
+        }
+        playerCardAnimationPlayed = !playerCardAnimationPlayed;
+    }
+    public int getOwnCard() {
+        return ownCard;
+    }
+
+    public void setOwnCard(int ownCard) {
+        this.ownCard = ownCard;
+    }
+    public void setEnemyCardsToDisplay(int[] enemyCardsToDisplay) {
+        this.enemyCardsToDisplay = enemyCardsToDisplay;
+    }
+    public void setAttributeToCheck(int attributeToCheck) {
+        this.attributeToCheck = attributeToCheck;
+    }
+
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+   public void setWinOrLoss(int winOrLoss) {
+        this.winOrLoss = winOrLoss;
+    }
+    public void setHasWonOrLost(boolean wonOrLost) {
+        this.hasWonOrLost = wonOrLost;
+    }
+
 
 }
 

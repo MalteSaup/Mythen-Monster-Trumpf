@@ -91,20 +91,34 @@ public class GameManager {
                 currentWinners.add(player);
             }
         }
+
+
         if (currentWinners.size() == 1){ // there is one winner
 
             for(ServerListener sL : playerList){
+                String enemyCardIDs = buildEnemyCardIDs(sL);
 
                 if (sL.getID() == currentWinners.get(0).getId()){
 
+                    Log.d("gezwirbel", enemyCardIDs + "win");
                     supportClass.sendMessage(sL, "WIN");
-                    awardWinner(players.indexOf(currentWinners.get((0))));
+                    supportClass.sendMessage(sL,"compared 1 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
+
                 } else {
 
-                    if (!players.get(playerList.indexOf(sL)).getHasLost() && players.get(playerList.indexOf(sL)).getPartOfDrawRound())
-                    supportClass.sendMessage(sL, "LOSE");
+                    if (!players.get(playerList.indexOf(sL)).getHasLost()){
+
+                        Log.d("gezwirbel", enemyCardIDs + "lose");
+                        Log.d("tokens", ""+(players.get(playerList.indexOf(sL)).playerDeck.get(players.get(playerList.indexOf(sL)).playerDeck.size()-1).id));
+                        if (players.get(playerList.indexOf(sL)).getPartOfDrawRound()){
+                            supportClass.sendMessage(sL, "LOSE");
+                        }
+
+                        supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
+                    }
                 }
             }
+            awardWinner(players.indexOf(currentWinners.get((0))));
 
             for (PlayerItem player : players){
                 player.setPartOfDrawRound(true);
@@ -112,9 +126,25 @@ public class GameManager {
             currentPlayer = players.indexOf(currentWinners.get(0));
         }
         else{ // draw round begins
+
+            for(ServerListener sL : playerList){
+                if (!players.get(playerList.indexOf(sL)).getHasLost()) {
+
+                    String enemyCardIDs = buildEnemyCardIDs(sL);
+                    supportClass.sendMessage(sL, "DRAW");
+                    supportClass.sendMessage(sL, "compared 2 " + currentWinners.get(0).getId() + " " + attributeNumber + enemyCardIDs);
+                }
+            }
             List<PlayerItem> drawWinners = new ArrayList<>();
 
             for (PlayerItem player : players){
+                if (!player.getHasLost() && player.getPartOfDrawRound()){
+                    callAddToPlayerDeck(pool, player.getCard(0));
+                    player.playerDeck.remove(0);
+                    if (player.playerDeck.size() == 0){
+                        currentWinners.remove(player);
+                    }
+                }
                 if (currentWinners.contains(player)){
                     drawWinners.add(player);
                 }
@@ -122,20 +152,24 @@ public class GameManager {
                     player.setPartOfDrawRound(false);
                 }
 
-                for(ServerListener sL : playerList){
-                    if (!players.get(playerList.indexOf(sL)).getHasLost())
-                        supportClass.sendMessage(sL, "DRAW");
-                }
-                if (!player.getHasLost()){
-                    callAddToPlayerDeck(pool, player.getCard(0));
-                    player.playerDeck.remove(0);}
+
 
             }
-            Log.d("alooah", "" +drawWinners.size());
 
-            if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
+            if (currentWinners.size() == 1){
+                awardWinner(players.indexOf(currentWinners.get(0)));
+                for (PlayerItem player : players){
+                    player.setPartOfDrawRound(true);
+                }
+                currentPlayer = players.indexOf(currentWinners.get(0));
+            }
+
+            else if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
                 currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random()))); //if not, a randomly determined player of the elligible players should be allowed
             }
+
+
+
         }
         nextTurn();
     }
@@ -258,7 +292,7 @@ public class GameManager {
     public void nextTurn() {
         
         determineCurrentPlayer();
-        sendCard();
+
         playerList = server.getServerListeners();
 
         /*
@@ -266,6 +300,22 @@ public class GameManager {
         Log.d("deckcontent", players.get(0).getUsername() + " | " + players.get(1).getUsername() + " | " + players.get(2).getUsername());
         Log.d("deckcontent", players.get(0).playerDeck.size() + " | " + players.get(1).playerDeck.size() + " | " + players.get(2).playerDeck.size());
         */
+        for (ServerListener sL : playerList){
+            for (PlayerItem pI : players){
+                if (pI.getId() == sL.getID()){
+                    if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
+                        if (!pI.getHasLost()){
+                            supportClass.sendMessage(sL, "totalLose " + getTurnCount());
+                            players.get(players.indexOf(pI)).setHasLost(true);
+                            Log.d("inspektion", playersRemaining + "");
+                            playersRemaining -=1 ;
+                            Log.d("inspektion", playersRemaining + "");
+                        }
+                        players.get(players.indexOf(pI)).setPartOfDrawRound(false);
+                    }
+                }
+            }
+        }
 
         if (playersRemaining == 1){ // one person being left means they are the winner
             for(ServerListener sL : playerList){
@@ -289,7 +339,7 @@ public class GameManager {
             Log.d("tcount", "" + turnCount);
             turnCount += 1;
         }
-
+        sendCard();
         //TODO NEXT TURN MSG AN ALLE
     }
 
@@ -300,19 +350,9 @@ public class GameManager {
     public void sendCard(){
         for(ServerListener sL : playerList){
             for(PlayerItem pI : players){
-                if(pI.getId() == sL.getID()){
-                    if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
-                        if (!pI.getHasLost()){
-                            supportClass.sendMessage(sL, "totalLose " + getTurnCount());
-                            players.get(players.indexOf(pI)).setHasLost(true);
-                            Log.d("inspektion", playersRemaining + "");
-                            playersRemaining -=1 ;
-                            Log.d("inspektion", playersRemaining + "");
-                        }
-                        players.get(players.indexOf(pI)).setPartOfDrawRound(false);
-                        break;
-                    }
-                    else if(pI.getId() == playerList.get(currentPlayer).getID()){
+                if(pI.getId() == sL.getID() && !pI.getHasLost()){
+
+                    if (pI.getId() == playerList.get(currentPlayer).getID()){
                         supportClass.sendMessage(sL, "turn 1 " + (pI.getPlayerDeck().get(0).id));
                     }else{
                         supportClass.sendMessage(sL, "turn 0 " + (pI.getPlayerDeck().get(0).id));
@@ -336,5 +376,27 @@ public class GameManager {
         turnCount = -1;
         supportClass = null;
 
+    }
+
+    public String buildEnemyCardIDs(ServerListener sL){
+        int[] cardIDs = new int[players.size()];
+        for (int i = 0; i < cardIDs.length; i++){
+            if (playerList.get(i).getID() != sL.getID()){
+                if(players.get(i).playerDeck.size() > 0 && players.get(i).getPartOfDrawRound()){
+                    cardIDs[i] = players.get(i).getCard(0).id;
+                }
+                else{
+                    cardIDs[i] = -1;
+                }
+            }
+            Log.d("arrayprüfung", cardIDs[i] + "");
+        }
+        String enemyCardIDs = "";
+        for (int i = 0; i < cardIDs.length; i++){
+            if (playerList.get(i).getID() != sL.getID()){
+                enemyCardIDs += " " + cardIDs[i];
+            }
+        }
+        return enemyCardIDs;
     }
 }

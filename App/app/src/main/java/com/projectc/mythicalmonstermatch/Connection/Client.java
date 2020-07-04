@@ -94,7 +94,6 @@ public class Client extends Thread{
 
             sendMessage("join " + id + " " + login);                                       //NACHRICHT AN SERVER DAS MAN JOINEN WILL
             joined = true;                                                                      //JOIN FLAG WIRD TRUE GESETZT
-
             while((line = bufferedReader.readLine()) != null && serverRunning && running){      //WHILE SCHLEIFE FÜR NACHRICHT VERARBEITUNG
                 String[] tokens = line.split(" ");                                        //NACHRICHT IN SEGMENTE AUFGETEILT, 1. SEGMENT IST DER COMMAND
                 if(tokens != null && tokens.length > 0) {
@@ -143,6 +142,7 @@ public class Client extends Thread{
                         handleTotalLose(Integer.parseInt(tokens[1]));
                     }
                 }
+                Log.d("tokens",line);
             }
             Log.d("CLIENT", "ZUENDDE");
 
@@ -190,6 +190,7 @@ public class Client extends Thread{
 
     private void handleLose() {
         Log.d("RUNDEVOLLENDET", "LOSER");
+
         gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -201,6 +202,7 @@ public class Client extends Thread{
 
     private void handleWin() {
         Log.d("RUNDEVOLLENDET", "IWINNER");
+
         gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -211,11 +213,15 @@ public class Client extends Thread{
     }
 
     private void handleTotalWin(int turnCount){
-        gameActivity.createEndScreen(1, turnCount);
+        gameActivity.gameFragment.setTurnCount(turnCount);
+        gameActivity.gameFragment.setWinOrLoss(1);
+        gameActivity.gameFragment.setHasWonOrLost(true);
     }
 
     private void handleTotalLose(int turnCount){
-        gameActivity.createEndScreen(0, turnCount);
+        gameActivity.gameFragment.setTurnCount(turnCount);
+        gameActivity.gameFragment.setWinOrLoss(0);
+        gameActivity.gameFragment.setHasWonOrLost(true);
     }
 
     private void handlePlayerInfo(String[] tokens) {
@@ -227,7 +233,17 @@ public class Client extends Thread{
         gameActivity.gameFragment.updateAll(uebergabe);
     }
 
-    private void handleCompare(String[] tokens) {
+    private void handleCompare(String[] tokens) { //tokens[0] = "compared", tokens[1] = win/loss/draw, tokens[2] = winnerID, tokens[3] = attribute, tokens[4-max] = cardID of enemy cards
+        gameActivity.gameFragment.setAttributeToCheck(Integer.parseInt(tokens[3]));
+        int[] enemyCardsToDisplay = new int[tokens.length - 4];
+        for (int i = 4; i < tokens.length; i++){
+            enemyCardsToDisplay[i-4] = Integer.parseInt(tokens[i]);
+            Log.d("gezwirbel", enemyCardsToDisplay[i-4] + "");
+        }
+        gameActivity.gameFragment.setEnemyCardsToDisplay(enemyCardsToDisplay);
+        gameActivity.gameFragment.roundEnd();
+
+
         if(tokens[1].equalsIgnoreCase("0")){
             //LOSE ANZEIGEN
         } else if(tokens[1].equalsIgnoreCase("1")){
@@ -252,7 +268,7 @@ public class Client extends Thread{
                 while(gameActivity.gameFragment.getPlayerTV()[0] == null){
                     assert true;
                 }
-                gameActivity.updatePlayer(cardID);
+                gameActivity.gameFragment.setOwnCard(cardID);
             }
         });
 

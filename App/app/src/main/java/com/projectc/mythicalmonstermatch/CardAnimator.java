@@ -3,6 +3,7 @@ package com.projectc.mythicalmonstermatch;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 
@@ -12,6 +13,7 @@ public class CardAnimator {
     float width;
     boolean flipped = false;
     boolean changed = false;
+    GameActivity gA;
 
     boolean fragChanged = false;
     boolean fragDirection = false;
@@ -19,6 +21,7 @@ public class CardAnimator {
     float prevVal = 0;
 
     public CardAnimator(GameActivity gA){
+        this.gA = gA;
         Display display = gA.getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -39,11 +42,13 @@ public class CardAnimator {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float deg = (float) animation.getAnimatedValue();
+
                 if(!flipped){
                     if(deg > 90 && !changed && deg < 180){
                         view.findViewById(R.id.background).setVisibility(View.VISIBLE);
                         changed = true;
                     }else if(deg >= 180){
+                        gA.gameFragment.showBackground(true);
                         flipped = true;
                         changed = false;
                     }
@@ -52,6 +57,7 @@ public class CardAnimator {
                         view.findViewById(R.id.background).setVisibility(View.GONE);
                         changed = true;
                     }else if(deg <= 0){
+                        gA.gameFragment.showBackground(false);
                         flipped = false;
                         changed = false;
                     }

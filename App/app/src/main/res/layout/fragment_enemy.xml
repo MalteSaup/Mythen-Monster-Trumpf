@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#262733"
+    android:background="@drawable/template3"
     tools:context=".Fragments.CardFragment">
 
     <ImageView
@@ -102,20 +102,28 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ImageView
+                android:id="@+id/attributeIcon"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:src="@drawable/icongerissenheit" />
+
             <TextView
                 android:id="@+id/attribut"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/attribute1"
-                android:textAlignment="textStart"
-                android:textSize="18sp" />
+                android:textAlignment="center"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/attributeWert"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:paddingRight="3dp"
                 android:textAlignment="center"
                 android:textSize="18sp" />
         </TableRow>
