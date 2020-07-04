@@ -5,7 +5,8 @@
     android:id="@+id/frameLayout5"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.HostFragment" >
+    android:background="@android:color/black"
+    tools:context=".Fragments.HostFragment">
 
     <android.support.constraint.Guideline
         android:id="@+id/guidelineTop"

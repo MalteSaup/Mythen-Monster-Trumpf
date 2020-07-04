@@ -300,6 +300,22 @@ public class GameManager {
         Log.d("deckcontent", players.get(0).getUsername() + " | " + players.get(1).getUsername() + " | " + players.get(2).getUsername());
         Log.d("deckcontent", players.get(0).playerDeck.size() + " | " + players.get(1).playerDeck.size() + " | " + players.get(2).playerDeck.size());
         */
+        for (ServerListener sL : playerList){
+            for (PlayerItem pI : players){
+                if (pI.getId() == sL.getID()){
+                    if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
+                        if (!pI.getHasLost()){
+                            supportClass.sendMessage(sL, "totalLose " + getTurnCount());
+                            players.get(players.indexOf(pI)).setHasLost(true);
+                            Log.d("inspektion", playersRemaining + "");
+                            playersRemaining -=1 ;
+                            Log.d("inspektion", playersRemaining + "");
+                        }
+                        players.get(players.indexOf(pI)).setPartOfDrawRound(false);
+                    }
+                }
+            }
+        }
 
         if (playersRemaining == 1){ // one person being left means they are the winner
             for(ServerListener sL : playerList){
@@ -334,19 +350,9 @@ public class GameManager {
     public void sendCard(){
         for(ServerListener sL : playerList){
             for(PlayerItem pI : players){
-                if(pI.getId() == sL.getID()){
-                    if (pI.playerDeck.size() == 0){ // player has no cards left and has therefore lost
-                        if (!pI.getHasLost()){
-                            supportClass.sendMessage(sL, "totalLose " + getTurnCount());
-                            players.get(players.indexOf(pI)).setHasLost(true);
-                            Log.d("inspektion", playersRemaining + "");
-                            playersRemaining -=1 ;
-                            Log.d("inspektion", playersRemaining + "");
-                        }
-                        players.get(players.indexOf(pI)).setPartOfDrawRound(false);
-                        break;
-                    }
-                    else if(pI.getId() == playerList.get(currentPlayer).getID()){
+                if(pI.getId() == sL.getID() && !pI.getHasLost()){
+
+                    if (pI.getId() == playerList.get(currentPlayer).getID()){
                         supportClass.sendMessage(sL, "turn 1 " + (pI.getPlayerDeck().get(0).id));
                     }else{
                         supportClass.sendMessage(sL, "turn 0 " + (pI.getPlayerDeck().get(0).id));
