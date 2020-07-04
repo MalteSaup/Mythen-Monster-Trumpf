@@ -106,11 +106,14 @@ public class GameManager {
 
                 } else {
 
-                    if (!players.get(playerList.indexOf(sL)).getHasLost() && players.get(playerList.indexOf(sL)).getPartOfDrawRound()){
+                    if (!players.get(playerList.indexOf(sL)).getHasLost()){
 
                         Log.d("gezwirbel", enemyCardIDs + "lose");
                         Log.d("tokens", ""+(players.get(playerList.indexOf(sL)).playerDeck.get(players.get(playerList.indexOf(sL)).playerDeck.size()-1).id));
-                        supportClass.sendMessage(sL, "LOSE");
+                        if (players.get(playerList.indexOf(sL)).getPartOfDrawRound()){
+                            supportClass.sendMessage(sL, "LOSE");
+                        }
+
                         supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
                     }
                 }
@@ -135,6 +138,13 @@ public class GameManager {
             List<PlayerItem> drawWinners = new ArrayList<>();
 
             for (PlayerItem player : players){
+                if (!player.getHasLost() && player.getPartOfDrawRound()){
+                    callAddToPlayerDeck(pool, player.getCard(0));
+                    player.playerDeck.remove(0);
+                    if (player.playerDeck.size() == 0){
+                        currentWinners.remove(player);
+                    }
+                }
                 if (currentWinners.contains(player)){
                     drawWinners.add(player);
                 }
@@ -142,15 +152,22 @@ public class GameManager {
                     player.setPartOfDrawRound(false);
                 }
 
-                if (!player.getHasLost()){
-                    callAddToPlayerDeck(pool, player.getCard(0));
-                    player.playerDeck.remove(0);}
+
 
             }
 
-            if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
+            if (currentWinners.size() == 1){
+                awardWinner(players.indexOf(currentWinners.get(0)));
+                for (PlayerItem player : players){
+                    player.setPartOfDrawRound(true);
+                }
+                currentPlayer = players.indexOf(currentWinners.get(0));
+            }
+
+            else if (!(currentWinners.contains(players.get(currentPlayer)))){ // if the current player caused the draw, they should be allowed to pick the next card,
                 currentPlayer = players.indexOf(drawWinners.get((int) (drawWinners.size()*Math.random()))); //if not, a randomly determined player of the elligible players should be allowed
             }
+
 
 
         }
@@ -275,7 +292,7 @@ public class GameManager {
     public void nextTurn() {
         
         determineCurrentPlayer();
-        sendCard();
+
         playerList = server.getServerListeners();
 
         /*
@@ -306,7 +323,7 @@ public class GameManager {
             Log.d("tcount", "" + turnCount);
             turnCount += 1;
         }
-
+        sendCard();
         //TODO NEXT TURN MSG AN ALLE
     }
 
@@ -359,7 +376,12 @@ public class GameManager {
         int[] cardIDs = new int[players.size()];
         for (int i = 0; i < cardIDs.length; i++){
             if (playerList.get(i).getID() != sL.getID()){
-                cardIDs[i] = players.get(i).getCard(0).id;
+                if(players.get(i).playerDeck.size() > 0 && players.get(i).getPartOfDrawRound()){
+                    cardIDs[i] = players.get(i).getCard(0).id;
+                }
+                else{
+                    cardIDs[i] = -1;
+                }
             }
             Log.d("arrayprüfung", cardIDs[i] + "");
         }

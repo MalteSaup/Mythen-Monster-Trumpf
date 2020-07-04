@@ -213,11 +213,15 @@ public class Client extends Thread{
     }
 
     private void handleTotalWin(int turnCount){
-        gameActivity.createEndScreen(1, turnCount);
+        gameActivity.gameFragment.setTurnCount(turnCount);
+        gameActivity.gameFragment.setWinOrLoss(1);
+        gameActivity.gameFragment.setHasWonOrLost(true);
     }
 
     private void handleTotalLose(int turnCount){
-        gameActivity.createEndScreen(0, turnCount);
+        gameActivity.gameFragment.setTurnCount(turnCount);
+        gameActivity.gameFragment.setWinOrLoss(0);
+        gameActivity.gameFragment.setHasWonOrLost(true);
     }
 
     private void handlePlayerInfo(String[] tokens) {

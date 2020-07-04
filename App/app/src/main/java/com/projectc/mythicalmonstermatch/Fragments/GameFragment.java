@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -75,8 +76,9 @@ public class GameFragment extends Fragment {
 
 
     private int ownCard;
-
-
+    private int turnCount;
+    private int winOrLoss; // 1 = win, 0 = loss
+    private boolean hasWonOrLost; // if this is true the endscreen will be created after the compare animation
 
     private int[] enemyCardsToDisplay;
 
@@ -267,7 +269,8 @@ public class GameFragment extends Fragment {
             };
             enemieImageViews[i] = new ImageView[]{
                     enemieFrags[i].findViewById(R.id.background),
-                    enemieFrags[i].findViewById(R.id.imageView)
+                    enemieFrags[i].findViewById(R.id.imageView),
+                    enemieFrags[i].findViewById(R.id.attributeIcon)
             };
             id = res.getIdentifier(uebergabe2, "id", gA.getPackageName());
             enemieDeck[i] = view.findViewById(id);
@@ -279,7 +282,8 @@ public class GameFragment extends Fragment {
             };
             enemieDeckIV[i] = new ImageView[]{
                     enemieDeck[i].findViewById(R.id.background),
-                    enemieDeck[i].findViewById(R.id.imageView)
+                    enemieDeck[i].findViewById(R.id.imageView),
+                    enemieDeck[i].findViewById(R.id.attributeIcon)
             };
             enemieDeck[i].setAlpha(0.0f);
 
@@ -385,19 +389,18 @@ public class GameFragment extends Fragment {
 
     public void flipAllCards(boolean direction){        //TRUE => Aufdecken, FALSE => Verdecken
         for(int i = 0; i < playerCount - 1; i++){
-            if(direction){
-                enemieAnimations[i][1].reverse();
-            } else {
-                enemieAnimations[i][1].start();
+            if(enemyCardsToDisplay[i] != -1){
+                if(direction){
+                    enemieAnimations[i][1].reverse();
+                } else {
+                    enemieAnimations[i][1].start();
+                }
+                background = !direction;
             }
-            background = !direction;
         }
     }
 
     public void roundEnd(){
-        for (int i : enemyCardsToDisplay){
-            Log.d("tokens1", "" + i);
-        }
         isPlaying = true;
         gA.runOnUiThread(new Runnable() {
             public void run(){
@@ -464,6 +467,9 @@ public class GameFragment extends Fragment {
                         flipAllCards(false);
                     }
                 });
+                if(hasWonOrLost){
+                    gA.createEndScreen(winOrLoss, turnCount);
+                }
                 return null;
             }
         };
@@ -601,48 +607,58 @@ public class GameFragment extends Fragment {
     }
 
     private void updateEnemieFrag(int number, int card, int attribute){
-        String attributeName;
-        TextView textHolder;
-        switch(attribute){
-            case (1):
-                textHolder = playerFrag.findViewById(R.id.attribute1);
-                attributeName = textHolder.getText().toString();
-                break;
-            case(2):
-                textHolder = playerFrag.findViewById(R.id.attribute2);
-                attributeName = textHolder.getText().toString();
-                break;
-            case(3):
-                textHolder = playerFrag.findViewById(R.id.attribute3);
-                attributeName = textHolder.getText().toString();
-                break;
-            case(4):
-                textHolder = playerFrag.findViewById(R.id.attribute4);
-                attributeName = textHolder.getText().toString();
-                break;
-            case(5):
-                textHolder = playerFrag.findViewById(R.id.attribute5);
-                attributeName = textHolder.getText().toString();
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + attribute);
-        }
-        String displayText = "" + gA.cardDeck[card].attributeMap.get("attribute"+attribute);
-        enemieTextViews[number][0].setText(gA.cardDeck[card].name);
-        enemieTextViews[number][1].setText(attributeName);
-        enemieTextViews[number][2].setText(displayText);
+        if (card != -1){
+            String attributeName;
+            TextView textHolder;
+            int iconImage;
+            switch(attribute){
+                case (1):
+                    textHolder = playerFrag.findViewById(R.id.attribute1);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.iconmasse;
+                    break;
+                case(2):
+                    textHolder = playerFrag.findViewById(R.id.attribute2);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.iconverteidigung;
+                    break;
+                case(3):
+                    textHolder = playerFrag.findViewById(R.id.attribute3);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.icongeschwindigkeit;
+                    break;
+                case(4):
+                    textHolder = playerFrag.findViewById(R.id.attribute4);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.icongerissenheit;
+                    break;
+                case(5):
+                    textHolder = playerFrag.findViewById(R.id.attribute5);
+                    attributeName = textHolder.getText().toString();
+                    iconImage = R.drawable.icongrusel;
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + attribute);
+            }
+            String displayText = "" + gA.cardDeck[card].attributeMap.get("attribute"+attribute);
+            enemieTextViews[number][0].setText(gA.cardDeck[card].name);
+            enemieTextViews[number][1].setText(attributeName);
+            enemieTextViews[number][2].setText(displayText);
 
-        enemieImageViews[number][0].setImageResource(R.drawable.background1);
-        Log.d("tokens4", ""+card);
-        enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
-        Log.d("tokens5", ""+card);
-        if(playerCount > 3){
-            enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
-            enemieAnimTextViews[number][1].setText(attribute);
-            enemieAnimTextViews[number][2].setText(displayText);
+            enemieImageViews[number][0].setImageResource(R.drawable.background1);
+            Log.d("tokens4", ""+card);
+            enemieImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+            Log.d("tokens5", ""+card);
+            enemieImageViews[number][2].setImageResource(iconImage);
+            if(playerCount > 3){
+                enemieAnimTextViews[number][0].setText(gA.cardDeck[card].name);
+                enemieAnimTextViews[number][1].setText(attribute);
+                enemieAnimTextViews[number][2].setText(displayText);
 
-            enemieAnimImageViews[number][0].setImageResource(R.drawable.background2);
-            enemieAnimImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+                enemieAnimImageViews[number][0].setImageResource(R.drawable.background2);
+                enemieAnimImageViews[number][1].setImageResource(gA.cardDeck[card].imgID);
+
+            }
         }
     }
 
@@ -803,6 +819,18 @@ public class GameFragment extends Fragment {
     public void setAttributeToCheck(int attributeToCheck) {
         this.attributeToCheck = attributeToCheck;
     }
+
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+   public void setWinOrLoss(int winOrLoss) {
+        this.winOrLoss = winOrLoss;
+    }
+    public void setHasWonOrLost(boolean wonOrLost) {
+        this.hasWonOrLost = wonOrLost;
+    }
+
+
 }
 
 //TODO wenn richtig eingebunden in richtiger activity den return button bei erfolgter animation dazu verwenden diese wieder reversen zu lassen und nicht animation zu schlißen, momentan aber noch nicht möglich da zum testen die game activity nicht so gut geeignet ist das der server das spiel nicht starten lässt bisher
