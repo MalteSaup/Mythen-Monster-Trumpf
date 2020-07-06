@@ -116,7 +116,7 @@ public class ShowCardFragment extends Fragment {
 
                     cardView.setVisibility(View.VISIBLE);                                           //CARD VIEW SICHTBAR GEMACHT
                     cardView.findViewById(R.id.background).setVisibility(View.GONE);
-                    close.setVisibility(View.VISIBLE);                                              //CLOSE BUTTON SICHTBAR GEMACHT
+                    //close.setVisibility(View.VISIBLE);                                              //CLOSE BUTTON SICHTBAR GEMACHT
                     mainActivity.mainFrag.onCard = true;                                            //ONCARD FLAG GESETZT
                 }
             });

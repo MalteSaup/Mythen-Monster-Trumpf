@@ -37,32 +37,33 @@ public class CardAnimator {
 
     public AnimationHolder createCardFlip(final View view){
         final ObjectAnimator rotationY = ObjectAnimator.ofFloat(view, "rotationY", 180.0f);
+        Log.d("VIEW", "" + view.getId());
+        final View background = view.findViewById(R.id.background);
         rotationY.setDuration(500);
         rotationY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float deg = (float) animation.getAnimatedValue();
-
+                Log.d("VIEWTEST", "" + background.getAlpha() + " " + changed + " " + deg);
                 if(!flipped){
-                    if(deg > 90 && !changed && deg < 180){
-                        view.findViewById(R.id.background).setVisibility(View.VISIBLE);
+                    if(deg > 90 && deg < 180){
+                        background.setAlpha(1.0f);
                         changed = true;
                     }else if(deg >= 180){
-                        gA.gameFragment.showBackground(true);
                         flipped = true;
                         changed = false;
                     }
                 }else{
-                    if(deg < 90 && !changed && deg > 0){
-                        view.findViewById(R.id.background).setVisibility(View.GONE);
+                    if(deg < 90 && deg > 0){
+                        background.setAlpha(0.0f);
                         changed = true;
                     }else if(deg <= 0){
-                        gA.gameFragment.showBackground(false);
                         flipped = false;
                         changed = false;
                     }
                 }
             }
+
         });
         return new AnimationHolder(rotationY);
     }

@@ -5,14 +5,14 @@
     android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/template3"
+    android:background="@drawable/template1"
     tools:context=".Fragments.CardFragment">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/cardbackground"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="@+id/guideline8"
@@ -23,6 +23,7 @@
         android:id="@+id/cardName"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:fontFamily="@font/garamond"
         android:gravity="center"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
@@ -113,19 +114,21 @@
                 android:id="@+id/attribut"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:fontFamily="@font/garamond"
                 android:gravity="center"
                 android:text="@string/attribute1"
                 android:textAlignment="center"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/attributeWert"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:fontFamily="@font/garamond"
                 android:gravity="center"
                 android:paddingRight="3dp"
                 android:textAlignment="center"
-                android:textSize="18sp" />
+                android:textSize="14sp" />
         </TableRow>
 
     </TableLayout>

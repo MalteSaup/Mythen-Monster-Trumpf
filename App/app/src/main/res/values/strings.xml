@@ -1,17 +1,17 @@
 <resources>
     <string name="app_name">Mythical Monster Match</string>
-    <string name="host_game_bt">Host Game</string>
-    <string name="find_game_bt">Find Game</string>
-    <string name="menu_bt">Settings</string>
-    <string name="card_bt">Cards</string>
-    <string name="enterName">Enter Name</string>
+    <string name="host_game_bt">Neues Spiel</string>
+    <string name="find_game_bt">Spiel Beitreten</string>
+    <string name="menu_bt">Einstellungen</string>
+    <string name="card_bt">Karten</string>
+    <string name="enterName">Name Eingeben</string>
     <string name="changeName">Name</string>
     <string name="start">Start</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">Abbrechen</string>
     <string name="username">Username</string>
     <string name="servername">Servername</string>
     <string name="playercount">1/5</string>
-    <string name="refresh">Refresh</string>
+    <string name="refresh">Aktualisieren</string>
     <string name="haken">✓</string>
     <string name="close">X</string>
     <string name="attribute1">Masse</string>
@@ -19,16 +19,18 @@
     <string name="attribute3">Geschwindigkeit</string>
     <string name="attribute4">Gerissenheit</string>
     <string name="attribute5">Gruselfaktor</string>
-    <string name="connectdirect">Connect Direct</string>
-    <string name="connect">Connect</string>
-    <string name="enterIP">Enter Valid IP Address to Connect</string>
-    <string name="playAgain">Play Again</string>
-    <string name="exit">Exit</string>
+    <string name="connectdirect">Direkt Verbinden</string>
+    <string name="connect">Verbinden</string>
+    <string name="enterIP">Bitte gültige IP-Adresse eingeben</string>
+    <string name="playAgain">Nochmal Spielen</string>
+    <string name="exit">Verlassen</string>
+    <string name="winText">Du hast alle Karten errungen!\nDu bist der Gewinner!</string>
+    <string name="loseText">Du hast all deine Karten verloren...</string>
+
     <!--<string name=""></string>!-->
 
     <string name="info_text">
-        Mythical Monster Match ist ein Trumpf Spiel, bei dem sich legendäre Monster gegenüberstehen. Die Person, die am Zug ist, wählt aus in welchem Bereich sich die Monster stellen. Die Bereiche, in denen die Monster gegeneinander antreten können, sind Verteidigung, Geschwindigkeit, Masse, Gerissenheit und Gruselfaktor.\n\nDas Monster mit den meisten Punkten gewinnt die Runde und entscheidet, wer als nächstes am Zug ist. Der Gewinner erhält alle Monster-Karten, die in einer Runde gegeneinander angetreten sind.\n\nTeilen sich mehrere Spieler den ersten Platz, treten diese so lange mit neuen Monster-Karten gegeneinander an und spielen die Runde weiter bis es einen Gewinner gibt, der alle Karten aus dieser großen Runde bekommt.\n\nWer keine Karten mehr hat, verliert das Spiel und sobald ein Spieler alle Monster gesammelt hat, gewinnt er/sie das gesamte Spiel.
-    </string>
+Tretet gegen legendäre Monster an! Wählt aus in welchem Bereich ihr gegen die Monster eurer Gegner antreten wollt: Verteidigung, Geschwindigkeit, Masse, Gerissenheit oder Gruselfaktor.\n\nDas Monster mit den meisten Punkten gewinnt die Runde. Wer eine Runde gewinnt, bekommt alle Monster-Karten, die besiegt wurden.\n\nTeilen sich mehrere Spieler den ersten Platz, wird um die Karten weitergespielt, bis es einen Rundensieger gibt.\n\nWer keine Karten mehr hat, verliert das Spiel und wer zuerst alle Karten seiner Gegner gesammelt hat, gewinnt!    </string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

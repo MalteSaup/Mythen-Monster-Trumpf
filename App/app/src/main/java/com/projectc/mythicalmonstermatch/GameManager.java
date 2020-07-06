@@ -127,12 +127,20 @@ public class GameManager {
         }
         else{ // draw round begins
 
+            String drawWinnerIDS = "";
+            for (int i = 0; i < currentWinners.size(); i++){
+                drawWinnerIDS += currentWinners.get(i).getId();
+                if (i < currentWinners.size()){
+                    drawWinnerIDS+="|";
+                }
+            }
+
             for(ServerListener sL : playerList){
                 if (!players.get(playerList.indexOf(sL)).getHasLost()) {
 
                     String enemyCardIDs = buildEnemyCardIDs(sL);
                     supportClass.sendMessage(sL, "DRAW");
-                    supportClass.sendMessage(sL, "compared 2 " + currentWinners.get(0).getId() + " " + attributeNumber + enemyCardIDs);
+                    supportClass.sendMessage(sL, "compared 2 " + drawWinnerIDS + " " + attributeNumber + enemyCardIDs);
                 }
             }
             List<PlayerItem> drawWinners = new ArrayList<>();

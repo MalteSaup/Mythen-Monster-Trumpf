@@ -59,6 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:fontFamily="@font/garamond"
         android:gravity="center"
         android:textSize="32sp"
         app:layout_constraintBottom_toTopOf="@+id/turnCountText"
@@ -74,6 +75,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:fontFamily="@font/garamond"
         android:gravity="center"
         android:textSize="32sp"
         app:layout_constraintBottom_toTopOf="@+id/guidelineButton"
@@ -87,28 +89,13 @@
         android:layout_height="100dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/buttonv1"
+        android:fontFamily="@font/garamond"
         android:text="@string/playAgain"
         app:layout_constraintBottom_toTopOf="@+id/guidelineBot"
-        app:layout_constraintEnd_toStartOf="@+id/exitButton"
-        app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
-        app:layout_constraintTop_toTopOf="@+id/guidelineButton" />
-
-    <Button
-        android:id="@+id/exitButton"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/buttonv1"
-        android:text="@string/exit"
-        app:layout_constraintBottom_toTopOf="@+id/guidelineBot"
         app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
-        app:layout_constraintStart_toEndOf="@+id/playAgainButton"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
         app:layout_constraintTop_toTopOf="@+id/guidelineButton" />
 
 </android.support.constraint.ConstraintLayout>

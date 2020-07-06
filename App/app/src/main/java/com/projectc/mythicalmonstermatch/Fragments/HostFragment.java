@@ -109,13 +109,6 @@ public class HostFragment extends Fragment {
             }
         });
 
-        cancelButton = getView().findViewById(R.id.cancelButton);
-        cancelButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                // TODO: Either shut down lobby completely and kick all the players or only remove the leaving player and give host to someone else
-            }
-        });
 
         super.onActivityCreated(saveInstandesState);
     }

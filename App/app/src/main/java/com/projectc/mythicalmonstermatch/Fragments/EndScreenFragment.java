@@ -73,23 +73,15 @@ public class EndScreenFragment extends Fragment {
 
 
         if (getArguments().getInt("result") == 1){ //1 means you win, 0 means you lose
-            resultText.setText("You won all the cards, so you are the winner!");
+            resultText.setText(R.string.winText);
             resultText.setTextColor(Color.GREEN);
         }
         else if (getArguments().getInt("result") == 0){
-            resultText.setText("You lost all your cards, you are a loser...");
+            resultText.setText(R.string.loseText);
             resultText.setTextColor(Color.RED);
         }
 
-        turnCountText.setText("For you the game lasted " + getArguments().getInt("turnCount") + " turns.");
-
-        exitButton = getView().findViewById(R.id.exitButton);
-        exitButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //TODO: if you were the host, this breaks the lobby for everyone and if not you leave the game
-             }
-        });
+        turnCountText.setText("Du konntest in diesem Spiel für " + getArguments().getInt("turnCount") + " Runden überdauern.");
 
         super.onActivityCreated(saveInstandesState);
     }

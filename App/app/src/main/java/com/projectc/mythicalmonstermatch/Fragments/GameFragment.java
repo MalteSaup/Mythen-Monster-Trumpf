@@ -7,7 +7,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.projectc.mythicalmonstermatch.GameActivity;
 import com.projectc.mythicalmonstermatch.PlayerItem;
 import com.projectc.mythicalmonstermatch.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GameFragment extends Fragment {
@@ -42,6 +45,7 @@ public class GameFragment extends Fragment {
     private View[] enemieDeck;
     private View view;
     private TableRow[] tableRows;
+
 
     private GameActivity gA;
     //private MainActivity gA;
@@ -81,6 +85,9 @@ public class GameFragment extends Fragment {
     private boolean hasWonOrLost; // if this is true the endscreen will be created after the compare animation
 
     private int[] enemyCardsToDisplay;
+    private int winnerID;
+
+    private ArrayList<Integer> winnersToDisplay;
 
 
     private int attributeToCheck;
@@ -95,7 +102,7 @@ public class GameFragment extends Fragment {
     private ImageView[][] enemieDeckIV;
     private AnimationHolder[][] enemieDeckAS;
 
-    private int green = Color.parseColor("#00FF00");
+    private int green = Color.parseColor("#c9c6c5");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,6 +121,7 @@ public class GameFragment extends Fragment {
         gA = (GameActivity) getActivity();
         playerCount = gA.playerItems.size();
         enemyCardsToDisplay = new int[playerCount];
+        winnersToDisplay = new ArrayList<>();
         //playerCount = gA.server.playerCount();
         /*switch (playerCount){
             case 2: return inflater.inflate(game_fragments[0], container, false);
@@ -248,10 +256,12 @@ public class GameFragment extends Fragment {
         enemieImageViews = new ImageView[playerCount-1][];
         enemieAnimations = new AnimationHolder[playerCount-1][];
 
+
         enemieDeck = new View[playerCount-1];
         enemieDeckTV = new TextView[playerCount-1][];
         enemieDeckIV = new ImageView[playerCount-1][];
         enemieDeckAS = new AnimationHolder[playerCount-1][];
+
 
 
         enemieAnimationDirection = new boolean[playerCount-1];
@@ -262,6 +272,7 @@ public class GameFragment extends Fragment {
             int id = res.getIdentifier(uebergabe, "id", gA.getPackageName());
             enemieFrags[i] = view.findViewById(id);
             Log.d("SCHONWIEDER", uebergabe + " " + id + " " + enemieFrags[i]);
+            enemieFrags[i].setBackgroundResource(R.drawable.template3);
             enemieTextViews[i] = new TextView[]{
                     enemieFrags[i].findViewById(R.id.cardName),
                     enemieFrags[i].findViewById(R.id.attribut),
@@ -296,6 +307,7 @@ public class GameFragment extends Fragment {
             enemieAnimAnimations = new AnimationHolder[playerCount-1];
             String enemyAnimString = "enemy_fragment_great";
             for(int i = 0; i < playerCount-1; i++){
+                enemieFrags[i].setBackgroundResource(R.drawable.template3);
                 String uebergabe = enemyAnimString + (i+1);
                 int id = res.getIdentifier(uebergabe, "id", gA.getPackageName());
                 enemieAnimationFrags[i] = view.findViewById(id);
@@ -309,12 +321,16 @@ public class GameFragment extends Fragment {
                         enemieAnimationFrags[i].findViewById(R.id.background),
                         enemieAnimationFrags[i].findViewById(R.id.imageView)
                 };
+
+
             }
         }
     }
 
     public void createEnemieAnimations(){
         for(int i = 0; i < playerCount-1; i++){
+
+
             AnimationHolder cardFlipAnimation = cardAnimator.createCardFlip(enemieFrags[i]);
             AnimationHolder onClickAnimation = null;
             AnimationHolder onClickAnimAnimator;
@@ -389,15 +405,16 @@ public class GameFragment extends Fragment {
 
     public void flipAllCards(boolean direction){        //TRUE => Aufdecken, FALSE => Verdecken
         for(int i = 0; i < playerCount - 1; i++){
+            Log.d("VIEW",   " " + i);
             if(enemyCardsToDisplay[i] != -1){
                 if(direction){
                     enemieAnimations[i][1].reverse();
                 } else {
                     enemieAnimations[i][1].start();
                 }
-                background = !direction;
             }
         }
+        background = !direction;
     }
 
     public void roundEnd(){
@@ -556,7 +573,7 @@ public class GameFragment extends Fragment {
                             gA.supportClass.sendMessage(gA.client, "move " + (i + 1));
                         }
                     }
-                    tableRows[i].setBackgroundColor(Color.parseColor("#262733"));
+                    tableRows[i].setBackgroundColor(Color.alpha(0));
                 }
             }
         });
@@ -571,7 +588,7 @@ public class GameFragment extends Fragment {
                         int color = 0;
                         if (background != null){color = background.getColor();}
                         if(color == green){
-                            tableRows[finalI].setBackgroundColor(Color.parseColor("#262733"));
+                            tableRows[finalI].setBackgroundColor(Color.alpha(0));
                             colorWasChanged = false;
                         }else{
                             if(colorWasChanged){resetColor();}
@@ -711,7 +728,7 @@ public class GameFragment extends Fragment {
 
     private void resetColor() {
         for (int i = 0; i < tableRows.length; i++) {
-            tableRows[i].setBackgroundColor(Color.parseColor("#262733"));
+            tableRows[i].setBackgroundColor(Color.alpha(0));
         }
     }
 
@@ -829,7 +846,13 @@ public class GameFragment extends Fragment {
     public void setHasWonOrLost(boolean wonOrLost) {
         this.hasWonOrLost = wonOrLost;
     }
+    public void setWinnerID(int winnerID){
+        this.winnerID = winnerID;
+    }
 
+    public void setWinnersToDisplay(ArrayList<Integer> winnersToDisplay) {
+        this.winnersToDisplay = winnersToDisplay;
+    }
 
 }
 

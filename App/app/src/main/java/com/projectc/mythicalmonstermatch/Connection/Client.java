@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -244,14 +245,25 @@ public class Client extends Thread{
         gameActivity.gameFragment.roundEnd();
 
 
+
+
         if(tokens[1].equalsIgnoreCase("0")){
-            //LOSE ANZEIGEN
+            //LOSE
+            int winnerID = Integer.parseInt(tokens[2]);
+            gameActivity.gameFragment.setWinnerID(winnerID);
         } else if(tokens[1].equalsIgnoreCase("1")){
             gameActivity.gameFragment.getPlayerFrag();
         } else if(tokens[1].equalsIgnoreCase("2")){
             //DRAW LAUNCHEN
+            ArrayList<Integer> winnerIds = new ArrayList<>();
+            for (int i = 0; i < tokens[2].toCharArray().length; i++){
+                if (tokens[2].charAt(i) == '|'){
+                    winnerIds.add(Integer.parseInt(tokens[2].subSequence(i-8, i).toString()));
+                }
+            }
+            gameActivity.gameFragment.setWinnersToDisplay(winnerIds);
         }
-        int winnerID = Integer.parseInt(tokens[2]);                 //TODO AN GAME FRAGMENT WEITERREICHEN UND ATTRIBUTE AN DEN VERSCHIEDENEN KARTEN EINFÄRBEN
+
     }
 
     private void handleTurnMsg(String[] tokens) {
