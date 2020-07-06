@@ -153,7 +153,7 @@ public class GameFragment extends Fragment {
 
 
         if(gA.code == 0){
-            //initAndSortIDArray();
+            initAndSortIDArray();
             gA.gameManager.dealOutCards();
 
 
@@ -218,6 +218,7 @@ public class GameFragment extends Fragment {
     public void initAndSortIDArray(){
         ArrayList<ServerListener> sLL = gA.server.getServerListeners();
         playerID = new int[sLL.size()];
+        Log.d("playeridcheck", "" + playerID.length);
         for(int i = 0; i < sLL.size(); i++){
             playerID[i] = sLL.get(i).getID();
         }
@@ -236,7 +237,7 @@ public class GameFragment extends Fragment {
             playerID[0] = playerID[uebergabe];
             playerID[uebergabe] = id;
         }
-        gA.gameManager.setPlayer(sLL);
+        //gA.gameManager.setPlayer(sLL);
     }
 
     private void deactivateAnimFrags() {
@@ -470,11 +471,65 @@ public class GameFragment extends Fragment {
         };
         flipCardsOpen.execute();
 
+        AsyncTask markWinners = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+
+                gA.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (winnerID == 0){
+                            enemieTextViews[0][0].setBackgroundColor(Color.GREEN);
+                        }
+                        else if (winnerID == 1){
+                            playerTextViews[0].setBackgroundColor(Color.GREEN);
+                        }
+                        else{
+                            enemieTextViews[0][0].setBackgroundColor(Color.GREEN);
+                            playerTextViews[0].setBackgroundColor(Color.GREEN);
+                        }
+                    }
+                });
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+                if(hasWonOrLost){
+                    gA.createEndScreen(winOrLoss, turnCount);
+                }else{
+                    gA.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (winnerID == 0){
+                                enemieTextViews[0][0].setBackgroundColor(Color.alpha(0));
+                            }
+                            else if (winnerID == 1){
+                                playerTextViews[0].setBackgroundColor(Color.alpha(0));
+                            }
+                            else{
+                                enemieTextViews[0][0].setBackgroundColor(Color.alpha(0));
+                                playerTextViews[0].setBackgroundColor(Color.alpha(0));
+                            }
+                        }
+                    });
+                }
+                return null;
+            }
+        };
+        markWinners.execute();
+
         AsyncTask flipCardsShut = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                 } catch (Exception e){
                     System.out.println(e);
                 }
@@ -484,9 +539,6 @@ public class GameFragment extends Fragment {
                         flipAllCards(false);
                     }
                 });
-                if(hasWonOrLost){
-                    gA.createEndScreen(winOrLoss, turnCount);
-                }
                 return null;
             }
         };

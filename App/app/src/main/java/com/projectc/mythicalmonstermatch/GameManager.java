@@ -20,7 +20,7 @@ public class GameManager {
     private ArrayList<ServerListener> playerList;
 
     private int currentPlayer;
-    private int turnCount = 0; // a turn means one comparison
+    private int turnCount = 1; // a turn means one comparison
 
     private AsyncSupportClass supportClass;
 

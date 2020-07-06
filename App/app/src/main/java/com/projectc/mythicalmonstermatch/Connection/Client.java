@@ -175,12 +175,6 @@ public class Client extends Thread{
     private void handleDraw(String[] tokens) {
         //TODO
 
-        gameActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(gameActivity,"It's a draw!",Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void handleMove(String[] tokens) {
@@ -192,24 +186,12 @@ public class Client extends Thread{
     private void handleLose() {
         Log.d("RUNDEVOLLENDET", "LOSER");
 
-        gameActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(gameActivity,"You lost...",Toast.LENGTH_SHORT).show();
-            }
-        });
         //gameActivity.gameFragment.createWinLoseScreen(0);
     }
 
     private void handleWin() {
         Log.d("RUNDEVOLLENDET", "IWINNER");
 
-        gameActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(gameActivity,"You won!",Toast.LENGTH_SHORT).show();
-            }
-        });
         //gameActivity.gameFragment.createWinLoseScreen(1);
     }
 
@@ -242,6 +224,20 @@ public class Client extends Thread{
             Log.d("gezwirbel", enemyCardsToDisplay[i-4] + "");
         }
         gameActivity.gameFragment.setEnemyCardsToDisplay(enemyCardsToDisplay);
+        ArrayList<Integer> winnerIds = new ArrayList<>();
+        if (tokens[2].contains("|")){
+            for (int i = 0; i < tokens[2].toCharArray().length; i++){
+                if (tokens[2].charAt(i) == '|'){
+                    winnerIds.add(Integer.parseInt(tokens[2].subSequence(i-8, i).toString()));
+                }
+            }
+        }
+        else{
+            winnerIds.add(Integer.parseInt(tokens[2]));
+        }
+
+        Log.d("chickendinner", winnerIds.size() + "");
+        gameActivity.gameFragment.setWinnersToDisplay(winnerIds);
         gameActivity.gameFragment.roundEnd();
 
 
@@ -249,19 +245,13 @@ public class Client extends Thread{
 
         if(tokens[1].equalsIgnoreCase("0")){
             //LOSE
-            int winnerID = Integer.parseInt(tokens[2]);
-            gameActivity.gameFragment.setWinnerID(winnerID);
+            gameActivity.gameFragment.setWinnerID(0);
         } else if(tokens[1].equalsIgnoreCase("1")){
+            gameActivity.gameFragment.setWinnerID(1);
             gameActivity.gameFragment.getPlayerFrag();
         } else if(tokens[1].equalsIgnoreCase("2")){
             //DRAW LAUNCHEN
-            ArrayList<Integer> winnerIds = new ArrayList<>();
-            for (int i = 0; i < tokens[2].toCharArray().length; i++){
-                if (tokens[2].charAt(i) == '|'){
-                    winnerIds.add(Integer.parseInt(tokens[2].subSequence(i-8, i).toString()));
-                }
-            }
-            gameActivity.gameFragment.setWinnersToDisplay(winnerIds);
+            gameActivity.gameFragment.setWinnerID(2);
         }
 
     }
