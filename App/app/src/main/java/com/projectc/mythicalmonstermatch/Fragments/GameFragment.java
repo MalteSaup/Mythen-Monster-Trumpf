@@ -86,6 +86,7 @@ public class GameFragment extends Fragment {
 
     private int[] enemyCardsToDisplay;
     private int winnerID;
+    private String winnersToBeMarked;
 
     private ArrayList<Integer> winnersToDisplay;
 
@@ -422,9 +423,13 @@ public class GameFragment extends Fragment {
         isPlaying = true;
         gA.runOnUiThread(new Runnable() {
             public void run(){
+                if (winnersToBeMarked.charAt(0)=='1'){
+                    playerTextViews[0].setBackgroundColor(Color.GREEN);
+                }
                 for (int i = 0; i < playerCount-1; i++){
                     Log.d("tokens2",""+enemyCardsToDisplay[i]);
-                    updateEnemieFrag(i, enemyCardsToDisplay[i], attributeToCheck);
+                    Log.d("stupide", winnersToBeMarked + " | " + winnersToBeMarked.charAt(i+1) + " " + ('1'== winnersToBeMarked.charAt(i+1)));
+                    updateEnemieFrag(i, enemyCardsToDisplay[i], attributeToCheck, ('1'==winnersToBeMarked.charAt(i+1)));
                 }
             }
         });
@@ -483,16 +488,7 @@ public class GameFragment extends Fragment {
                 gA.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (winnerID == 0){
-                            enemieTextViews[0][0].setBackgroundColor(Color.GREEN);
-                        }
-                        else if (winnerID == 1){
-                            playerTextViews[0].setBackgroundColor(Color.GREEN);
-                        }
-                        else{
-                            enemieTextViews[0][0].setBackgroundColor(Color.GREEN);
-                            playerTextViews[0].setBackgroundColor(Color.GREEN);
-                        }
+                        //markWinner();
                     }
                 });
                 try {
@@ -506,17 +502,7 @@ public class GameFragment extends Fragment {
                     gA.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
-                            if (winnerID == 0){
-                                enemieTextViews[0][0].setBackgroundColor(Color.alpha(0));
-                            }
-                            else if (winnerID == 1){
-                                playerTextViews[0].setBackgroundColor(Color.alpha(0));
-                            }
-                            else{
-                                enemieTextViews[0][0].setBackgroundColor(Color.alpha(0));
-                                playerTextViews[0].setBackgroundColor(Color.alpha(0));
-                            }
+                            unMarkWinner();
                         }
                     });
                 }
@@ -675,7 +661,7 @@ public class GameFragment extends Fragment {
         }); */
     }
 
-    private void updateEnemieFrag(int number, int card, int attribute){
+    private void updateEnemieFrag(int number, int card, int attribute, boolean hasWon){
         if (card != -1){
             String attributeName;
             TextView textHolder;
@@ -711,6 +697,9 @@ public class GameFragment extends Fragment {
             }
             String displayText = "" + gA.cardDeck[card].attributeMap.get("attribute"+attribute);
             enemieTextViews[number][0].setText(gA.cardDeck[card].name);
+            if (hasWon){
+                enemieTextViews[number][0].setBackgroundColor(Color.GREEN);
+            }
             enemieTextViews[number][1].setText(attributeName);
             enemieTextViews[number][2].setText(displayText);
 
@@ -904,6 +893,36 @@ public class GameFragment extends Fragment {
 
     public void setWinnersToDisplay(ArrayList<Integer> winnersToDisplay) {
         this.winnersToDisplay = winnersToDisplay;
+    }
+
+    public void setWinnersToBeMarked(String winnersToBeMarked){
+        this.winnersToBeMarked = winnersToBeMarked;
+    }
+
+    public void markWinner(){
+        for (int i = 0; i < winnersToBeMarked.length(); i++){
+            if (i == 0){
+                if (winnersToBeMarked.charAt(0) == '1'){
+                    playerTextViews[0].setBackgroundColor(Color.GREEN);
+                }
+            }
+            else{
+                char c = winnersToBeMarked.charAt(i);
+                if (c == '1'){
+                    enemieTextViews[i][0].setBackgroundColor(Color.GREEN);
+                }
+            }
+        }
+    }
+    public void unMarkWinner(){
+        for (int i = 0; i < winnersToBeMarked.length(); i++){
+            if (i == 0){
+                playerTextViews[0].setBackgroundColor(Color.alpha(0));
+            }
+            else{
+                enemieTextViews[i-1][0].setBackgroundColor(Color.alpha(0));
+            }
+        }
     }
 
 }

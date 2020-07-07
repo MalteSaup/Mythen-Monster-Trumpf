@@ -217,24 +217,30 @@ public class Client extends Thread{
     }
 
     private void handleCompare(String[] tokens) { //tokens[0] = "compared", tokens[1] = win/loss/draw, tokens[2] = winnerID, tokens[3] = attribute, tokens[4-max] = cardID of enemy cards
-        gameActivity.gameFragment.setAttributeToCheck(Integer.parseInt(tokens[3]));
+        String winnersToBeMarked = "";
+        String[] attSplit = tokens[3].split(":",2);
+        gameActivity.gameFragment.setAttributeToCheck(Integer.parseInt(attSplit[0]));
+        winnersToBeMarked+=attSplit[1];
         int[] enemyCardsToDisplay = new int[tokens.length - 4];
+
         for (int i = 4; i < tokens.length; i++){
-            enemyCardsToDisplay[i-4] = Integer.parseInt(tokens[i]);
-            Log.d("gezwirbel", enemyCardsToDisplay[i-4] + "");
+            String[] split = tokens[i].split(":",2);
+            enemyCardsToDisplay[i-4] = Integer.parseInt(split[0]);
+            winnersToBeMarked+=split[1];
+            Log.d("gezwirbel", enemyCardsToDisplay[i-4] + winnersToBeMarked);
         }
         gameActivity.gameFragment.setEnemyCardsToDisplay(enemyCardsToDisplay);
+        gameActivity.gameFragment.setWinnersToBeMarked(winnersToBeMarked);
         ArrayList<Integer> winnerIds = new ArrayList<>();
-        if (tokens[2].contains("|")){
-            for (int i = 0; i < tokens[2].toCharArray().length; i++){
-                if (tokens[2].charAt(i) == '|'){
-                    winnerIds.add(Integer.parseInt(tokens[2].subSequence(i-8, i).toString()));
-                }
+        /*if (tokens[2].contains(":")){
+            String[] split = tokens[2].split(":", 5);
+            for (int i = 0; i < split.length; i++){
+                winnerIds.add(Integer.parseInt(split[i]));
             }
         }
         else{
             winnerIds.add(Integer.parseInt(tokens[2]));
-        }
+        }*/
 
         Log.d("chickendinner", winnerIds.size() + "");
         gameActivity.gameFragment.setWinnersToDisplay(winnerIds);

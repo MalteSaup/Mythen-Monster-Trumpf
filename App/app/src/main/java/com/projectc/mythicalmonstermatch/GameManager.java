@@ -96,13 +96,13 @@ public class GameManager {
         if (currentWinners.size() == 1){ // there is one winner
 
             for(ServerListener sL : playerList){
-                String enemyCardIDs = buildEnemyCardIDs(sL);
+                String enemyCardIDs = buildEnemyCardIDs(sL, currentWinners);
 
                 if (sL.getID() == currentWinners.get(0).getId()){
 
                     Log.d("gezwirbel", enemyCardIDs + "win");
                     supportClass.sendMessage(sL, "WIN");
-                    supportClass.sendMessage(sL,"compared 1 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
+                    supportClass.sendMessage(sL,"compared 1 " + currentWinners.get(0).getId()+ " " + attributeNumber+":1" + enemyCardIDs);
 
                 } else {
 
@@ -114,7 +114,7 @@ public class GameManager {
                             supportClass.sendMessage(sL, "LOSE");
                         }
 
-                        supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + attributeNumber + enemyCardIDs);
+                        supportClass.sendMessage(sL,"compared 0 " + currentWinners.get(0).getId()+ " " + attributeNumber+":0" + enemyCardIDs);
                     }
                 }
             }
@@ -130,17 +130,25 @@ public class GameManager {
             String drawWinnerIDS = "";
             for (int i = 0; i < currentWinners.size(); i++){
                 drawWinnerIDS += currentWinners.get(i).getId();
-                if (i < currentWinners.size()){
-                    drawWinnerIDS+="|";
+                if (i < currentWinners.size()-1){
+                    drawWinnerIDS+=":";
                 }
             }
 
             for(ServerListener sL : playerList){
                 if (!players.get(playerList.indexOf(sL)).getHasLost()) {
 
-                    String enemyCardIDs = buildEnemyCardIDs(sL);
+                    String enemyCardIDs = buildEnemyCardIDs(sL, currentWinners);
                     supportClass.sendMessage(sL, "DRAW");
-                    supportClass.sendMessage(sL, "compared 2 " + drawWinnerIDS + " " + attributeNumber + enemyCardIDs);
+                    String message = "compared 2 " + drawWinnerIDS + " " + attributeNumber;
+                    if (currentWinners.contains(players.get(playerList.indexOf(sL)))){
+                        message+=":1";
+                    }
+                    else{
+                        message+=":0";
+                    }
+                    message+=enemyCardIDs;
+                    supportClass.sendMessage(sL, message);
                 }
             }
             List<PlayerItem> drawWinners = new ArrayList<>();
@@ -386,7 +394,7 @@ public class GameManager {
 
     }
 
-    public String buildEnemyCardIDs(ServerListener sL){
+    public String buildEnemyCardIDs(ServerListener sL, List<PlayerItem> currentWinners){
         int[] cardIDs = new int[players.size()];
         for (int i = 0; i < cardIDs.length; i++){
             if (playerList.get(i).getID() != sL.getID()){
@@ -403,6 +411,12 @@ public class GameManager {
         for (int i = 0; i < cardIDs.length; i++){
             if (playerList.get(i).getID() != sL.getID()){
                 enemyCardIDs += " " + cardIDs[i];
+                if(currentWinners.contains(players.get(i))){
+                    enemyCardIDs+=":1";
+                }
+                else{
+                    enemyCardIDs+=":0";
+                }
             }
         }
         return enemyCardIDs;
