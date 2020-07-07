@@ -422,6 +422,9 @@ public class GameFragment extends Fragment {
         isPlaying = true;
         gA.runOnUiThread(new Runnable() {
             public void run(){
+                if (winnersToBeMarked.charAt(0)=='1'){
+                    playerTextViews[0].setBackgroundColor(Color.GREEN);
+                }
                 for (int i = 0; i < playerCount-1; i++){
                     Log.d("tokens2",""+enemyCardsToDisplay[i]);
                     Log.d("stupide", winnersToBeMarked + " | " + winnersToBeMarked.charAt(i+1) + " " + ('1'== winnersToBeMarked.charAt(i+1)));
@@ -467,7 +470,6 @@ public class GameFragment extends Fragment {
                         flipAllCards(true);
                     }
                 });
-
                 return null;
             }
         };
@@ -476,7 +478,6 @@ public class GameFragment extends Fragment {
         AsyncTask markWinners = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
-
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e){
@@ -486,9 +487,7 @@ public class GameFragment extends Fragment {
                 gA.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (winnersToBeMarked.charAt(0)=='1'){
-                            playerTextViews[0].setBackgroundColor(Color.GREEN);
-                        }
+                        //markWinner();
                     }
                 });
                 try {
