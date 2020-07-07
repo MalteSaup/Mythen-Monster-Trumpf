@@ -274,6 +274,7 @@ public class GameFragment extends Fragment {
             int id = res.getIdentifier(uebergabe, "id", gA.getPackageName());
             enemieFrags[i] = view.findViewById(id);
             Log.d("SCHONWIEDER", uebergabe + " " + id + " " + enemieFrags[i]);
+            enemieFrags[i].setBackgroundResource(R.drawable.template3);
             enemieTextViews[i] = new TextView[]{
                     enemieFrags[i].findViewById(R.id.cardName),
                     enemieFrags[i].findViewById(R.id.attribut),
