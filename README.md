@@ -32,3 +32,6 @@ Harpie   |   2   |    2    |    2   |      2     |      7      | 8 9 5 |       6
 Phönix   |   1   |    1    |    1   |      3     |      1      | 9 9 10|       3      |     1     |   1  |    9
 Greif    |   3   |    3    |    4   |      2     |      4      | 8 7 8 |       2      |     3     |   4  |    5
 Pegasus  |   3   |    3    |    4   |      1     |      5      |10 1010|       1      |     1     |   1  |    6
+
+
+Gameplay: https://www.youtube.com/watch?v=jmm3rWAyxjs
